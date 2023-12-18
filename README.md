@@ -5,7 +5,7 @@ minha paixão pelo desenvolvimento de software e pela exploração de tecnologia
 vontade para explorar cada projeto e descobrir as soluções criativas implementadas. Se tiver alguma
 dúvida ou sugestão, não hesite em entrar em contato.
 
-# **Projetos Disponíveis:**!
+## **Projetos Disponíveis:**!
 
 ## **1. Jogo da Velha Interativo**!
 Desenvolvi um jogo da velha, e no projeto utilizei apenas css, html e javascript
