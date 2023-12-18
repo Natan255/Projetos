@@ -1,0 +1,93 @@
+*{
+    margin: 0;
+    padding: 0;
+
+    
+}
+body{
+    background: rebeccapurple;
+}
+
+.conteiner{
+    width: 100%;
+    height: 100%;
+    
+}
+
+.botao{
+    width: 100%;
+    height: 100%;
+    border-radius: 15px;
+    font-size: 10rem;
+}
+
+#opcao{
+    display: grid;
+    column-count: 1; /* número de colunas desejado */
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    background: #ffffff;
+    border-radius: 0 20px 20px 0;
+    width: 100px;
+    height: 200px;
+    left: -40px;
+    writing-mode: vertical-lr;
+    text-decoration: none;
+    color: black;
+    transition: 0.3s;
+}
+#opcao:hover{
+    justify-content: none;
+    left: 0px;
+
+}
+
+.headline{
+    visibility: hidden;
+}
+#tela{
+    display: grid;
+    height: 100vh;
+    padding: 80px;
+    align-items: center;
+    justify-content: center;
+    grid-template-rows: 27vh 27vh 27vh;
+    grid-template-columns: 27vh 27vh 27vh;  
+    background: rebeccapurple;
+}
+#barra{
+    background: transparent;
+    width: 50vw;
+    height: 30vh;
+    position: absolute;
+    right: 15.5vw;
+    z-index: -1;
+}
+#barra_vert{
+    background: transparent;
+    width: 50vw;
+    height: 50vh;
+    position: absolute;
+    right: 14.5vw;
+    top: 18vh;
+    z-index: -1;
+}
+#barra_lat_di{
+    background: transparent;
+    width: 30vw;
+    height: 25vh;
+    position: absolute;
+    right: 40vw;
+    bottom: 69vh;
+    z-index: -1;
+}
+#barra_lat_esq{
+    background: transparent;
+    width: 30vw;
+    height: 25vh;
+    position: absolute;
+    right: 40vw;
+    bottom: 69vh;
+    z-index: -1;
+}
