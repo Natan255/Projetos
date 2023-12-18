@@ -1,0 +1,115 @@
+body{
+    background: rgb(37, 37, 37);
+    margin: 0;
+    padding: 0;
+    font-family: 'Kanit', sans-serif;
+}
+nav{
+    height: 12vh;
+    background: #1b1b1b;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: white;
+    font-size: 2rem;
+    padding-left: 20px;
+   
+}
+
+header{
+
+    padding-left: 20vw;
+    align-items: center;
+    justify-content: center;
+
+}
+
+#lista{
+    color: white;
+    background: #0d0e0e;
+    font-size: 1.5rem;
+    
+
+}
+
+.gaveta{
+    background: white;
+    color: white;
+    display: flex;
+    border-radius: 10px;
+    border: solid rgb(221, 131, 12);
+    box-shadow: 0 0 15px orange;
+    align-items: center;
+    padding-left: 40px;
+    font-size: 1.5rem;
+    width: 60vw;
+    height: 10vh;
+    background: #333333;
+}
+#logo{
+    display: flex;
+    width: 22vw;
+    align-items: center;
+    justify-content: space-between;
+}
+
+#titulo{
+    padding-bottom: 10px;
+}
+#cabecalho{
+    font-size: 2rem;
+    height: 10vh;
+    color:  rgb(94, 94, 94);
+    padding-top: 30px;
+}
+#numero{
+    width: 20%;
+    font-size: 1.3rem;
+    color: white;
+    background: #0d0e0e;
+    box-shadow: none;
+
+}
+#valor{
+    width: 10vw;
+}
+
+#pesquisa{
+    display: flex;
+    width: 44vw;
+    align-items: center;
+    justify-content: space-between;
+    padding-right: 10vw;
+    
+}
+#busca{
+    width: 40vw;
+    height: 5vh;
+    
+    background: #1b1b1b;
+    color: white;
+    font-family: 'Kanit', sans-serif;
+    border: none;
+    border-bottom: 2px solid rgb(221, 131, 12);
+    outline: none;
+    
+}
+
+
+#enter{
+    border: none;
+    cursor: pointer;
+    height: 6vh;
+    width: 6vh;
+    border-radius: 10px;
+    background: #1b1b1b;
+    text-decoration: none;
+    transition: 0.3s;
+    border: solid rgb(34, 34, 34);
+    
+}
+#enter:hover{
+    border: solid rgb(221, 131, 12);
+    background: rgb(221, 131, 12);
+    box-shadow: 0 0 15px orange;
+}

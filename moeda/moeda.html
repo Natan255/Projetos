@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="moeda.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav>
+        <div id="logo">
+            <div id="titulo">
+                Moeda do dia
+            </div>
+            <div>
+                <img src="imagens/moeda.png" width="28%" height="28%" alt="">
+            </div>
+            
+        </div >
+        <div id='pesquisa' >
+            <div>
+                <button id="enter" onclick="enter(linha)">🔎 </button>
+            </div>
+            <div>
+                <input type="text" id="busca" placeholder="Buscar" >
+            </div>
+            
+        </div>
+
+        <div id="valor">
+            <select name="" id="lista">
+            </select>
+            <input type="number" id="numero" value="1">
+        </div>
+    </nav>
+    <header>
+        <div id="cabecalho">
+            &nbsp Moeda &nbsp|&nbsp Valor &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+            &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+            &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+            &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+            &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+            &nbsp&nbsp&nbsp&nbsp&nbsp Atual valor comparado
+        </div>
+
+        <script src="adicional.js"></script>
+        <script src="moeda.js"></script>
+    </header>
+</body>
+</html>
