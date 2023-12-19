@@ -5,6 +5,7 @@ let conta;
 let numero;
 let buscar = document.getElementById('busca')
 
+
 buscar.addEventListener('keydown', function (event) {
   if (event.key === 'Enter') {
     event.preventDefault(); // Evita o comportamento padrão de enviar formulários
@@ -22,7 +23,7 @@ function calcularConta(linha, conj, moedaSelecionada) {
     linha[n].conta = contaItem; // Armazenar a conta no objeto correspondente em linha
     let texto = document.getElementById(`div${n}`)
     texto.textContent = ''
-    texto.innerHTML += `${linha[n].name} &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp $${(Math.round(linha[n].priceUsd * g)/g).toLocaleString()}&nbsp&nbsp&nbsp&nbsp&nbsp...............................................................................................&nbsp&nbsp&nbsp&nbsp&nbsp${(Math.round(contaItem*g) /g).toLocaleString()}`
+    texto.innerHTML += `<p class="nome" >${linha[n].name}  </p> <p class="valor"> $${(Math.round(linha[n].priceUsd * g)/g).toLocaleString()}</p> <p>${(Math.round(contaItem*g) /g).toLocaleString()} </p>`
   }
 }
 
@@ -38,7 +39,7 @@ function enter(linha) {
     if(nome.startsWith(busca)){
       let h = Math.pow(10, 3);
       console.log(`Nome encontrado: ${linha[n].name}`);
-      let div_nova = `<div class="gaveta" id="div${n}" > <p>${linha[n].name} &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp    $${(Math.round(linha[n].priceUsd * h)/h).toLocaleString()}&nbsp&nbsp&nbsp&nbsp&nbsp...............................................................................................&nbsp&nbsp&nbsp&nbsp&nbsp${(Math.round(linha[n].conta*h) /h).toLocaleString()}`
+      let div_nova = `<div class="gaveta" id="div${n}" > <p class="nome" >${linha[n].name}  </p> <p class="valor"> $${(Math.round(linha[n].priceUsd * h)/h).toLocaleString()}</p> <p>${(Math.round(linha[n].conta*h) /h).toLocaleString()} </p>`
       document.querySelector('header').insertAdjacentHTML('beforeend', div_nova)
       
       
@@ -49,15 +50,16 @@ function enter(linha) {
 
 fetch(link_cripto)
   .then((res) => res.json())
-  .then((dados) =>{
-    linha = dados.data
-    for ( const i in linha){
-        let f = Math.pow(10, 3)
-        let div = `<div class="gaveta" id="div${i}" > <p>${linha[i].name} &nbsp&nbsp&nbsp&nbsp-&nbsp&nbsp&nbsp    $${(Math.round(linha[i].priceUsd * f)/f).toLocaleString()}</p></div>`
-        document.querySelector('header').insertAdjacentHTML('beforeend', div)
+  .then((dados) => {
+    linha = dados.data;
 
+    for (const i in linha) {
+      let f = Math.pow(10, 3);
+      let div = `<div class="gaveta" id="div${i}" > <p class="nome" >${linha[i].name}  </p> <p class="valor"> $${(Math.round(linha[i].priceUsd * f)/f).toLocaleString()}</p></div>`;
+      document.getElementById('todos').insertAdjacentHTML('beforeend', div);
+      
     }
-    fetch(link_rea)
+    fetch(link_real)
     .then((res) => res.json())
     .then((data) => {
 
