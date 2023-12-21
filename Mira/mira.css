@@ -28,13 +28,20 @@ main{
     justify-content: center;
     align-self: center;
     margin-left: 5vw;
+
 }
 .botao{
     width: 20vw;
     height: 10vh;
     border-radius: 25px;
+    font-size: 2rem;
+    font-family: 'Times New Roman', Times, serif;
+    cursor: pointer;
 }
 #imagens{
-    width: 50vw;
-    height: 50vh;
+    width: 15vw;
+    height: 28vh;
+}
+#titulo{
+    display: flex;
 }

@@ -1,0 +1,30 @@
+html{
+    background: #C8B4B4;
+    color: white;
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 2rem;
+    margin: 0;
+    padding: 0;
+}
+body{
+    margin: 0;
+    padding: 0;
+}
+#conteiner{
+    display: flex;
+    justify-content: space-between;
+    width: 100vw;
+    padding: 0;
+}
+#timer{
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100vw;
+    height: 90vh;
+    font-size: 4rem;
+}
+#tempo{
+    margin-right: 1vw;
+}
