@@ -10,6 +10,8 @@ body{
     margin: 0;
     padding: 0;
     height: 100vh;
+    user-select: none;
+    -webkit-user-drag: none;
 }
 #conteiner{
     display: flex;
@@ -38,6 +40,15 @@ body{
     border: none;
     position: relative;
 
+}
+#menu{
+    width: 20vw;
+    height: 10vh;
+    border-radius: 25px;
+    font-size: 2rem;
+    font-family: 'Times New Roman', Times, serif;
+    cursor: pointer;
+    align-items: center;
 }
 #imagem_mira{
     user-select: none;
