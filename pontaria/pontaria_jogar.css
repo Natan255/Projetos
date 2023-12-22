@@ -9,6 +9,7 @@ html{
 body{
     margin: 0;
     padding: 0;
+    height: 100vh;
 }
 #conteiner{
     display: flex;
@@ -28,4 +29,17 @@ body{
 }
 #tempo{
     margin-right: 1vw;
+}
+#alvos{
+    width: 5vw;
+    height: 10vh;
+    border-radius: 40px;
+    background: #C8B4B4;
+    border: none;
+    position: relative;
+
+}
+#imagem_mira{
+    user-select: none;
+    -webkit-user-drag: none;
 }
