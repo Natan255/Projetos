@@ -42,10 +42,10 @@ body{
 
 }
 #menu{
-    width: 20vw;
-    height: 10vh;
+    width: 18vw;
+    height: 8vh;
     border-radius: 25px;
-    font-size: 2rem;
+    font-size: 1.8rem;
     font-family: 'Times New Roman', Times, serif;
     cursor: pointer;
     align-items: center;
@@ -53,4 +53,8 @@ body{
 #imagem_mira{
     user-select: none;
     -webkit-user-drag: none;
+}
+#juntin{
+    font-size: 2rem;
+    margin-right: 3vw;
 }

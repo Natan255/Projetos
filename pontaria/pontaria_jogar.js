@@ -1,8 +1,12 @@
 let contador = 1
-let min = 1
-let sec_unidade = 0
+let min = 0
+let sec_unidade = 1
 let sec_dezena = 0
 let score = -1
+
+function menu(){
+    window.location.href = 'pontaria.html'
+}
 
 function fim(){
     let alvos = document.getElementById('alvos')
@@ -15,9 +19,8 @@ function fim(){
     pontuacao.style.display = 'none'
     alvos.style.display = "none"
     timer.style.display = ""
-    timer.innerHTML = `Fim! <br> Pontuação: ${score} <br> <button id='menu'>Menu</button> `
+    timer.innerHTML = `<div id="juntin"> Fim! <br> Pontuação: ${score}</div> <button id='menu' onclick='menu()'>Menu</button> `
 
-    
 
 }
 
@@ -25,7 +28,6 @@ function fim(){
 function cronometro(){
     let alvos = document.getElementById('alvos')
     let tempo = document.getElementById('tempo')
-    let timer =  document.getElementById('timer')
     if (sec_dezena == 0 && sec_unidade == -1 && min == 0 ){
         sec_dezena = 0
         sec_unidade = 0
