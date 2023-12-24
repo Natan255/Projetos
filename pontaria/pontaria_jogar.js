@@ -1,8 +1,8 @@
 let contador = 1
-let min = 0
-let sec_unidade = 1
-let sec_dezena = 0
 let score = -1
+let min = 1
+let sec_unidade = 0
+let sec_dezena = 0
 
 function menu(){
     window.location.href = 'pontaria.html'
@@ -54,7 +54,7 @@ function cronometro(){
         cronometro()
     }else{
         tempo.innerHTML ='Tempo:    :'
-        tempo.innerHTML += ` 0${min}:${sec_dezena}${sec_unidade}`
+        tempo.innerHTML += `${min}:${sec_dezena}${sec_unidade}`
         sec_unidade -= 1
         setTimeout(cronometro, 1000)
     }
@@ -91,8 +91,9 @@ function tempo(){
     }else{
         timer.style.display = 'none'
         conteiner.style.color = 'white'
-        cronometro()
         alvo()
+        cronometro()
+        
         
     }
        

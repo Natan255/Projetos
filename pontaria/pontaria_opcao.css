@@ -1,3 +1,38 @@
 html{
     background: #C8B4B4;
+    color: white;
+    margin: 0;
+    padding: 0;
+    font-family: 'Times New Roman', Times, serif;
+    
+}
+body{
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+    
+main{
+    font-size: 4rem;
+    width: 40vw;
+}
+
+.tempo{
+    font-family: 'Times New Roman', Times, serif;
+    border: none;
+    font-size: 4rem;
+    width: 3vw;
+    background: #C8B4B4;
+    color: white;
+}
+#idioma{
+    font-family: 'Times New Roman', Times, serif;
+    border: none;
+    font-size: 4rem;
+    width: 18vw;
+    background: #C8B4B4;
+    color: white;
 }
