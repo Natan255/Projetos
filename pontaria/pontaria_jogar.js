@@ -1,8 +1,14 @@
 let contador = 1
 let score = -1
-let min = 1
-let sec_unidade = 0
-let sec_dezena = 0
+let myfrime = document.getElementById('myframe')
+let iframeContent = myfrime.contentDocument || myfrime.contentWindow.document;
+let min = iframeContent.getElementById('min').value
+let sec_unidade = iframeContent.getElementById('sec_unidade').value
+let sec_dezena = iframeContent.getElementById('sec_dezena').value
+
+
+
+
 
 function menu(){
     window.location.href = 'pontaria.html'
@@ -13,7 +19,7 @@ function fim(){
     let pontuacao = document.getElementById('pontuacao')
     let timer =  document.getElementById('timer')
     let tempo = document.getElementById('tempo')
- 
+
     
     tempo.style.display = 'none'
     pontuacao.style.display = 'none'
@@ -26,8 +32,10 @@ function fim(){
 
 
 function cronometro(){
+    
     let alvos = document.getElementById('alvos')
     let tempo = document.getElementById('tempo')
+
     if (sec_dezena == 0 && sec_unidade == -1 && min == 0 ){
         sec_dezena = 0
         sec_unidade = 0
