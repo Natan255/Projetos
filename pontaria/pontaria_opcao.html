@@ -17,7 +17,7 @@
             <option value="">English</option>
         </select>
         <div class="gavetas">
-            Tempo do jogo: <input type="number" value="1" class="tempo" id="min">:<input type="number" class="tempo" value="1" id="sec_dezena"><input class="tempo" type="number" value="0" id="sec_unidade">
+            Tempo do jogo: <input type="number" value="1" class="tempo" id="min" oninput="atualizar_valor_m(this.value)">:<input type="number" class="tempo" value="0" id="sec_dezena" oninput="atualizar_valor_ds(this.value)"><input class="tempo" type="number" value="0" id="sec_unidade" oninput="atualizar_valor_s(this.value)">
         </div>
         <div class="gavetas">
             Alvo:
