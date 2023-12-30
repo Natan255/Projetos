@@ -5,23 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="stylesheet" href="pontaria_opcao.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 </head>
 <body>
     <main>
-        <div class="gavetas">
+        <div class="gavetas_tempo">
+            Tempo do jogo: <input type="number" value="1" min="0" max="9" class="tempo" id="min" oninput="atualizar_valor_m(this.value)">:<input type="number" class="tempo" min="0" max="5" value="0" id="sec_dezena" oninput="atualizar_valor_ds(this.value)"><input class="tempo" type="number" min="0" max="9" value="0" id="sec_unidade" oninput="atualizar_valor_s(this.value)">
+        </div>
+        <div class="gavetas_alvo">
+            Alvos:&nbsp
+            <button class="opcao_alvo">
+                <img src="imagens/logo_mira.png" alt="" width="120%" height="110%">
+            </button>
+            <button class="opcao_alvo">
+                <img src="imagens/logo_mira.png" alt="" width="120%" height="110%">
+            </button>
+            <button class="opcao_alvo">
+                <img src="imagens/logo_mira.png" alt="" width="120%" height="110%">
+            </button>
+            <label for="up" id="fileUpload"><span class="material-symbols-outlined" id="icone">upload</span></label>
+            <input type="file"  name="up" id="up" style="display: none;">
             
         </div>
-        idioma:
-        <select name="" id="idioma">
-            <option value="">Portugues</option>
-            <option value="">English</option>
-        </select>
-        <div class="gavetas">
-            Tempo do jogo: <input type="number" value="1" class="tempo" id="min" oninput="atualizar_valor_m(this.value)">:<input type="number" class="tempo" value="0" id="sec_dezena" oninput="atualizar_valor_ds(this.value)"><input class="tempo" type="number" value="0" id="sec_unidade" oninput="atualizar_valor_s(this.value)">
-        </div>
-        <div class="gavetas">
-            Alvo:
-        </div>
+        
     </main>
     <script src="pontaria_opcao.js"></script>
 </body>

@@ -36,3 +36,43 @@ main{
     background: #C8B4B4;
     color: white;
 }
+#fileUpload{
+    background: #afadad;
+    display: flex;
+    width: 5vw;
+    height: 10vh;
+    align-items: center;
+    justify-content: center;
+    border: solid white;
+    border-radius: 15px;
+    cursor: pointer;
+    transition: 0.5s;
+}
+#fileUpload:hover{
+    transform: translateY(-15px);
+    background: #C8B4B4;
+}
+#icone{
+    font-size: 4rem;
+}
+.gavetas_tempo{
+    display: flex;
+}
+.gavetas_alvo{
+    display: flex;
+    padding-top: 40px;
+}
+
+.opcao_alvo{
+    background: #afadad;
+    border: solid white;
+    border-radius: 15px;
+    width: 5vw;
+    height: 10.5vh;
+    transition: 0.5s;
+    cursor: pointer;
+}
+.opcao_alvo:hover{
+    transform: translateY(-15px);
+    background: #C8B4B4;
+}

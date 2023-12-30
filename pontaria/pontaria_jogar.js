@@ -4,6 +4,7 @@ let min;
 let sec_unidade;
 let sec_dezena;
 
+
 document.addEventListener('DOMContentLoaded', function() {
     sec_unidade = localStorage.getItem('valor_fixo_s')
     sec_unidade = Number(sec_unidade)
@@ -46,8 +47,6 @@ function cronometro(){
         alvos.disabled = true
         fim()
         cronometro= saf
-        
-        
     }
     
     if (sec_dezena == 0 && sec_unidade == -1){
@@ -64,7 +63,7 @@ function cronometro(){
         sec_dezena -= 1
         cronometro()
     }else{
-        tempo.innerHTML ='Tempo:    :'
+        tempo.innerHTML ='Tempo:'
         tempo.innerHTML += `${min}:${sec_dezena}${sec_unidade}`
         sec_unidade -= 1
         setTimeout(cronometro, 1000)
@@ -72,6 +71,8 @@ function cronometro(){
     
 }
 function ativar(){
+    
+    
     let alvos = document.getElementById('alvos')
     let imagem_mira = document.getElementById('imagem_mira')
     imagem_mira.style.width ="120%"
@@ -82,10 +83,18 @@ function ativar(){
     alvos.style.left = `${sort_left}vw`
     score += 1
     pontuacao.innerHTML = `Pontuação: ${score}`
+    if (score > 0){
+    const audio = new Audio()
+    audio.src = 'imagens/pontaria_click.mp3'
+    audio.play()
+
+    }
+    
 }
 
 function alvo(){
-    let div = "<button id='alvos' onclick='ativar()'><img src='imagens/logo_mira.png' width='0' height='0' id='imagem_mira'></button>"
+    
+    let div = "<button id='alvos' onclick='ativar()' ><img src='imagens/logo_mira.png' width='0' height='0' id='imagem_mira'></button>"
     document.querySelector("body").insertAdjacentHTML("beforeend", div)
     ativar()
     

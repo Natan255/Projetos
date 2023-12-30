@@ -7,7 +7,6 @@ document.getElementById('sec_dezena').value = dez_armazem
 document.getElementById('min').value = min_armazem
     
 
-
 function atualizar_valor_s(novo_valor) {
     // Atualizar o valor do input number com o valor inserido
     let sec_unidade = document.getElementById("sec_unidade").value
