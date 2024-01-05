@@ -5,7 +5,24 @@ let min_armazem = localStorage.getItem('valor_fixo_m')
 document.getElementById('sec_unidade').value = sec_armazem
 document.getElementById('sec_dezena').value = dez_armazem
 document.getElementById('min').value = min_armazem
-    
+  
+function mudar_alvo(valor){
+    if (valor == 1){
+        let alvo = 'imagens/logo_mira.png'
+        localStorage.removeItem('mira')
+        localStorage.setItem('mira', alvo )
+    }
+    if (valor == 2){
+        let alvo2 = "imagens/mosquito_alvo.png"
+        localStorage.removeItem('mira')
+        localStorage.setItem('mira', alvo2)
+    }
+    if (valor == 3){
+        let alvo3 = "imagens/maça_alvo.png"
+        localStorage.removeItem('mira')
+        localStorage.setItem('mira', alvo3)
+    }
+}
 
 function atualizar_valor_s(novo_valor) {
     // Atualizar o valor do input number com o valor inserido

@@ -93,10 +93,19 @@ function ativar(){
 }
 
 function alvo(){
-    
-    let div = "<button id='alvos' onclick='ativar()' ><img src='imagens/logo_mira.png' width='0' height='0' id='imagem_mira'></button>"
-    document.querySelector("body").insertAdjacentHTML("beforeend", div)
-    ativar()
+    let mira = localStorage.getItem('mira')
+    if (mira == null){
+        let div = "<button id='alvos' onclick='ativar()' ><img src='imagens/logo_mira.png' width='0' height='0' id='imagem_mira'></button>"
+        document.querySelector("body").insertAdjacentHTML("beforeend", div)
+        ativar()
+        console.log('ofi')
+
+    }else{
+        let div = `<button id='alvos' onclick='ativar()' ><img src='${mira}' width='0' height='0' id='imagem_mira'></button>`
+        document.querySelector("body").insertAdjacentHTML("beforeend", div)
+        ativar()
+        console.log('i')
+    }
     
 }
 
