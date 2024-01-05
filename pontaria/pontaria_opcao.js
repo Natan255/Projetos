@@ -1,10 +1,23 @@
 let sec_armazem = localStorage.getItem('valor_fixo_s')
 let dez_armazem = localStorage.getItem('valor_fixo_ds')
 let min_armazem = localStorage.getItem('valor_fixo_m')
- 
+
+
 document.getElementById('sec_unidade').value = sec_armazem
 document.getElementById('sec_dezena').value = dez_armazem
 document.getElementById('min').value = min_armazem
+let up = document.getElementById('up')
+let icone = document.getElementById('fileUpload')
+
+
+up.onchange = function(){
+    link_foto = URL.createObjectURL(up.files[0])
+    localStorage.removeItem('mira')
+    localStorage.setItem('mira', link_foto)
+    icone.innerHTML = `<img src='${link_foto}' width="92%" height="92%">`
+    window.alert('Sua mira foi mudada')
+    
+}
   
 function mudar_alvo(valor){
     if (valor == 1){
@@ -22,6 +35,7 @@ function mudar_alvo(valor){
         localStorage.removeItem('mira')
         localStorage.setItem('mira', alvo3)
     }
+
 }
 
 function atualizar_valor_s(novo_valor) {
