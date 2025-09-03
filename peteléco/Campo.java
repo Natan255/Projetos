@@ -3,14 +3,54 @@ import java.awt.*;
 
 //criar campo separada da criação da janela melhorou a velocidade do redimensionamento do desenho
 //mais dinamico
+
 public class Campo extends JPanel {
+
+    int moeda_X;
+    int moeda_Y;
+    private boolean mouseSobreMoeda = false;
+    private boolean moedaInicializada = false;
+    public Campo() {
+        setBackground(Color.GREEN);
+
+        addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            @Override
+            public void mouseMoved(java.awt.event.MouseEvent e) {
+                int mouse_x = e.getX();
+                int mouse_y = e.getY();
+                int raio = 5;
+
+                // Verifica se o mouse está dentro do círculo da moeda
+                if(mouse_x > moeda_X && mouse_x < moeda_X + raio*4 && mouse_y > moeda_Y && mouse_y < moeda_Y + raio*4) {
+                    mouseSobreMoeda = true;
+                } else {
+                    mouseSobreMoeda = false;
+                }
+                
+
+                repaint(); // redesenha para dar feedback visual
+            }
+        });
+    }
+
     @Override
     protected void paintComponent(Graphics g){
         super.paintComponent(g);
-
+        
+          
         int largura = getWidth();
         int altura = getHeight();
-
+        
+        if (moedaInicializada == false || mouseSobreMoeda == false) {
+            moeda_X = largura / 2 - 10;
+            moeda_Y = altura / 2 - 10;
+            moedaInicializada = true;
+            //deixa de atualizar caso nao tenha o || mouseSobreMoeda
+            // futuramente vai dar conflito com o deslocamento da moeda
+            // ajeita com mouseSobreMoeda ficar true quando clicar e arrastar pq assim isso n vai ficar mudando a posiçao da moeda
+            // porem quando voltar a ser false volta a atualizar a posiçao de acordo com o tamanho da janela
+        } 
+    
         // Cor de fundo do campo
         g.setColor(new Color(0, 128, 0));
         g.fillRect(0, 0, largura, altura);
@@ -56,10 +96,24 @@ public class Campo extends JPanel {
         int arcoX_dir = gaX_dir - arcoLargura / 2;
         g.drawArc(arcoX_dir, arcoY, arcoLargura, arcoAltura, 90, 180);
 
-        // Meio de canpo ----------------------
+        // Meio de campo ----------------------
 
         g.fillOval(largura / 2 - raio, altura / 2 - raio, raio*2, raio*2);
         g.drawOval(largura / 2 - raio*11, altura / 2 - raio*11, raio*22, raio*22);
         g.drawLine(largura/2 , altura/7, largura/2, altura - altura/8 );
+
+        //Moeda ---------------------------- talvez tire
+
+        if (mouseSobreMoeda) {
+            g.setColor(Color.black); // muda cor se mouse está em cima
+            
+        } else {
+            g.setColor(Color.YELLOW);
+        }
+        g.fillOval(moeda_X, moeda_Y, raio * 4, raio * 4);
+        
+
+
     }
+
 }
