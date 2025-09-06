@@ -11,11 +11,12 @@ public class Campo extends JPanel {
 
     int moeda_X;
     int moeda_Y;
+    double velocidade = 0.01;
     int mlinha_X;
     int mlinha_Y;
-    private boolean mouseClicado = false;
+    private boolean moedaClicada = false;
+    private boolean moedaLancada = false;
     private boolean moedaInicializada = false;
-
     public Campo() {
         setBackground(Color.GREEN);
 
@@ -28,15 +29,15 @@ public class Campo extends JPanel {
                 int raio = 5;
 
                 if ((mouse_x > moeda_X && mouse_x < moeda_X + raio * 4 && mouse_y > moeda_Y
-                        && mouse_y < moeda_Y + raio * 4) && !mouseClicado) {
+                        && mouse_y < moeda_Y + raio * 4)) {
                     System.out.printf("Arrastando mouse em: (%d, %d)%n", mouse_x, mouse_y);
-                    mouseClicado = true;
+                    moedaClicada = true;
                     mlinha_X = mouse_x;
                     mlinha_Y = mouse_y;
 
                 } else {
                     if (!(mouse_x > moeda_X && mouse_x < moeda_X + raio * 4 && mouse_y > moeda_Y
-                            && mouse_y < moeda_Y + raio * 4) && mouseClicado) {
+                            && mouse_y < moeda_Y + raio * 4)) {
                         System.out.printf("Arrastando mouse Fora em: (%d, %d)%n", mouse_x, mouse_y);
                         mlinha_X = mouse_x;
                         mlinha_Y = mouse_y;
@@ -51,11 +52,12 @@ public class Campo extends JPanel {
         addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseReleased(java.awt.event.MouseEvent e) {
-                int x = e.getX();
-                int y = e.getY();
-
-                System.out.println("Mouse solto em: (" + x + ", " + y + ")");
-                mouseClicado = false;
+                if (moedaClicada == true) {
+                    moedaLancada = true;
+                    moedaClicada = false;
+                    System.out.println("Moeda lançada");
+                }
+                
                 repaint();
             }
 
@@ -70,16 +72,13 @@ public class Campo extends JPanel {
         int largura = getWidth();
         int altura = getHeight();
 
-        if (moedaInicializada == false || mouseClicado == false) {
+        if (moedaLancada == false && moedaInicializada == false) {
             moeda_X = largura / 2 - 10;
             moeda_Y = altura / 2 - 10;
+              
+        }else{
             moedaInicializada = true;
-            // deixa de atualizar caso nao tenha o || mouseSobreMoeda
-            // futuramente vai dar conflito com o deslocamento da moeda
-            // ajeita com mouseSobreMoeda ficar true quando clicar e arrastar pq assim isso
-            // n vai ficar mudando a posiçao da moeda
-            // porem quando voltar a ser false volta a atualizar a posiçao de acordo com o
-            // tamanho da janela
+            
         }
 
         // Cor de fundo do campo
@@ -133,15 +132,40 @@ public class Campo extends JPanel {
         g.drawOval(largura / 2 - raio * 11, altura / 2 - raio * 11, raio * 22, raio * 22);
         g.drawLine(largura / 2, altura / 7, largura / 2, altura - altura / 8);
 
-        // Moeda ---------------------------- talvez tire
+        // Moeda ---------------------------- 
 
         g.setColor(Color.BLACK);
         g.fillOval(moeda_X, moeda_Y, raio * 4, raio * 4);
 
-        if (mouseClicado) {
+        if (moedaClicada == true) {
             g.drawLine(moeda_X + raio * 2, moeda_Y + raio * 2, mlinha_X, mlinha_Y);
+            repaint();
+            
         }
-
+        if (moedaLancada == true) {
+            if (moeda_X + raio * 2 <= mlinha_X) {
+                moeda_X -= 1 * velocidade;
+            }else{
+                moeda_X += 1 * velocidade;
+            }
+            if (moeda_Y + raio * 2 <= mlinha_Y) {
+                moeda_Y -= 1 * velocidade; 
+            }else{
+                moeda_Y += 1 * velocidade;
+            }
+            
+            
+            if ((moeda_Y - raio <= altura / 7) || (moeda_Y + raio >= altura - altura / 8)) {
+                System.out.println("Moeda parou");
+                moedaClicada = false;
+                moedaLancada = false;
+                
+                
+            }
+            System.out.printf("Moeda em: (%d, %d)%n", moeda_X, moeda_Y);
+            repaint();
+        }
+        
     }
 
 }
