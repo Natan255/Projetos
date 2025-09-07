@@ -12,6 +12,8 @@ public class Campo extends JPanel {
     double deltaY;
     int mlinha_X;
     int mlinha_Y;
+    int timeEsquerda = 0;
+    int timeDireita = 0;
     private boolean moedaClicada = false;
     private boolean moedaLancada = false;
     private boolean moedaInicializada = false;
@@ -30,7 +32,7 @@ public class Campo extends JPanel {
 
                 if ((mouse_x > moeda_X && mouse_x < moeda_X + raio * 4 && mouse_y > moeda_Y
                         && mouse_y < moeda_Y + raio * 4)) {
-                    System.out.printf("Arrastando mouse em: (%d, %d)%n", mouse_x, mouse_y);
+
                     moedaClicada = true;
                     mlinha_X = mouse_x;
                     mlinha_Y = mouse_y;
@@ -38,7 +40,7 @@ public class Campo extends JPanel {
                 } else {
                     if (!(mouse_x > moeda_X && mouse_x < moeda_X + raio * 4 && mouse_y > moeda_Y
                             && mouse_y < moeda_Y + raio * 4)) {
-                        System.out.printf("Arrastando mouse em: (%d, %d)%n", mouse_x, mouse_y);
+
                         mlinha_X = mouse_x;
                         mlinha_Y = mouse_y;
                         deltaX = mlinha_X - (moeda_X + raio * 2);
@@ -149,18 +151,28 @@ public class Campo extends JPanel {
         if (moedaLancada) {
             // Atualiza posição
             double modulo = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-            moeda_X += -(deltaX / modulo) * velocidade; //normaliza e multiplica pela velocidade
+            moeda_X += -(deltaX / modulo) * velocidade; // normaliza e multiplica pela velocidade
             moeda_Y += -(deltaY / modulo) * velocidade;
 
-            // Colisão com as paredes
-            if ((moeda_X <= 0) && !colidiu) {
-                deltaX = -deltaX;
-                colidiu = true;
+            // Colisão com a parede esquerda (exceto se estiver no gol)
+            if ((moeda_X < 0) && !colidiu) {
+                // Só colide se NÃO estiver na área do gol esquerdo
+                if (!(moeda_Y + raio * 4 > golY_esq && moeda_Y < golY_esq + golAltura)) {
+                    deltaX = -deltaX;
+                    colidiu = true;
+                }
             }
+
+            // Colisão com a parede direita
             if ((moeda_X + raio * 4 >= largura) && !colidiu) {
-                deltaX = -deltaX;
-                colidiu = true;
+
+                if (!(moeda_Y + raio * 4 > golY_esq && moeda_Y < golY_esq + golAltura)) {
+                    deltaX = -deltaX;
+                    colidiu = true;
+                }
             }
+
+            // Colisão com as paredes de cima e baixo
             if ((moeda_Y - raio * 2 <= altura / 7) && !colidiu) {
                 deltaY = -deltaY;
                 colidiu = true;
@@ -169,11 +181,37 @@ public class Campo extends JPanel {
                 deltaY = -deltaY;
                 colidiu = true;
             }
+
+            // Gol para o time da direita
+            if (moeda_Y > golY_esq && moeda_Y < golY_esq + golAltura && moeda_X <= -raio * 4) {
+                timeDireita++;
+                colidiu = false;
+                moedaLancada = false;
+                moedaInicializada = false; // pra resetar a posição da moeda
+                System.out.println("GOL PARA O TIME DA DIREITA!");
+                System.out.println("Placar: " + timeEsquerda + " x " + timeDireita);
+
+            }
+            if (moeda_Y > golY_esq && moeda_Y < golY_esq + golAltura && moeda_X >= largura) {
+                colidiu = false;
+                moedaLancada = false;
+                moedaInicializada = false;
+                timeEsquerda++;
+                System.out.println("GOL PARA O TIME DA ESQUERDA!");
+                System.out.println("Placar: " + timeEsquerda + " x " + timeDireita);
+
+            }
+
             if (colidiu) {
                 colidiu = false;
             }
+
             repaint();
         }
+        // Placar ----------------------------
+        g.setColor(Color.BLACK);
+        g.setFont(new Font("Arial", Font.BOLD, 55));
+        g.drawString(timeEsquerda + " X " + timeDireita, largura / 2 - 50, 50);
 
     }
 
