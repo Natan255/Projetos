@@ -1,24 +1,22 @@
 import javax.swing.JPanel;
-
 import java.awt.*;
-
-//criar campo separada da criação da janela melhorou a velocidade do redimensionamento do desenho
-//mais dinamico
 
 public class Campo extends JPanel {
 
     double moeda_X;
     double moeda_Y;
     double b;
-    double velocidade = 0.1;
+    double velocidade = 1;
     double coeficienteAngular;
     double deltaX;
-    double deltaY;  
+    double deltaY;
     int mlinha_X;
     int mlinha_Y;
     private boolean moedaClicada = false;
     private boolean moedaLancada = false;
     private boolean moedaInicializada = false;
+    private boolean colidiu = false;
+
     public Campo() {
         setBackground(Color.GREEN);
 
@@ -40,9 +38,11 @@ public class Campo extends JPanel {
                 } else {
                     if (!(mouse_x > moeda_X && mouse_x < moeda_X + raio * 4 && mouse_y > moeda_Y
                             && mouse_y < moeda_Y + raio * 4)) {
-                        System.out.printf("Arrastando mouse Fora em: (%d, %d)%n", mouse_x, mouse_y);
+                        System.out.printf("Arrastando mouse em: (%d, %d)%n", mouse_x, mouse_y);
                         mlinha_X = mouse_x;
                         mlinha_Y = mouse_y;
+                        deltaX = mlinha_X - (moeda_X + raio * 2);
+                        deltaY = mlinha_Y - (moeda_Y + raio * 2);
 
                     }
                 }
@@ -61,7 +61,7 @@ public class Campo extends JPanel {
                     moedaClicada = false;
                     System.out.println("Moeda lançada");
                 }
-                
+
                 repaint();
             }
 
@@ -79,10 +79,10 @@ public class Campo extends JPanel {
         if (moedaLancada == false && moedaInicializada == false) {
             moeda_X = largura / 2 - 10;
             moeda_Y = altura / 2 - 10;
-              
-        }else{
+
+        } else {
             moedaInicializada = true;
-            
+
         }
 
         // Cor de fundo do campo
@@ -136,52 +136,45 @@ public class Campo extends JPanel {
         g.drawOval(largura / 2 - raio * 11, altura / 2 - raio * 11, raio * 22, raio * 22);
         g.drawLine(largura / 2, altura / 7, largura / 2, altura - altura / 8);
 
-        // Moeda ---------------------------- 
+        // Moeda ----------------------------
 
         g.setColor(Color.BLACK);
-        g.fillOval((int)moeda_X, (int)moeda_Y, raio * 4, raio * 4);
-        deltaX = mlinha_X - (moeda_X + raio*2);
-        deltaY = mlinha_Y - (moeda_Y + raio*2);
-        
-        
+        g.fillOval((int) moeda_X, (int) moeda_Y, raio * 4, raio * 4);
 
         if (moedaClicada == true) {
-            g.drawLine((int)moeda_X + raio * 2, (int)moeda_Y + raio * 2, mlinha_X, mlinha_Y);
+            g.drawLine((int) moeda_X + raio * 2, (int) moeda_Y + raio * 2, mlinha_X, mlinha_Y);
             repaint();
-            
+
         }
-        if (moedaLancada == true) {
-            if (deltaY > 1) {
+        if (moedaLancada) {
+            // Atualiza posição
+            double modulo = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+            moeda_X += -(deltaX / modulo) * velocidade; //normaliza e multiplica pela velocidade
+            moeda_Y += -(deltaY / modulo) * velocidade;
 
-                moeda_Y = coeficienteAngular * moeda_X + b;
-                
-            } else if (deltaY < -1) {
-
-                moeda_Y = coeficienteAngular * moeda_X + b;       
+            // Colisão com as paredes
+            if ((moeda_X <= 0) && !colidiu) {
+                deltaX = -deltaX;
+                colidiu = true;
             }
-
-            if (moeda_X  < mlinha_X) {
-                moeda_X -= velocidade;  
-                
-            }else{
-                moeda_X += velocidade;  
-                
+            if ((moeda_X + raio * 4 >= largura) && !colidiu) {
+                deltaX = -deltaX;
+                colidiu = true;
             }
-
-
-            
-            if ((moeda_Y - raio <= altura / 7) || (moeda_Y + raio >= altura - altura / 8) || (moeda_X - raio <= 0)
-                    || (moeda_X + raio >= largura)) {
-                System.out.println("Moeda parou");
-                moedaClicada = false;
-                moedaLancada = false;
-                
-                
+            if ((moeda_Y - raio * 2 <= altura / 7) && !colidiu) {
+                deltaY = -deltaY;
+                colidiu = true;
             }
-            System.out.printf("Moeda em: (%.2f, %.2f)%n", moeda_X, moeda_Y);
+            if ((moeda_Y + raio * 2 >= altura - altura / 8) && !colidiu) {
+                deltaY = -deltaY;
+                colidiu = true;
+            }
+            if (colidiu) {
+                colidiu = false;
+            }
             repaint();
         }
-        
+
     }
 
 }
