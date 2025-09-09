@@ -5,11 +5,12 @@ public class Campo extends JPanel {
 
     double moeda_X;
     double moeda_Y;
-    double b;
-    double velocidade = 1;
-    double coeficienteAngular;
+    double velocidade;
+    int largura;
+    int altura;
     double deltaX;
     double deltaY;
+    double modulo;
     int mlinha_X;
     int mlinha_Y;
     int timeEsquerda = 0;
@@ -45,6 +46,7 @@ public class Campo extends JPanel {
                         mlinha_Y = mouse_y;
                         deltaX = mlinha_X - (moeda_X + raio * 2);
                         deltaY = mlinha_Y - (moeda_Y + raio * 2);
+                        modulo = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
 
                     }
                 }
@@ -58,10 +60,13 @@ public class Campo extends JPanel {
             public void mouseReleased(java.awt.event.MouseEvent e) {
                 if (moedaClicada == true) {
                     moedaLancada = true;
-                    coeficienteAngular = (double) deltaY / deltaX;
-                    b = moeda_Y - (coeficienteAngular * moeda_X);
                     moedaClicada = false;
-                    System.out.println("Moeda lançada");
+                    if(largura >= 1300){
+                        velocidade = modulo * 0.0107;
+                    }else{
+                        velocidade = modulo * 0.001; // use um valor maior para testar
+                    }
+                    
                 }
 
                 repaint();
@@ -75,8 +80,8 @@ public class Campo extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        int largura = getWidth();
-        int altura = getHeight();
+        largura = getWidth();
+        altura = getHeight();
 
         if (moedaLancada == false && moedaInicializada == false) {
             moeda_X = largura / 2 - 10;
@@ -141,7 +146,7 @@ public class Campo extends JPanel {
         // Moeda ----------------------------
 
         g.setColor(Color.BLACK);
-        g.fillOval((int) moeda_X, (int) moeda_Y, raio * 4, raio * 4);
+        g.fillOval((int) moeda_X, (int) moeda_Y, raio * 4, raio * 4); //problema de posicionamento da moeda quando a tela é redimensionada
 
         if (moedaClicada == true) {
             g.drawLine((int) moeda_X + raio * 2, (int) moeda_Y + raio * 2, mlinha_X, mlinha_Y);
@@ -150,9 +155,19 @@ public class Campo extends JPanel {
         }
         if (moedaLancada) {
             // Atualiza posição
-            double modulo = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+        
+            
             moeda_X += -(deltaX / modulo) * velocidade; // normaliza e multiplica pela velocidade
             moeda_Y += -(deltaY / modulo) * velocidade;
+            if (largura < 1000){
+                velocidade -=  0.00001; // diminui a velocidade a cada atualização
+            } else if (largura >= 1000 && largura <= 1300){
+                velocidade -=  0.0001; // diminui a velocidade a cada atualização
+            } else if (largura > 1300){
+                velocidade -=  0.003; // diminui a velocidade a cada atualização
+            }
+            
+
 
             // Colisão com a parede esquerda (exceto se estiver no gol)
             if ((moeda_X < 0) && !colidiu) {
@@ -201,7 +216,12 @@ public class Campo extends JPanel {
                 System.out.println("Placar: " + timeEsquerda + " x " + timeDireita);
 
             }
+            
+            if (velocidade <= 0) {
+                velocidade = 0;
+                moedaLancada = false;
 
+            }
             if (colidiu) {
                 colidiu = false;
             }

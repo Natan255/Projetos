@@ -8,9 +8,7 @@ public class Janela extends JFrame{
         this.setSize(700, 500);
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         Campo campo = new Campo();
-        //Moeda moeda = new Moeda();
         add(campo);
-        //add(moeda);
         this.setVisible(true);
         
     }
