@@ -5,6 +5,15 @@ import pynput as pp
 import os
 from time import sleep
 
+
+def apagar_comando(nome_arquivo):
+    numeros_comandos = input("Digite a linha que deseja apagar: ")
+    with open(f"{nome_arquivo}.txt", "r", encoding="utf-8") as arquivo:
+        linhas = arquivo.readlines()
+        linhas.pop(int(numeros_comandos) - 1)
+    with open(f"{nome_arquivo}.txt", "w", encoding="utf-8") as arquivo:
+        arquivo.writelines(linhas)
+
 def opcao_usuario():
     while True:
         try:
@@ -37,14 +46,14 @@ MM.           MM   ,pm9MM 8M       MM;Mm
    print("[5] - Sair")
    print("+-----------------------------------+")
 
-def mostrar_comando():
+def mostrar_automatizacao(nome_arquivo):
     print("+-----------------------------------+")
-    with open("meus_comandos.txt", "r", encoding="utf-8") as arquivo:
+    with open(f"{nome_arquivo}.txt", "r", encoding="utf-8") as arquivo:
         for i, linha in enumerate(arquivo, start=1):
             print(f"[{i}] {linha.strip()}")
     print("+-----------------------------------+")
 
-def mostrar_menu_editar():
+def mostrar_menu_conclusao():
     print("+-----------------------------------+")
     print("[1] - Apagar comando expecifico e continuar editando")
     print("[2] - Concluir automatização")
@@ -54,18 +63,12 @@ def mostrar_menu_editar():
 
 
     if opcao == 1:
-        mostrar_comando()
+        mostrar_automatizacao()
         rodando = True
         while rodando:
             try:
-                
-                numeros_comandos = input("Digite os números dos comandos que deseja apagar: ")
-                with open("meus_comandos.txt", "r", encoding="utf-8") as arquivo:
-                    linhas = arquivo.readlines()
-                    linhas.pop(int(numeros_comandos) - 1)
-                with open("meus_comandos.txt", "w", encoding="utf-8") as arquivo:
-                    arquivo.writelines(linhas)
-                mostrar_comando()
+                mostrar_automatizacao("meus_comandos")
+                apagar_comando("meus_comandos")
                 print("+-----------------------------------+")
                 print("[1] - Continuar editando")
                 print("[2] - Concluir automatização")
@@ -99,7 +102,50 @@ def mostrar_menu_editar():
          print(f"[Ok] Automatização salva como {nome_arquivo}.txt")
          print("[!] Voltando para o menu principal...")
          sleep(2)
-           
+
+def mostrar_menu_edicao():
+    try:
+        nome_arquivo = input("[?] Qual o nome do arquivo da automatização que deseja editar? (sem extensão): ")
+        
+    except FileNotFoundError:
+        print("[!] Arquivo não encontrado!")
+        return
+    while True:
+        print("[!] Recomendo que edite manualmente no texto pois é mais eficaz")
+        print("+-----------------------------------+")
+        print("[1] - apagar comando")
+        print("[2] - adicionar comando")
+        print("[3] - voltar para o menu principal")
+        print("+-----------------------------------+")
+        
+        opcao = opcao_usuario()
+        mostrar_automatizacao(nome_arquivo)
+        if opcao == 1:
+            apagar_comando(nome_arquivo)
+            mostrar_automatizacao(nome_arquivo)
+        elif opcao == 2:
+            print("[?] Selecione a linha, e o seu novo comando sera adicionado logo acima a ela")
+            linha_1 = int(input("Entre a linha: "))
+
+            if linha_1 < 1 or linha_1 > len(open(f"{nome_arquivo}.txt", "r", encoding="utf-8").readlines()) + 1:
+                print("[!] Linha inválida, tente novamente.")
+                continue
+            else:
+                with open(f"{nome_arquivo}.txt", "r", encoding="utf-8") as arquivo:
+                    linhas = arquivo.readlines()
+                print("[!]Cuidado com o comando que voce esta adicionando, ele sera adicionado exatamente na linha que voce selecionou e isso pode fazer com que a automatização nao funcione como esperado se o comando for adicionado no lugar errado")
+                comando_novo = input("[?] Digite o comando que deseja adicionar: ")
+                linhas.insert(int(linha_1) - 1, f"{comando_novo}\n")
+                with open(f"{nome_arquivo}.txt", "w", encoding="utf-8") as arquivo:
+                    arquivo.writelines(linhas)
+                mostrar_automatizacao(nome_arquivo)
+        elif opcao == 3:
+            print("[Ok] Voltando para o menu principal...")
+            sleep(2)
+            break
+        else:
+            print("[!] Opção inválida, tente novamente.")
+
 def salvar_teclado(tecla):
 
     try:
@@ -131,14 +177,13 @@ def ouvir_comandos():
 
         listener_teclado.join()
         listener_mouse.stop()
-    mostrar_menu_editar()
+    mostrar_menu_conclusao()
     
-
-def selecionar_automatização():
+def ativar_automatização():
     print("+-----------------------------------+")
     print("[!] As automatizações devem estar na mesma pasta do programa e devem ser arquivos .txt")
     print("+-----------------------------------+")
-    nome_arquivo = input("[?] Digite o nome do arquivo da automatização que deseja ativar (sem extensão): ")
+    nome_arquivo = input("[?] Digite o nome do arquivo da automatização que deseja ativar (sem extensão): ").strip()
     mapeamento = {
         "Key.enter": "enter",
         "Key.esc": "esc",
@@ -182,6 +227,7 @@ def selecionar_automatização():
     except FileNotFoundError:
         print(f"[!] Arquivo {nome_arquivo}.txt não encontrado. Verifique o nome e tente novamente.")
 
+
 while True:
     mostrar_menu()
     opcao = opcao_usuario()
@@ -189,7 +235,9 @@ while True:
     if opcao == 1:
         ouvir_comandos()
     elif opcao == 2:
-        selecionar_automatização()
+        ativar_automatização()
+    elif opcao == 3:
+        mostrar_menu_edicao()
     elif opcao == 5:
         print("[Ok] Saindo do programa...")
         break
