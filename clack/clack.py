@@ -13,6 +13,11 @@ from time import sleep
 
 stop = '5'
 
+if not os.path.exists("automatizacoes"):
+    os.mkdir("automatizacoes")
+if not os.path.exists("automatizacoes_ia"):
+    os.mkdir("automatizacoes_ia")
+
 BUFFER_SIZE = 10
 capturas = deque(maxlen=BUFFER_SIZE)
 rodando = True
@@ -67,14 +72,21 @@ MM.           MM   ,pm9MM 8M       MM;Mm
    print("[5] - Sair")
    print("+-----------------------------------+")
 
-def mostrar_automatizacao(nome_arquivo):
-    print("+-----------------------------------+")
-    with open(f"{nome_arquivo}.txt", "r", encoding="utf-8") as arquivo:
-        for i, linha in enumerate(arquivo, start=1):
-            print(f"[{i}] {linha.strip()}")
-    print("+-----------------------------------+")
+def mostrar_automatizacao(nome_arquivo, ia):
+    if ia == 0:
+        print("+-----------------------------------+")
+        with open(f"automatizacoes/{nome_arquivo}.txt", "r", encoding="utf-8") as arquivo:
+            for i, linha in enumerate(arquivo, start=1):
+                print(f"[{i}] {linha.strip()}")
+        print("+-----------------------------------+")
+    elif ia == 1:
+        print("+-----------------------------------+")
+        with open(f"automatizacoes_ia/{nome_arquivo}.txt", "r", encoding="utf-8") as arquivo:
+            for i, linha in enumerate(arquivo, start=1):
+                print(f"[{i}] {linha.strip()}")
+        print("+-----------------------------------+")
 
-def mostrar_menu_conclusao():
+def mostrar_menu_conclusao(ia):
     print("+-----------------------------------+")
     print("[1] - Apagar comando expecifico e continuar editando")
     print("[2] - Concluir automatização")
@@ -84,11 +96,10 @@ def mostrar_menu_conclusao():
 
 
     if opcao == 1:
-        mostrar_automatizacao()
         rodando = True
         while rodando:
             try:
-                mostrar_automatizacao("meus_comandos")
+                mostrar_automatizacao("meus_comandos", ia)
                 apagar_comando("meus_comandos")
                 print("+-----------------------------------+")
                 print("[1] - Continuar editando")
@@ -116,10 +127,16 @@ def mostrar_menu_conclusao():
          
          print("[Ok] Automatização concluída com sucesso!")
          nome_arquivo = input("[?] Qual o nome do arquivo para salvar a automatização? (sem extensão): ")
-         with open(f"{nome_arquivo}.txt", "w", encoding="utf-8") as arquivo_saida:
-             with open("meus_comandos.txt", "r", encoding="utf-8") as arquivo_entrada:
-                 arquivo_saida.write(arquivo_entrada.read())
-                 os.remove("meus_comandos.txt")
+         if ia == 0:
+            with open(f"automatizacoes/{nome_arquivo}.txt", "w", encoding="utf-8") as arquivo_saida:
+                with open("automatizacoes/meus_comandos.txt", "r", encoding="utf-8") as arquivo_entrada:
+                    arquivo_saida.write(arquivo_entrada.read())
+                    os.remove("automatizacoes/meus_comandos.txt")
+         elif ia == 1:
+            with open(f"automatizacoes_ia/{nome_arquivo}.txt", "w", encoding="utf-8") as arquivo_saida:
+                with open("automatizacoes_ia/meus_comandos.txt", "r", encoding="utf-8") as arquivo_entrada:
+                    arquivo_saida.write(arquivo_entrada.read())
+                    os.remove("automatizacoes_ia/meus_comandos.txt")
          print(f"[Ok] Automatização salva como {nome_arquivo}.txt")
          print("[!] Voltando para o menu principal...")
          sleep(2)
@@ -140,10 +157,10 @@ def mostrar_menu_edicao():
         print("+-----------------------------------+")
         
         opcao = opcao_usuario()
-        mostrar_automatizacao(nome_arquivo)
+        mostrar_automatizacao(nome_arquivo, 0)
         if opcao == 1:
             apagar_comando(nome_arquivo)
-            mostrar_automatizacao(nome_arquivo)
+            mostrar_automatizacao(nome_arquivo, 0)
         elif opcao == 2:
             
             print("[?] Selecione a linha, e o seu novo comando sera adicionado logo acima a ela")
@@ -153,15 +170,15 @@ def mostrar_menu_edicao():
                 print("[!] Linha inválida, tente novamente.")
                 continue
             else:
-                with open(f"{nome_arquivo}.txt", "r", encoding="utf-8") as arquivo:
+                with open(f"automatizacoes/{nome_arquivo}.txt", "r", encoding="utf-8") as arquivo:
                     linhas = arquivo.readlines()
                 print("[!]Cuidado com o comando que voce esta adicionando, ele sera adicionado exatamente na linha \n " \
                 "que voce selecionou e isso pode fazer com que a automatização nao funcione como esperado se o comando for adicionado no lugar errado\n")
                 comando_novo = input("[?] Digite o comando que deseja adicionar: ")
                 linhas.insert(int(linha_1) - 1, f"{comando_novo}\n")
-                with open(f"{nome_arquivo}.txt", "w", encoding="utf-8") as arquivo:
+                with open(f"automatizacoes/{nome_arquivo}.txt", "w", encoding="utf-8") as arquivo:
                     arquivo.writelines(linhas)
-                mostrar_automatizacao(nome_arquivo)
+                mostrar_automatizacao(nome_arquivo, 0)
         elif opcao == 3:
             print("[Ok] Voltando para o menu principal...")
             sleep(2)
@@ -186,12 +203,31 @@ def salvar_mouse_ia(x, y, button, pressed):
             x1, x2 = max(0, x-60), min(larg, x+60)
 
             roi = frame[y1:y2, x1:x2]
-            nome_imagem = f"btn_{int(tempo_clique)}.png"
+            nome_imagem = f"automatizacoes_ia/btn_{int(tempo_clique)}.png"
             cv2.imwrite(nome_imagem, roi)
-            with open("meus_comandos.txt", "a", encoding="utf-8") as arquivo:
+            with open("automatizacoes_ia/meus_comandos.txt", "a", encoding="utf-8") as arquivo:
                 arquivo.write(f"{x},{y},{button},{nome_imagem}\n")
             
             print(f"[IA] Clique em ({x},{y}) salvo com referência visual: {nome_imagem}")
+
+def salvar_teclado_ia(tecla):
+    global stop
+    try:
+        if tecla.char == stop:
+            return False
+        tecla = tecla.char 
+    except AttributeError:
+        tecla = str(tecla)
+    print(f"[Ok] Comando {tecla} registrado com sucesso!")
+
+    with open("automatizacoes_ia/meus_comandos.txt", "a", encoding="utf-8") as arquivo:
+        arquivo.write(f"{tecla}\n")
+
+def salvar_mouse(x, y, button, pressed):
+    if pressed:
+        print(f"Mouse clicado em ({x}, {y}) com {button}")
+        with open("automatizacoes/meus_comandos.txt", "a", encoding="utf-8") as arquivo:
+            arquivo.write(f"{x},{y},{button}\n")
 
 def salvar_teclado(tecla):
     global stop
@@ -203,16 +239,8 @@ def salvar_teclado(tecla):
         tecla = str(tecla)
     print(f"[Ok] Comando {tecla} registrado com sucesso!")
 
-    
-
-    with open("meus_comandos.txt", "a", encoding="utf-8") as arquivo:
+    with open("automatizacoes/meus_comandos.txt", "a", encoding="utf-8") as arquivo:
         arquivo.write(f"{tecla}\n")
-
-def salvar_mouse(x, y, button, pressed):
-    if pressed:
-        print(f"Mouse clicado em ({x}, {y}) com {button}")
-        with open("meus_comandos.txt", "a", encoding="utf-8") as arquivo:
-            arquivo.write(f"{x},{y},{button}\n")
 
 def ouvir_comandos(ia):
     global rodando
@@ -222,13 +250,13 @@ def ouvir_comandos(ia):
         print("[!] Gravando com visão computacional...")
         thread_print = threading.Thread(target=capturador_continuo, daemon=True)
         thread_print.start()
-        with pp.keyboard.Listener(on_press=salvar_teclado) as listener_teclado, \
+        with pp.keyboard.Listener(on_press=salvar_teclado_ia) as listener_teclado, \
              pp.mouse.Listener(on_click=salvar_mouse_ia) as listener_mouse:
             listener_teclado.join()
             listener_mouse.stop()
         
         rodando = False
-        mostrar_menu_conclusao()
+        mostrar_menu_conclusao(ia)
     elif ia == 0:
         print("+-----------------------------------+")
         print("[!] Os locais em que o mouse estiver em cima no momento que voce clicar serao registrados ")
@@ -239,7 +267,7 @@ def ouvir_comandos(ia):
 
             listener_teclado.join()
             listener_mouse.stop()
-        mostrar_menu_conclusao()
+        mostrar_menu_conclusao(0)
     
 def ativar_automatizacao():
     print("+-----------------------------------+")
@@ -268,7 +296,7 @@ def ativar_automatizacao():
         "Key.delete": "delete",
     }
     try:
-        with open(f"{nome_arquivo}.txt", "r", encoding="utf-8") as arquivo:
+        with open(f"automatizacoes/{nome_arquivo}.txt", "r", encoding="utf-8") as arquivo:
             comandos = arquivo.readlines()
             for comando in comandos:
                 comando = comando.strip()
@@ -297,7 +325,7 @@ def ativar_automatizacao_ia():
     
     MARGEM = 500 
     try:
-        with open(f"{nome_arquivo}.txt", "r", encoding="utf-8") as arquivo:
+        with open(f"automatizacoes_ia/{nome_arquivo}.txt", "r", encoding="utf-8") as arquivo:
             comandos = arquivo.readlines()
             
             for comando in comandos:
