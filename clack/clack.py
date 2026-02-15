@@ -30,15 +30,21 @@ def capturador_continuo():
         capturas.append((time.time(), frame))
         time.sleep(0.1)
 
-
-
-def apagar_comando(nome_arquivo):
+def apagar_comando(nome_arquivo, ia):
     numeros_comandos = input("Digite a linha que deseja apagar: ")
-    with open(f"{nome_arquivo}.txt", "r", encoding="utf-8") as arquivo:
-        linhas = arquivo.readlines()
-        linhas.pop(int(numeros_comandos) - 1)
-    with open(f"{nome_arquivo}.txt", "w", encoding="utf-8") as arquivo:
-        arquivo.writelines(linhas)
+    if ia == 1:
+        with open(f"automatizacoes_ia/{nome_arquivo}.txt", "r", encoding="utf-8") as arquivo:
+            linhas = arquivo.readlines()
+            linhas.pop(int(numeros_comandos) - 1)
+        with open(f"automatizacoes_ia/{nome_arquivo}.txt", "w", encoding="utf-8") as arquivo:
+            arquivo.writelines(linhas)
+    elif ia == 2:
+        with open(f"automatizacoes/{nome_arquivo}.txt", "r", encoding="utf-8") as arquivo:
+            linhas = arquivo.readlines()
+            linhas.pop(int(numeros_comandos) - 1)
+        with open(f"automatizacoes/{nome_arquivo}.txt", "w", encoding="utf-8") as arquivo:
+            arquivo.writelines(linhas)
+        
 
 def opcao_usuario():
     while True:
@@ -73,15 +79,15 @@ MM.           MM   ,pm9MM 8M       MM;Mm
    print("+-----------------------------------+")
 
 def mostrar_automatizacao(nome_arquivo, ia):
-    if ia == 0:
+    if ia == 1:
         print("+-----------------------------------+")
-        with open(f"automatizacoes/{nome_arquivo}.txt", "r", encoding="utf-8") as arquivo:
+        with open(f"automatizacoes_ia/{nome_arquivo}.txt", "r", encoding="utf-8") as arquivo:
             for i, linha in enumerate(arquivo, start=1):
                 print(f"[{i}] {linha.strip()}")
         print("+-----------------------------------+")
-    elif ia == 1:
+    elif ia == 2:
         print("+-----------------------------------+")
-        with open(f"automatizacoes_ia/{nome_arquivo}.txt", "r", encoding="utf-8") as arquivo:
+        with open(f"automatizacoes/{nome_arquivo}.txt", "r", encoding="utf-8") as arquivo:
             for i, linha in enumerate(arquivo, start=1):
                 print(f"[{i}] {linha.strip()}")
         print("+-----------------------------------+")
@@ -100,7 +106,7 @@ def mostrar_menu_conclusao(ia):
         while rodando:
             try:
                 mostrar_automatizacao("meus_comandos", ia)
-                apagar_comando("meus_comandos")
+                apagar_comando("meus_comandos", ia)
                 print("+-----------------------------------+")
                 print("[1] - Continuar editando")
                 print("[2] - Concluir automatização")
@@ -141,12 +147,40 @@ def mostrar_menu_conclusao(ia):
          print("[!] Voltando para o menu principal...")
          sleep(2)
 
-def mostrar_menu_edicao():
-    try:
-        nome_arquivo = input("[?] Qual o nome do arquivo da automatização que deseja editar? (sem extensão): ")
+def mostrar_menu_edicao(ia):
+    mapeamento = {
+        "Key.enter": "enter",
+        "Key.esc": "esc",
+        "Key.cmd": "win",
+        "Key.space": "space",
+        "Key.tab": "tab",
+        "Key.backspace": "backspace",
+        "Key.shift": "shift",
+        "Key.ctrl_l": "ctrl",
+        "Key.ctrl_r": "ctrl",
+        "Key.alt_l": "alt",
+        "Key.alt_gr": "altright",
+        "Key.caps_lock": "capslock",
+        "Key.up": "up",
+        "Key.down": "down",
+        "Key.left": "left",
+        "Key.right": "right",
+        "Key.num_lock": "numlock",
+        "Key.print_screen": "printscreen",
+        "Key.delete": "delete",
+    }
+    
         
+    nome_arquivo = input("[?] Qual o nome do arquivo da automatização que deseja editar? (sem extensão): ")
+    try:
+        if ia == 1:
+            with open(f"automatizacoes_ia/{nome_arquivo}.txt", "r", encoding="utf-8") as arquivo:
+                pass
+        elif ia == 2:
+            with open(f"automatizacoes/{nome_arquivo}.txt", "r", encoding="utf-8") as arquivo:
+                pass
     except FileNotFoundError:
-        print("[!] Arquivo não encontrado!")
+        print(f"[!] Arquivo {nome_arquivo}.txt não encontrado. Verifique o nome e tente novamente.")
         return
     while True:
         print("[!] Recomendo que edite manualmente no texto pois é mais eficaz")
@@ -157,28 +191,38 @@ def mostrar_menu_edicao():
         print("+-----------------------------------+")
         
         opcao = opcao_usuario()
-        mostrar_automatizacao(nome_arquivo, 0)
+        mostrar_automatizacao(nome_arquivo, ia)
         if opcao == 1:
-            apagar_comando(nome_arquivo)
-            mostrar_automatizacao(nome_arquivo, 0)
+            apagar_comando(nome_arquivo, ia)
+            mostrar_automatizacao(nome_arquivo, ia)
         elif opcao == 2:
             
             print("[?] Selecione a linha, e o seu novo comando sera adicionado logo acima a ela")
-            linha_1 = int(input("Entre a linha: "))
-
-            if linha_1 < 1 or linha_1 > len(open(f"{nome_arquivo}.txt", "r", encoding="utf-8").readlines()) + 1:
-                print("[!] Linha inválida, tente novamente.")
-                continue
-            else:
+            linha_1 = int(input("Acima  da linha: "))
+            #talvez colocar verificação de linha aqui
+            if ia == 1:
+                 with open(f"automatizacoes_ia/{nome_arquivo}.txt", "r", encoding="utf-8") as arquivo:
+                    linhas = arquivo.readlines()
+            elif ia == 2:
                 with open(f"automatizacoes/{nome_arquivo}.txt", "r", encoding="utf-8") as arquivo:
                     linhas = arquivo.readlines()
-                print("[!]Cuidado com o comando que voce esta adicionando, ele sera adicionado exatamente na linha \n " \
-                "que voce selecionou e isso pode fazer com que a automatização nao funcione como esperado se o comando for adicionado no lugar errado\n")
+            print("[!]Cuidado com o comando que voce esta adicionando, ele sera adicionado exatamente na linha \n " \
+            "que voce selecionou e isso pode fazer com que a automatização nao funcione como esperado se o comando for adicionado no lugar errado\n")
+            print("[-1] Se quiser ver os comandos especias como enter, esc, tab, etc... ")
+            comando_novo = input("[?] Digite o comando que deseja adicionar: ")
+            if comando_novo == "-1":
+                print("+-----------------------------------+")
+                print(mapeamento)
+                print("+-----------------------------------+")
                 comando_novo = input("[?] Digite o comando que deseja adicionar: ")
-                linhas.insert(int(linha_1) - 1, f"{comando_novo}\n")
+            linhas.insert(int(linha_1) - 1, f"{comando_novo}\n")
+            if ia == 1:
+                with open(f"automatizacoes_ia/{nome_arquivo}.txt", "w", encoding="utf-8") as arquivo:
+                    arquivo.writelines(linhas)
+            elif ia == 2:
                 with open(f"automatizacoes/{nome_arquivo}.txt", "w", encoding="utf-8") as arquivo:
                     arquivo.writelines(linhas)
-                mostrar_automatizacao(nome_arquivo, 0)
+            mostrar_automatizacao(nome_arquivo, ia)
         elif opcao == 3:
             print("[Ok] Voltando para o menu principal...")
             sleep(2)
@@ -323,7 +367,7 @@ def ativar_automatizacao_ia():
     print("+-----------------------------------+")
     nome_arquivo = input("[?] Nome da automatização (sem extensão): ").strip()
     
-    MARGEM = 500 
+    MARGEM = 800 
     try:
         with open(f"automatizacoes_ia/{nome_arquivo}.txt", "r", encoding="utf-8") as arquivo:
             comandos = arquivo.readlines()
@@ -360,8 +404,7 @@ def ativar_automatizacao_ia():
                             res = cv2.matchTemplate(roi_gray, template, cv2.TM_CCOEFF_NORMED)
                             _, max_val, _, max_loc = cv2.minMaxLoc(res)
                             
-                            if max_val >= 0.7:
-
+                            if max_val >= 0.6:
                                 novo_x = x_start + max_loc[0] + wt // 2
                                 novo_y = y_start + max_loc[1] + ht // 2
                                 
@@ -419,7 +462,13 @@ while True:
         elif opcao_ativacao == 2:
             ativar_automatizacao()
     elif opcao == 3:
-        mostrar_menu_edicao()
+        print("[1] - Editar automatizao de ia (so se gravou com ia)")
+        print("[2] - Editar automatizacao")
+        opcao_edicao = opcao_usuario()
+        if opcao_edicao == 1:
+            mostrar_menu_edicao(opcao_edicao)
+        elif opcao_edicao == 2:
+            mostrar_menu_edicao(opcao_edicao)
     elif opcao == 4:
         mostrar_config()
     elif opcao == 5:
