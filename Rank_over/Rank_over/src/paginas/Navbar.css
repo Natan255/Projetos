@@ -1,0 +1,70 @@
+/* Navbar.css */
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 5%;
+    background-color: #121212;
+    
+    /* ESSAS LINHAS FIXAM NO TOPO */
+    position: sticky; 
+    top: 0;
+    width: 100%;
+    z-index: 1000; /* Faz ela ficar "na frente" dos cards ao rolar */
+    
+    box-sizing: border-box; /* Garante que o padding não aumente o tamanho da barra */
+}
+
+.logo h1 {
+    font-size: 1.5rem;
+    color: #ff4d00; /* Laranja vibrante */
+    margin: 0;
+}
+
+.links {
+    display: flex;
+    list-style: none;
+    gap: 30px;
+}
+
+.links a {
+    text-decoration: none;
+    color: #ccc;
+    font-weight: 500;
+    transition: 0.3s;
+}
+
+.links a:hover {
+    color: #ff4d00; /* Cor muda ao passar o mouse */
+}
+
+/* Estilo do formulário de pesquisa */
+nav form {
+    display: flex;
+    gap: 5px;
+}
+
+nav input {
+    padding: 8px 15px;
+    border-radius: 20px; /* Input arredondado */
+    border: 1px solid #333;
+    background-color: #222;
+    color: white;
+    outline: none;
+}
+
+nav button {
+    padding: 8px 15px;
+    border-radius: 20px;
+    border: none;
+    background-color: #ff4d00;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+nav button:hover {
+    background-color: #ff6a26;
+    transform: scale(1.05); /* Botão cresce levemente */
+}

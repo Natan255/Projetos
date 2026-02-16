@@ -1,0 +1,29 @@
+/* 1. Zera tudo que o navegador coloca por padrão */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* 2. Remove o limite de largura e o padding que o Vite coloca */
+#root {
+  width: 100%;
+  max-width: none; /* O Vite coloca 1280px aqui, nós tiramos */
+  margin: 0;
+  padding: 0;      /* O Vite coloca 2rem aqui, isso é o que empurra o nav pra baixo */
+  text-align: center;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  background-color: #0b0b0b; /* Fundo escuro para combinar com o RankOver */
+  color: white;
+}
+
+.App {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}

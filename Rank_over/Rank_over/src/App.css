@@ -1,0 +1,23 @@
+/* Limpa as margens padrão do navegador */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+  background-color: #0b0b0b; /* Um fundo escuro combina com o RankOver */
+  color: white;
+  overflow-x: hidden;
+}
+
+/* O #root do Vite vem com max-width por padrão. Precisamos tirar! */
+#root {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.App {
+    display: flex;
+    flex-direction: column; /* Coloca Navbar em cima e Home embaixo */
+    min-height: 100vh;
+}
+
