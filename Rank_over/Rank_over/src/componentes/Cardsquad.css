@@ -1,0 +1,119 @@
+/* Container do Grid (Coloque isso no arquivo do componente pai, ex: Squads.css) */
+.squad_grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 30px;
+    padding: 40px;
+    background-color: #0f0f0f;
+}
+
+/* O Card Principal */
+.card_squad {
+    position: relative;
+    width: 220px;
+    height: 330px; /* Proporção clássica de poster */
+    border-radius: 12px;
+    overflow: hidden;
+    background-color: #1a1a1a;
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+    cursor: pointer;
+}
+
+/* Efeito de Zoom e Borda Neon no Hover */
+.card_squad:hover {
+    transform: scale(1.08);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.8), 0 0 15px rgba(255, 255, 255, 0.1);
+}
+
+/* O Nome do Squad (no topo) */
+.card_squad > p {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 3;
+    color: white;
+    font-weight: bold;
+    font-size: 0.9rem;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+    margin: 0;
+}
+
+/* A Imagem de Fundo (Banner) */
+.card_bg {
+    width: 100%;
+    height: 100%;
+}
+
+.card_bg img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: filter 0.3s ease;
+}
+
+.card_squad:hover .card_bg img {
+    filter: brightness(0.4) blur(2px); /* Escurece a imagem quando passa o mouse */
+}
+
+/* Informações do Squad (Aparecem no Hover) */
+.card_info {
+    position: absolute;
+    bottom: 80px;
+    left: 0;
+    width: 100%;
+    padding: 0 15px;
+    color: #ddd;
+    font-size: 0.85rem;
+    text-align: center;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.3s ease;
+    z-index: 2;
+}
+
+.card_squad:hover .card_info {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Botão de Entrar Estilo "Netflix" */
+.card_enter {
+    position: absolute;
+    bottom: 25px;
+    left: 50%;
+    transform: translateX(-50%) translateY(50px);
+    transition: all 0.4s ease;
+    z-index: 4;
+}
+
+.card_squad:hover .card_enter {
+    transform: translateX(-50%) translateY(0);
+}
+
+.card_enter button {
+    background: rgba(255, 255, 255, 0.9);
+    color: black;
+    border: none;
+    padding: 10px 25px;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: background 0.2s;
+}
+
+.card_enter button:hover {
+    background: #ff4d00; /* Vermelho vibrante ao focar no botão */
+    color: white;
+}
+
+/* Overlay Escuro para garantir leitura */
+.card_squad::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.9) 10%, transparent 50%);
+    z-index: 1;
+}

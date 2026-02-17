@@ -1,12 +1,8 @@
-import CardSquad from "../componentes/CardSquad";
 import Home from "./Home";
 import "./Navbar.css";
+import { Link } from "react-router-dom";
 
 function Navbar({pesquisaQuery, setPesquisa, squads}) {
-
-    const pesquisar = () => {
-        <Home squads={squads} pesquisaQuery={pesquisaQuery} />
-    };
 
     return (
         <nav>
@@ -14,15 +10,15 @@ function Navbar({pesquisaQuery, setPesquisa, squads}) {
                 <h1>Rank Over</h1>
             </div>
             
-            <form onSubmit={pesquisar}>
+            <form>
                 <input type="text" placeholder="Pesquisa por squads..." value={pesquisaQuery} onChange={(e) => setPesquisa(e.target.value)} />
                 <button type="submit">🔎</button>
             </form>
 
             <ul className="links">
-                <li><a href="/">Home</a></li>
-                <li><a href="/Squad">Squad</a></li>
-                <li><a href="/Perfil">Perfil</a></li>
+                <li><Link to="">Home</Link></li>
+                <li><Link to="/squads">Squads</Link></li>
+                <li><Link to="/perfil">Perfil</Link></li>
             </ul>
 
         </nav>

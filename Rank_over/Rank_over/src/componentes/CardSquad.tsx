@@ -1,3 +1,5 @@
+import "./Cardsquad.css"
+
 function CardSquad({card}){
 
     function entrar(){
