@@ -1,15 +1,16 @@
-import Home from "./Home";
 import "./Navbar.css";
 import { Link } from "react-router-dom";
 
-function Navbar({pesquisaQuery, setPesquisa, squads}) {
+function Navbar({ pesquisaQuery, setPesquisa, squads }) {
 
     return (
         <nav>
             <div className="logo">
-                <h1>Rank Over</h1>
+                <Link to="/">
+                    <img src="rank_logo.png" alt="Rank Over Logo" />
+                </Link>
             </div>
-            
+
             <form>
                 <input type="text" placeholder="Pesquisa por squads..." value={pesquisaQuery} onChange={(e) => setPesquisa(e.target.value)} />
                 <button type="submit">🔎</button>

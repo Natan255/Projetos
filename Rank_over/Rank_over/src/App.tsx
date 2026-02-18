@@ -2,6 +2,7 @@ import './App.css'
 import Home from './paginas/Home'
 import Navbar from './paginas/Navbar'
 import Squads from './paginas/Squads' // Importe o componente de Squads
+import PerfilSquad from './paginas/PerfilSquad'
 import { useState } from "react"
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom"
 
@@ -29,18 +30,13 @@ function App() {
       <Navbar squads={squads} setPesquisa={setPesquisa} pesquisaQuery={pesquisaQuery} />
 
       <Routes>
-        {/* Rota principal: Home */}
-        <Route path="/" element={
-          <Home squads={squads} pesquisaQuery={pesquisaQuery} />
-        } />
+        <Route path="/" element={<Home squads={squads} pesquisaQuery={pesquisaQuery} />} />
 
-        {/* Rota da lista completa de Squads */}
-        <Route path="/squads" element={
-          <Squads squads={squads} />
-        } />
 
-        {/* Rota do Perfil (você pode criar o componente depois) */}
-        <Route path="/perfil" element={<h1>Página de Perfil em construção</h1>} />
+        <Route path="/squads" element={<Squads squads={squads} />} />
+
+
+        <Route path="/paginas/PerfilSquad/:id" element={<PerfilSquad squads={squads} />} />
       </Routes>
     </Router>
   );

@@ -1,24 +1,93 @@
+/* Garanta que o container tenha altura */
 .Banner {
     width: 100%;
-    height: 400px; /* Ou a altura que você preferir */
-    overflow: hidden;
-    position: relative;
+    height: 650px; /* Ou o tamanho que você definiu antes */
 }
 
 .Banner img {
     width: 100%;
     height: 100%;
-    object-fit: cover; /* Não deixa a imagem esticar */
-    filter: brightness(0.7); /* Deixa um pouco mais escuro para destacar o texto */
+
 }
 
-/* Opcional: Efeito de sombra interna no banner */
-.Banner::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 50%;
-    background: linear-gradient(to top, #121212, transparent);
+.logo a {
+    display: flex;
+    align-items: center;
+}
+
+.logo img {
+    height: 100px; /* Ajuste o tamanho da sua logo aqui */
+    transition: transform 0.3s ease;
+}
+
+.logo img:hover {
+    transform: scale(1.15); /* Um efeitinho de aumentar ao passar o rato */
+}
+
+/* Customizando as cores do carrossel para combinar com seu site */
+:root {
+    --swiper-navigation-color: #ff4d00; /* Setas vermelhas */
+    --swiper-pagination-color: #ff4d00; /* Bolinhas vermelhas */
+}
+
+.swiper-pagination-bullet {
+    background: #000000 !important;
+    width: 16px !important;  /* Aumentei o tamanho */
+    height: 16px !important; /* Aumentei o tamanho */
+    transition: all 0.3s ease;
+}
+
+/* Bolinha ativa (estilo pílula grossa) */
+.swiper-pagination-bullet-active {
+    background: #ff4d00 !important;
+    width: 45px !important;  /* Mais comprida */
+    height: 16px !important; /* Mesma altura para ficar harmônico */
+    border-radius: 8px !important;
+    opacity: 1;
+}
+
+.Descricao {
+    padding: 60px 20px; /* Espaço generoso em cima e embaixo */
+    text-align: center;
+    max-width: 800px; /* Não deixa o texto ficar largo demais em telas grandes */
+    margin: 0 auto; /* Centraliza o bloco na página */
+    background: radial-gradient(circle, rgba(255,0,0,0.05) 0%, transparent 70%); /* Um brilho vermelho bem sutil no fundo */
+}
+
+.Descricao h2 {
+    color: #ffffff;
+    font-size: 1.5rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    /* Efeito de gradiente no texto */
+    background: linear-gradient(to right, #ffffff, #888888);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.Descricao p {
+    color: #bbbbbb;
+    font-size: 1.2rem;
+    line-height: 1.6;
+    font-weight: 300;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* Detalhe de linha decorativa embaixo do título */
+
+
+.titulo_secao {
+    color: white;
+    font-size: 1.5rem;
+    margin: 40px 0 20px 40px; /* Alinhado com o padding do seu grid */
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    border-left: 5px solid #ff4d00; /* Um detalhe vermelho estilo "E-sports" */
+    padding-left: 15px;
+}
+
+.secao_populares {
+    padding-bottom: 60px; /* Espaço no final da página */
 }
