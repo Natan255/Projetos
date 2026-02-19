@@ -1,93 +1,352 @@
-/* Garanta que o container tenha altura */
+/* --- BANNER --- */
 .Banner {
     width: 100%;
-    height: 650px; /* Ou o tamanho que você definiu antes */
+    height: 550px;
+    overflow: hidden;
 }
 
 .Banner img {
     width: 100%;
     height: 100%;
-
+    object-fit: cover;
 }
 
-.logo a {
-    display: flex;
-    align-items: center;
-}
-
-.logo img {
-    height: 100px; /* Ajuste o tamanho da sua logo aqui */
-    transition: transform 0.3s ease;
-}
-
-.logo img:hover {
-    transform: scale(1.15); /* Um efeitinho de aumentar ao passar o rato */
-}
-
-/* Customizando as cores do carrossel para combinar com seu site */
-:root {
-    --swiper-navigation-color: #ff4d00; /* Setas vermelhas */
-    --swiper-pagination-color: #ff4d00; /* Bolinhas vermelhas */
-}
-
-.swiper-pagination-bullet {
-    background: #000000 !important;
-    width: 16px !important;  /* Aumentei o tamanho */
-    height: 16px !important; /* Aumentei o tamanho */
-    transition: all 0.3s ease;
-}
-
-/* Bolinha ativa (estilo pílula grossa) */
-.swiper-pagination-bullet-active {
-    background: #ff4d00 !important;
-    width: 45px !important;  /* Mais comprida */
-    height: 16px !important; /* Mesma altura para ficar harmônico */
-    border-radius: 8px !important;
-    opacity: 1;
-}
-
+/* --- DESCRIÇÃO 1 (Ajustada para ser mais sutil e elegante) --- */
 .Descricao {
-    padding: 60px 20px; /* Espaço generoso em cima e embaixo */
+    padding-top: 30px;
     text-align: center;
-    max-width: 800px; /* Não deixa o texto ficar largo demais em telas grandes */
-    margin: 0 auto; /* Centraliza o bloco na página */
-    background: radial-gradient(circle, rgba(255,0,0,0.05) 0%, transparent 70%); /* Um brilho vermelho bem sutil no fundo */
+    max-width: 800px;
+    margin: 0 auto;
 }
 
 .Descricao h2 {
     color: #ffffff;
-    font-size: 1.5rem;
+    font-size: 1.5rem; /* Tamanho médio: nem gigante, nem sumido */
     font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 2px;
-    /* Efeito de gradiente no texto */
-    background: linear-gradient(to right, #ffffff, #888888);
+    letter-spacing: 1px;
+    margin-bottom: 15px;
+    background: linear-gradient(to right, #ffffff, #aaaaaa);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
 .Descricao p {
-    color: #bbbbbb;
-    font-size: 1.2rem;
-    line-height: 1.6;
-    font-weight: 300;
-    max-width: 600px;
+    color: #999999; /* Um cinza um pouco mais discreto */
+    font-size: 1.1rem;
+    line-height: 1.5;
+    max-width: 550px;
     margin: 0 auto;
 }
 
-/* Detalhe de linha decorativa embaixo do título */
+/* --- DESCRIÇÃO 2 (Crie seu Squad - Mantida imponente) --- */
+.Descricao_2 {
+    background: linear-gradient(90deg, #111 0%, #1a0f0a 100%);
+    padding: 100px 10%; 
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-top: 1px solid rgba(255, 77, 0, 0.1);
+    border-bottom: 1px solid rgba(255, 77, 0, 0.1);
+}
 
+.ilustracao_1 h1 {
+    font-size: 2.5rem;
+    line-height: 1.2;
+    color: #fff;
+    max-width: 600px;
+}
 
-.titulo_secao {
-    color: white;
-    font-size: 1.5rem;
-    margin: 40px 0 20px 40px; /* Alinhado com o padding do seu grid */
+.ilustracao_1 h3 {
+    color: #ff4d00;
+    font-size: 1.1rem;
+    font-weight: 600;
     text-transform: uppercase;
+    margin-top: 10px;
+}
+
+.bota_criar_squad button {
+    background-color: #ff4d00;
+    color: white;
+    padding: 18px 45px;
+    border: none;
+    border-radius: 4px;
+    font-weight: 900;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: 0.3s;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.bota_criar_squad button:hover {
+    box-shadow: 0 0 30px rgba(255, 77, 0, 0.4);
+    transform: scale(1.05);
+}
+
+/* --- DESCRIÇÃO 3  --- */
+.Descricao_3 {
+    padding: 100px 10%;
+    background-color: #050505;
+    text-align: center;
+}
+
+.cabecalho_recursos h1 {
+    font-size: 2.5rem;
+    color: #fff;
+    text-transform: uppercase;
+    margin-bottom: 15px;
+}
+
+.cabecalho_recursos p {
+    color: #777;
+    margin-bottom: 60px;
+    font-size: 1.1rem;
+}
+
+.grid_recursos {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 40px;
+}
+
+.recurso_item {
+    background: #111;
+    padding: 40px 20px;
+    border-radius: 15px;
+    border: 1px solid #222;
+    transition: 0.3s;
+}
+
+.recurso_item:hover {
+    border-color: #ff4d00;
+    transform: translateY(-5px);
+}
+
+.recurso_item .icon {
+    font-size: 3rem;
+    margin-bottom: 20px;
+}
+
+.recurso_item h4 {
+    color: #fff;
+    font-size: 1.4rem;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+}
+
+.recurso_item p {
+    color: #888;
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+.bloco_destaque_final {
+    margin-top: 60px;
+    background: linear-gradient(135deg, #111 0%, #1a1a1a 100%);
+    border: 1px solid rgba(255, 77, 0, 0.3);
+    border-radius: 20px;
+    padding: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    text-align: left; /* Texto alinhado à esquerda para mudar o ritmo */
+    gap: 40px;
+    overflow: hidden;
+    position: relative;
+}
+
+/* Um detalhe de luz no fundo do bloco */
+.bloco_destaque_final::before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 300px;
+    height: 300px;
+    background: rgba(255, 77, 0, 0.1);
+    filter: blur(80px);
+    border-radius: 50%;
+    z-index: 0;
+}
+
+.conteudo_destaque {
+    flex: 2;
+    z-index: 1;
+}
+
+.conteudo_destaque span {
+    color: #ff4d00;
+    text-transform: uppercase;
+    font-weight: 800;
+    font-size: 0.9rem;
     letter-spacing: 2px;
-    border-left: 5px solid #ff4d00; /* Um detalhe vermelho estilo "E-sports" */
+}
+
+.conteudo_destaque h2 {
+    font-size: 2.5rem;
+    color: #fff;
+    margin: 15px 0;
+}
+
+.conteudo_destaque p {
+    color: #aaa;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 30px;
+}
+
+/* Botão específico para esse bloco */
+.btn_bora {
+    background-color: #ff4d00;
+    color: #fff;
+    border: none;
+    padding: 15px 35px;
+    font-weight: 900;
+    text-transform: uppercase;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn_bora:hover {
+    background-color: #ff6a2a;
+    box-shadow: 0 0 20px rgba(255, 77, 0, 0.4);
+}
+
+/* Parte visual (Gráfico ou Barra) */
+.ilustracao_destaque {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    z-index: 1;
+}
+
+.barra_progresso_fake {
+    width: 20px;
+    height: 150px;
+    background: #222;
+    border-radius: 10px;
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+}
+
+.progresso_preenchido {
+    width: 100%;
+    height: 80%; /* Altura simulando progresso */
+    background: #ff4d00;
+    border-radius: 10px;
+    box-shadow: 0 0 15px #ff4d00;
+    animation: crescer 2s ease-out;
+}
+
+@keyframes crescer {
+    from { height: 0; }
+    to { height: 80%; }
+}
+
+/* Ajuste para telas menores */
+@media (max-width: 768px) {
+    .bloco_destaque_final {
+        flex-direction: column;
+        text-align: center;
+        padding: 30px;
+    }
+}
+
+/* --- TÍTULO DA SEÇÃO DE CARDS --- */
+.titulo_secao {
+    color: #ffffff;
+    font-size: 1.8rem;
+    font-weight: 800;
+    margin: 30px 30px 30px;
+    border-left: 6px solid #ff4d00;
+    border-right: 6px solid #ff4d00 ;
     padding-left: 15px;
 }
 
-.secao_populares {
-    padding-bottom: 60px; /* Espaço no final da página */
+/*------ RODAPE ----------*/
+
+.rodape {
+    background-color: #050505;
+    border-top: 1px solid #222;
+    padding: 60px 10% 20px;
+    color: white;
+    margin-top: 50px;
+}
+
+.rodape_conteudo {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 40px;
+}
+
+/* Identidade */
+.rodape_info {
+    max-width: 300px;
+}
+
+.rodape_info h2 {
+    font-size: 1.8rem;
+    letter-spacing: 2px;
+}
+
+.rodape_info h2 span {
+    color: #ff4d00;
+}
+
+.rodape_info p {
+    color: #777;
+    margin-top: 15px;
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+/* Links e Redes */
+/* Container de ambas as listas */
+.rodape_links ul, 
+.Redes_sociais ul {
+    list-style: none;
+    padding: 0;
+    display: flex;        /* Ativa o flexbox */
+    flex-direction: column; /* Coloca um debaixo do outro */
+    gap: 12px;           /* Espaçamento entre os links */
+}
+
+/* Títulos das colunas */
+.rodape_links h4, 
+.Redes_sociais h4 {
+    color: #fff;
+    margin-bottom: 25px; /* Espaço para não grudar na lista */
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+}
+
+/* Estilo dos Links */
+.rodape_links a, 
+.Redes_sociais a {
+    color: #777;
+    text-decoration: none;
+    font-size: 0.95rem;
+    transition: 0.3s ease;
+}
+
+.rodape_links a:hover, 
+.Redes_sociais a:hover {
+    color: #ff4d00;
+    padding-left: 5px; /* Um leve efeito de deslocamento ao passar o mouse */
+}
+
+/* Linha final */
+.rodape_copyright {
+    text-align: center;
+    margin-top: 50px;
+    padding-top: 20px;
+    border-top: 1px solid #111;
+    color: #444;
+    font-size: 0.8rem;
 }

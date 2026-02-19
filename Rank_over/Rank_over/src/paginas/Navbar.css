@@ -5,7 +5,7 @@ nav {
     align-items: center;
     padding: 15px 5%;
     background-color: #121212;
-    height: 100px; 
+    height: 60px; 
     /* ESSAS LINHAS FIXAM NO TOPO */
     position: sticky; 
     top: 0;
@@ -15,10 +15,18 @@ nav {
     box-sizing: border-box; /* Garante que o padding não aumente o tamanho da barra */
 }
 
-.logo h1 {
-    font-size: 1.5rem;
-    color: #ff4d00; /* Laranja vibrante */
-    margin: 0;
+.logo a {
+    display: flex;
+    align-items: center;
+}
+
+.logo img {
+    height: 65px; /* Ajuste o tamanho da sua logo aqui */
+    transition: transform 0.3s ease;
+}
+
+.logo img:hover {
+    transform: scale(1.15); /* Um efeitinho de aumentar ao passar o rato */
 }
 
 .links {

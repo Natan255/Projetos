@@ -2,13 +2,10 @@ import { useParams } from "react-router-dom"; // Importe o useParams
 import "./PerfilSquad.css"
 
 function PerfilSquad({ squads }) {
-    // 1. Pegamos o ID que veio da URL (aquele que você colocou no Link do CardSquad)
     const { id } = useParams();
 
-    // 2. Procuramos na lista de squads qual deles tem o ID igual ao da URL
     const squadSelecionado = squads.find((s) => s.id === parseInt(id));
 
-    // 3. Caso o ID não exista ou a página seja carregada errada
     if (!squadSelecionado) {
         return <h2 style={{color: "white", padding: "100px"}}>Squad não encontrado!</h2>;
     }
