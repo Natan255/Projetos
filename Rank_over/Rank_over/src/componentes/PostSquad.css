@@ -1,0 +1,126 @@
+/* Container do Post */
+.Estrutura_post {
+    background: linear-gradient(145deg, #151515, #0f0f0f);
+    border: 1px solid #222;
+    border-radius: 16px;
+    padding: 25px;
+    margin-bottom: 25px;
+    transition: all 0.4s ease;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.Estrutura_post:hover {
+    border-color: #ff4d00;
+    transform: scale(1.01);
+}
+
+/* Título e Texto */
+.Conteudo_Post h1 {
+    font-size: 1.2rem;
+    color: #fff;
+    margin-bottom: 12px;
+    font-weight: 900;
+    letter-spacing: -0.5px;
+}
+
+.Conteudo_Post p {
+    color: #999;
+    line-height: 1.6;
+    font-size: 1.1rem;
+}
+
+/* Cabeçalho do Post (Foto + Nome) */
+.Foto_perfil {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 15px;
+}
+
+.Foto_perfil img {
+    width: 45px;          /* Tamanho ideal para avatar de post */
+    height: 45px;
+    border-radius: 50%;   /* Deixa redonda */
+    object-fit: cover;    /* Não distorce a imagem */
+    border: 2px solid #222; /* Uma borda sutil para separar do fundo */
+    transition: 0.3s;
+}
+
+.Foto_perfil:hover img {
+    border-color: #ff4d00; /* A foto "acende" no seu laranja ao passar o mouse */
+}
+
+.Foto_perfil p {
+    color: #eee;
+    font-weight: 700;
+    font-size: 0.95rem;
+    margin: 0;
+}
+
+/* Onde a mágica acontece: OS BOTÕES */
+.Botoes_interacoes {
+    display: flex;
+    gap: 15px;
+    margin-top: 25px;
+    border-top: 1px solid #222;
+    padding-top: 20px;
+}
+
+.btn_interacao {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #1a1a1a; /* Fundo do botão */
+    border: 1px solid #333;
+    border-radius: 12px; /* Botão mais quadrado/moderno */
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Texto dentro do botão */
+.btn_interacao .count {
+    color: #fff;
+    font-weight: 800;
+    font-size: 0.9rem;
+}
+
+.btn_interacao .icon {
+    font-size: 1.1rem;
+    filter: grayscale(1); /* Deixa o emoji cinza por padrão */
+    transition: 0.3s;
+}
+
+/* Efeito no HOVER do botão de LIKE */
+.btn_like:hover {
+    background: rgba(255, 77, 0, 0.1);
+    border-color: #ff4d00;
+    box-shadow: 0 0 15px rgba(255, 77, 0, 0.2);
+    transform: translateY(-3px);
+}
+
+.btn_like:hover .icon {
+    filter: grayscale(0); /* O coração volta a ser vermelho */
+    transform: scale(1.2);
+}
+
+.btn_like:hover .count {
+    color: #ff4d00;
+}
+
+/* Efeito no HOVER do botão de COMENTÁRIO */
+.btn_comment:hover {
+    background: rgba(0, 150, 255, 0.1);
+    border-color: #0096ff;
+    box-shadow: 0 0 15px rgba(0, 150, 255, 0.2);
+    transform: translateY(-3px);
+}
+
+.btn_comment:hover .icon {
+    filter: grayscale(0);
+    transform: scale(1.2);
+}
+
+.btn_comment:hover .count {
+    color: #0096ff;
+}

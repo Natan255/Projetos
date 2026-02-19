@@ -7,7 +7,7 @@ function Navbar({ pesquisaQuery, setPesquisa, squads }) {
         <nav>
             <div className="logo">
                 <Link to="/">
-                    <img src="rank_logo.png" alt="Rank Over Logo" />
+                    <img src="rank-lar.png" alt="Rank Over Logo" />
                 </Link>
             </div>
 
@@ -19,7 +19,9 @@ function Navbar({ pesquisaQuery, setPesquisa, squads }) {
             <ul className="links">
                 <li><Link to="">Home</Link></li>
                 <li><Link to="/squads">Squads</Link></li>
-                <li><Link to="/perfil">Perfil</Link></li>
+                <li><Link to="/perfil">Cadastrar</Link></li>
+                <li><Link to="/perfil">Entrar</Link></li>
+
             </ul>
 
         </nav>

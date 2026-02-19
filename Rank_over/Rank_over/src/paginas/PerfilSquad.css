@@ -8,7 +8,7 @@
 }
 
 /* Seção de Topo (Capa e Bio) */
-.Fundo_perfil {
+.Fundo_perfil_squad{
     position: relative;
     width: 100%;
     height: 400px;
@@ -38,7 +38,7 @@
 }
 
 /* Foto de Perfil Circular */
-.Foto_perfil {
+.Foto_perfil_squad {
     width: 180px;
     height: 180px;
     border-radius: 50%;
@@ -48,7 +48,7 @@
     box-shadow: 0 0 20px rgba(255, 77, 0, 0.3);
 }
 
-.Foto_perfil img {
+.Foto_perfil_squad img {
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -160,4 +160,65 @@
     background: #333;
     padding: 8px 15px;
     border-radius: 6px;
+}
+.Topicos_squad {
+    display: flex;
+    flex-direction: column; /* Coloca a barra de botões em cima da lista */
+    align-items: center;
+    padding: 40px 10%;
+    gap: 20px;
+}
+
+.Topicos_config {
+    width: 100%;
+    max-width: 800px;
+    display: flex;
+    justify-content: flex-end; /* Alinha os botões à direita */
+    gap: 15px;
+    padding-bottom: 10px;
+}
+
+/* Estilo Base dos Botões de Ação */
+.Filtro, .Postar {
+    background: #1a1a1a;
+    border: 1px solid #333;
+    color: #fff;
+    width: 45px;
+    height: 45px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+/* Botão de Filtro (Mais discreto) */
+.Filtro:hover {
+    background: #252525;
+    border-color: #555;
+    color: #ccc;
+}
+
+/* Botão de Postar (Destaque Laranja Rank Over) */
+.Postar {
+    background: #ff4d00;
+    border: none;
+    font-weight: bold;
+}
+
+.Postar:hover {
+    background: #ff6a2a;
+    transform: scale(1.1);
+    box-shadow: 0 0 15px rgba(255, 77, 0, 0.4);
+}
+
+/* Container da Lista de Posts */
+.Topicos {
+    width: 100%;
+    max-width: 800px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
