@@ -1,0 +1,109 @@
+/* Container principal para centralizar e dar altura */
+.perfil-container-user {
+    background-color: #0d0d0d;
+    min-height: 100vh;
+    padding: 40px 20px;
+    display: flex;
+    justify-content: center;
+    color: #ffffff;
+}
+
+/* O card do perfil */
+.perfil {
+    width: 100%;
+    max-width: 900px;
+    background: #1a1a1a;
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+/* Header: Alinhamento da Bio, Foto e Quantidade */
+.perfil-header-user {
+    display: grid;
+    grid-template-columns: 1fr 150px 1fr; /* Três colunas para equilibrar */
+    align-items: center;
+    gap: 20px;
+    border-bottom: 1px solid #333;
+    padding-bottom: 30px;
+    position: relative;
+}
+
+/* Bio e Nome */
+.perfil-bio h1 {
+    font-size: 2rem;
+    margin-bottom: 5px;
+    color: #ff4d00; /* Destaque Rank Over */
+}
+
+.perfil-bio h3 {
+    font-size: 1rem;
+    color: #aaa;
+    font-weight: 400;
+}
+
+/* Foto de Perfil */
+.perfil-foto img {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #ff4d00;
+    background-color: #333;
+}
+
+/* Quantidade de Squads */
+.perfil-squad-quant {
+    text-align: right;
+    font-size: 1.1rem;
+}
+
+.perfil-squad-quant p::before {
+    content: "Squads: ";
+    color: #888;
+}
+
+/* Botão Sair - Estilo perigoso/red */
+.perfil-sair {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: transparent;
+    border: 1px solid #ff4444;
+    color: #ff4444;
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.perfil-sair:hover {
+    background: #ff4444;
+    color: white;
+}
+
+/* Seção de Posts (Squads do usuário) */
+.perfil-posts {
+    margin-top: 40px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+/* Responsividade para celulares */
+@media (max-width: 768px) {
+    .perfil-header {
+        display: flex;
+        flex-direction: column;
+        text-align: center;
+    }
+    .perfil-squad-quant {
+        text-align: center;
+    }
+    .perfil-sair {
+        position: relative;
+        margin-top: 20px;
+        width: 100%;
+    }
+}

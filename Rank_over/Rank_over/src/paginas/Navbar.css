@@ -1,18 +1,18 @@
 /* Navbar.css */
-nav {
+
+.navbar-container {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 15px 5%;
+    padding: 0 5%;
     background-color: #121212;
-    height: 60px; 
-    /* ESSAS LINHAS FIXAM NO TOPO */
+    height: 70px; 
     position: sticky; 
     top: 0;
     width: 100%;
-    z-index: 1000; /* Faz ela ficar "na frente" dos cards ao rolar */
-    
-    box-sizing: border-box; /* Garante que o padding não aumente o tamanho da barra */
+    z-index: 1000;
+    box-sizing: border-box;
+    border-bottom: 1px solid #222;
 }
 
 .logo a {
@@ -21,59 +21,78 @@ nav {
 }
 
 .logo img {
-    height: 65px; /* Ajuste o tamanho da sua logo aqui */
+    height: 50px; /* Ajustado para caber bem nos 70px da nav */
     transition: transform 0.3s ease;
 }
 
 .logo img:hover {
-    transform: scale(1.15); /* Um efeitinho de aumentar ao passar o rato */
+    transform: scale(1.1);
 }
 
+/* --- BARRA DE PESQUISA (Ajuste de Alinhamento) --- */
+.nav-search-form {
+    display: flex !important;   /* Força o alinhamento lado a lado */
+    flex-direction: row;        /* Garante que fiquem na mesma linha */
+    align-items: center;
+    background-color: #222;     /* Fundo cinza escuro para o conjunto */
+    border-radius: 25px;        /* Formato de pílula */
+    border: 1px solid #333;
+    overflow: hidden;           /* Corta as bordas do botão para seguir o arredondado */
+    width: fit-content;
+}
+
+.nav-search-input {
+    padding: 10px 20px;
+    border: none;
+    background-color: transparent; /* Usa o fundo do form */
+    color: white;
+    width: 400px;               /* Tamanho fixo para não empurrar os links */
+    outline: none;
+    font-size: 0.9rem;
+}
+
+.nav-btn-search {
+    background-color: #ff4d00;
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 1rem;
+    height: 100%;               /* Preenche a altura do form */
+    transition: background 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nav-btn-search:hover {
+    background-color: #ff6a26;
+}
+
+/* --- LINKS --- */
 .links {
     display: flex;
     list-style: none;
-    gap: 30px;
+    gap: 25px;
+    margin: 0;
+    padding: 0;
 }
 
 .links a {
     text-decoration: none;
     color: #ccc;
     font-weight: 500;
+    font-size: 0.95rem;
     transition: 0.3s;
 }
 
 .links a:hover {
-    color: #ff4d00; /* Cor muda ao passar o mouse */
+    color: #ff4d00;
 }
 
-/* Estilo do formulário de pesquisa */
-nav form {
-    display: flex;
-    gap: 5px;
-}
-
-nav input {
-    padding: 8px 15px;
-    border-radius: 20px; /* Input arredondado */
-    border: 1px solid #333;
-    background-color: #222;
-    color: white;
-    outline: none;
-    width: 700px;
-}
-
-nav button {
-    padding: 8px 15px;
-    border-radius: 20px;
-    border: none;
-    background-color: #ff4d00;
-    color: white;
-    font-weight: bold;
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-nav button:hover {
-    background-color: #ff6a26;
-    transform: scale(1.05); /* Botão cresce levemente */
+/* Responsividade Básica */
+@media (max-width: 900px) {
+    .nav-search-input {
+        width: 200px;
+    }
 }

@@ -1,13 +1,30 @@
 import './App.css'
 import Home from './paginas/Home'
 import Navbar from './paginas/Navbar'
-import Squads from './paginas/Squads' // Importe o componente de Squads
+import Squads from './paginas/Squads'
+import Cadastrar from './paginas/Cadastrar'
 import PerfilSquad from './paginas/PerfilSquad'
-import { useState } from "react"
+import Entrar from './paginas/Entrar'
+import Perfil from './paginas/Perfil'
+import { useState, useEffect } from "react"
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom"
+import { auth } from "./firebaseConfig";
+import { onAuthStateChanged, type User } from "firebase/auth";
+
+
 
 function App() {
   const [pesquisaQuery, setPesquisa] = useState("");
+  const [usuario, setUsuario] = useState<User | null>(null);
+
+  useEffect(() => {
+    // Esse vigia fica olhando se o login mudou
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setUsuario(user); // Se logou, 'user' tem os dados. Se saiu, é 'null'.
+    });
+
+    return () => unsubscribe(); // Limpa o vigia ao fechar
+  }, []);
 
   const squads = [
     { id: 1, nome: "Enem", info: "Focado em estudo e aprendizagem", url: "https://picsum.photos/seed/enem/400/600" },
@@ -27,16 +44,22 @@ function App() {
 
   return (
     <Router>
-      <Navbar squads={squads} setPesquisa={setPesquisa} pesquisaQuery={pesquisaQuery} />
+      <Navbar squads={squads} setPesquisa={setPesquisa} pesquisaQuery={pesquisaQuery} usuario={usuario} />
 
       <Routes>
         <Route path="/" element={<Home squads={squads} pesquisaQuery={pesquisaQuery} />} />
 
 
-        <Route path="/squads" element={<Squads squads={squads} />} />
+        <Route path="/paginas/Squads" element={<Squads squads={squads} />} />
 
 
         <Route path="/paginas/PerfilSquad/:id" element={<PerfilSquad squads={squads} />} />
+
+        <Route path='/paginas/Cadastrar' element={<Cadastrar />} />
+
+        <Route path='/paginas/Entrar' element={<Entrar />} />
+
+        <Route path='/paginas/Perfil' element={<Perfil usuario={usuario}/>}/>
       </Routes>
     </Router>
   );
