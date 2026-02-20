@@ -9,20 +9,19 @@ function Entrar() {
     const [senha, setSenha] = useState("");
     const navigate = useNavigate();
 
-    // Função para entrar com e-mail e senha
+
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
             await signInWithEmailAndPassword(auth, email, senha);
             console.log("Login realizado com sucesso!");
-            navigate("/"); // Manda para a Home
+            navigate("/");
         } catch (error: any) {
             console.error("Erro ao entrar:", error.code);
             alert("E-mail ou senha incorretos.");
         }
     };
 
-    // A função do Google é EXATAMENTE a mesma do cadastro
     const handleGoogleLogin = async () => {
         try {
             await signInWithPopup(auth, provider);

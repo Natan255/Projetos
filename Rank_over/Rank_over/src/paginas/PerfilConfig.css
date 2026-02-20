@@ -1,0 +1,73 @@
+.config-container {
+    background-color: #0a0a0a;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.config {
+    width: 100%;
+    max-width: 450px;
+    background: #161616;
+    border: 1px solid #333;
+    border-radius: 12px;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+}
+
+.config-titulo {
+    color: #fff;
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.config-opcao {
+    background: #222;
+    border: 1px solid #444;
+    color: #ccc;
+    padding: 15px 20px;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s ease;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.config-opcao:hover {
+    background: #2a2a2a;
+    border-color: #ff4d00;
+    color: #fff;
+    transform: translateX(5px);
+}
+
+/* Seta discreta no canto da opção */
+.config-opcao::after {
+    content: ">";
+    color: #ff4d00;
+    font-weight: bold;
+}
+
+.config-voltar {
+    margin-top: 10px;
+    background: transparent;
+    border: none;
+    color: #888;
+    cursor: pointer;
+    text-decoration: underline;
+    font-size: 0.9rem;
+}
+
+.config-voltar:hover {
+    color: #fff;
+}

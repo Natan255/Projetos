@@ -13,7 +13,7 @@ function Perfil({ usuario }: PerfilProps) {
     const handleSair = async () => {
         try {
             await auth.signOut();
-            navigate("/"); // e assim que guia pra outra pagina por um botao
+            navigate("/");
         } catch (error) {
             console.error("Erro ao sair:", error);
         }
@@ -22,11 +22,6 @@ function Perfil({ usuario }: PerfilProps) {
         <div className="perfil-container-user">
             <div className="perfil">
                 <div className="perfil-header-user">
-                    <div className="perfil-bio">
-                        <h1 className="perfil-nome-user">{usuario.displayName}</h1>
-                        <h3 className="perfil-bio-text">Pro Player de Rank Over</h3>
-                    </div>
-
                     <div className="perfil-foto">
                         <img
                             src={usuario.photoURL}
@@ -35,10 +30,15 @@ function Perfil({ usuario }: PerfilProps) {
                         />
                     </div>
 
+                    <div className="perfil-bio">
+                        <h1 className="perfil-nome-user">{usuario.displayName}</h1>
+                        <h3 className="perfil-bio-text">A primeira conta a ser criada</h3>
+                    </div>
+
                     <div className="perfil-squad-quant">
                         <p>12</p>
                     </div>
-
+                    <button onClick={() => navigate("/paginas/PerfilConfig")} style={{fontSize: '2.3rem'}}>⚙️</button>
                     <button className="perfil-sair" onClick={handleSair}>Sair</button>
                 </div>
 

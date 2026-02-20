@@ -1,22 +1,33 @@
 import "./Cadastrar.css"
 import { auth, provider, signInWithPopup } from "../firebaseConfig";
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { useState } from "react";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { use, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 
 function Cadastrar() {
+    const [nome, setNome] = useState("");
     const [email, setEmail] = useState("");
     const [senha, setSenha] = useState("");
+    const [senhadef, setSenhaDef] = useState("")
     const navigate = useNavigate();
 
-    // Função para Cadastro com E-mail e Senha
+
     const handleEmailSignup = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
+            if (senha !== senhadef) {
+                alert("As senhas não coincidem! Verifique e tente novamente.");
+                return;
+            }
             const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
-            console.log("Usuário criado:", userCredential.user);
-            navigate("/"); // Sucesso! Vai para a Home
+            const user = userCredential.user;
+            navigate("/");
+
+            await updateProfile(user, {
+                displayName: nome,
+                photoURL: `https://ui-avatars.com/api/?name=${nome}&background=ff4d00&color=fff`
+            });
         } catch (error: any) {
             if (error.code === 'auth/email-already-in-use') {
                 alert("Este e-mail já está sendo usado por outra conta!");
@@ -30,7 +41,6 @@ function Cadastrar() {
         }
     };
 
-    // Função para o Google (mesma lógica do Entrar)
     const handleGoogleSignup = async () => {
         try {
             await signInWithPopup(auth, provider);
@@ -48,10 +58,10 @@ function Cadastrar() {
                 </div>
 
                 <form className="auth-form" onSubmit={handleEmailSignup} >
-                    <input className="auth-input" type="text" placeholder="Nome de usuário" />
+                    <input className="auth-input" type="text" placeholder="Nome de usuário" onChange={(e) => setNome(e.target.value)} />
                     <input className="auth-input" type="email" placeholder="e-mail" onChange={(e) => setEmail(e.target.value)} />
-                    <input className="auth-input" type="password" placeholder="Crie uma senha" />
-                    <input className="auth-input" type="password" placeholder="Confirme a senha" onChange={(e) => setSenha(e.target.value)} />
+                    <input className="auth-input" type="password" placeholder="Crie uma senha" onChange={(e) => setSenha(e.target.value)} />
+                    <input className="auth-input" type="password" placeholder="Confirme a senha" onChange={(e) => setSenhaDef(e.target.value)} />
 
                     <button type="submit" className="btn-submit-auth">
                         Criar Conta

@@ -42,8 +42,7 @@ function Home({ squads, pesquisaQuery }) {
                         <h2>Sua produtividade tem um <span className="destaque">Ranking</span>.</h2>
                         <p>No Rank Over, se voce nao se esforçar seu concorrente vai! <strong>Qual o seu lugar no topo hoje?</strong></p>
                     </div>
-
-                    {/* --- NOVA SEÇÃO: SQUADS POPULARES --- */}
+                    
                     <div className="secao_populares">
                         <h3 className="titulo_secao">Squads Populares</h3>
                         <div className="squad_grid">
@@ -103,7 +102,6 @@ function Home({ squads, pesquisaQuery }) {
                                 <button className="btn_bora">Bora pra cima</button>
                             </div>
                             <div className="ilustracao_destaque">
-                                {/* Aqui você pode colocar um ícone grande ou um gráfico de barras subindo */}
                                 <div className="barra_progresso_fake">
                                     <div className="progresso_preenchido"></div>
                                 </div>
@@ -113,13 +111,10 @@ function Home({ squads, pesquisaQuery }) {
 
                     <div className="rodape">
                         <div className="rodape_conteudo">
-                            {/* Lado Esquerdo: Identidade */}
                             <div className="rodape_info">
                                 <h2>RANK<span>OVER</span></h2>
                                 <p>Domine sua rotina, suba no ranking e conquiste seus objetivos com a melhor comunidade de foco.</p>
                             </div>
-
-                            {/* Centro: Navegação rápida */}
                             <div className="rodape_links">
                                 <h4>Navegação</h4>
                                 <ul>
@@ -129,7 +124,6 @@ function Home({ squads, pesquisaQuery }) {
                                 </ul>
                             </div>
 
-                            {/* Lado Direito: Redes Sociais */}
                             <div className="Redes_sociais">
                                 <h4>Siga-nos</h4>
                                 <ul>
@@ -149,7 +143,6 @@ function Home({ squads, pesquisaQuery }) {
 
             ) : (
                 <div className="squad_grid">
-                    {/* Filtro de pesquisa que você já fez */}
                     {squads.map((cards) => cards.nome.toLowerCase().includes(pesquisaQuery.toLowerCase()) && (
                         <CardSquad card={cards} key={cards.id} />
                     ))}

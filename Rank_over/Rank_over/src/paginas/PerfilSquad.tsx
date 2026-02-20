@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom";
 import "./PerfilSquad.css";
-import PostSquad from "../componentes/PostSquad"; // Ajustei o import aqui
+import PostSquad from "../componentes/PostSquad";
 
 function PerfilSquad({ squads }) {
     const { id } = useParams();
