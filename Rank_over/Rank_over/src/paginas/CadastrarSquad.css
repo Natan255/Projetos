@@ -1,0 +1,169 @@
+/* Container principal que centraliza tudo */
+.criars-container {
+    background-color: #050505;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    padding: 60px 20px;
+    color: white;
+    font-family: 'Inter', sans-serif;
+}
+
+/* Card do formulário */
+.criars {
+    width: 100%;
+    max-width: 800px;
+    background: #0d0d0d;
+    padding: 40px;
+    border-radius: 15px;
+    border: 1px solid #1a1a1a;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.titulo-sessao {
+    font-size: 2rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    margin-bottom: 30px;
+    color: #ff4d00;
+    text-align: center;
+    letter-spacing: 2px;
+}
+
+/* Estrutura do Form */
+.criar-form {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.input-group p {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #888;
+    margin: 0;
+    text-transform: uppercase;
+}
+
+/* Estilo dos Inputs e Textarea */
+.criar-form input, 
+.criar-form textarea, 
+.criar-form select {
+    background: #151515;
+    border: 1px solid #222;
+    padding: 12px 15px;
+    border-radius: 8px;
+    color: white;
+    font-size: 1rem;
+    outline: none;
+    transition: 0.3s;
+}
+
+.criar-form input:focus, 
+.criar-form textarea:focus {
+    border-color: #ff4d00;
+    background: #1a1a1a;
+    box-shadow: 0 0 10px rgba(255, 77, 0, 0.1);
+}
+
+.criar-form textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+/* Grid para as fotos (duas colunas no desktop) */
+.fotos-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+/* Opções de Métrica (Botões de Seleção) */
+.metrica-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.metrica-options button {
+    background: #151515;
+    border: 1px solid #222;
+    color: #aaa;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: 0.3s;
+}
+
+.metrica-options button:hover {
+    border-color: #ff4d00;
+    color: white;
+}
+
+.metrica-options button.active {
+    background: #ff4d00;
+    color: black;
+    border-color: #ff4d00;
+}
+
+/* Input extra que aparece quando clica em "Outros" */
+.input-outro {
+    margin-top: 10px;
+    animation: fadeIn 0.4s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Botão de Envio */
+.btn-criar {
+    background: #ff4d00;
+    color: black;
+    font-weight: 800;
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    padding: 18px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: 0.3s;
+}
+
+.btn-criar:hover {
+    background: #ff6a26;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 77, 0, 0.3);
+}
+
+.btn-criar:disabled {
+    background: #333;
+    color: #666;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Responsividade para celulares */
+@media (max-width: 600px) {
+    .fotos-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .criars {
+        padding: 25px;
+    }
+
+    .metrica-options button {
+        flex: 1 1 40%;
+        font-size: 0.8rem;
+    }
+}

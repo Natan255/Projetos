@@ -1,8 +1,9 @@
 import "./Cadastrar.css"
-import { auth, provider, signInWithPopup } from "../firebaseConfig";
+import { auth, provider, signInWithPopup, db } from "../firebaseConfig";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { use, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { doc, setDoc } from "firebase/firestore"; // Importe estas funções
 
 
 function Cadastrar() {
@@ -22,6 +23,18 @@ function Cadastrar() {
             }
             const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
             const user = userCredential.user;
+            await setDoc(doc(db, "usuarios", user.uid), {
+            nome: nome,
+            email: email,
+            bio: "Recruta do Rank Over",
+            squads_seguindo: [], // Começa vazio
+            fotoUrl: `https://ui-avatars.com/api/?name=${nome}&background=ff4d00&color=fff`,
+            criadoEm: new Date()
+        });
+        await updateProfile(user, {
+            displayName: nome,
+            photoURL: `https://ui-avatars.com/api/?name=${nome}&background=ff4d00&color=fff`
+        });
             navigate("/");
 
             await updateProfile(user, {
@@ -43,7 +56,18 @@ function Cadastrar() {
 
     const handleGoogleSignup = async () => {
         try {
-            await signInWithPopup(auth, provider);
+            const result = await signInWithPopup(auth, provider);
+            const user = result.user;
+
+            // Cria ou atualiza o perfil no banco
+            await setDoc(doc(db, "usuarios", user.uid), {
+                nome: user.displayName,
+                email: user.email,
+                fotoUrl: user.photoURL,
+                // Só define se o documento for novo
+                squads_seguindo: [], 
+            }, { merge: true });
+
             navigate("/");
         } catch (error) {
             console.error(error);

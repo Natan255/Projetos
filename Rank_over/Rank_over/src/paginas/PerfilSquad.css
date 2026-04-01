@@ -97,6 +97,19 @@
     text-transform: uppercase;
 }
 
+.btn-sair {
+    background-color: #ff4d00;
+    color: white;
+    border: none;
+    padding: 12px 35px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s ease;
+    text-transform: uppercase;
+}
+
 .btn-entrar:hover {
     background-color: #ff6a2a;
     transform: scale(1.05);

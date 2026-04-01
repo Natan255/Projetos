@@ -1,6 +1,7 @@
 import CardSquad from "../componentes/CardSquad"
 import "./Home.css"
 import { Swiper, SwiperSlide } from 'swiper/react';
+import { Link } from "react-router-dom";
 import { Navigation, Pagination, Autoplay } from 'swiper/modules';
 
 // Importe os estilos do Swiper
@@ -59,7 +60,11 @@ function Home({ squads, pesquisaQuery }) {
                         </div>
 
                         <div className="bota_criar_squad">
-                            <button>Crie seu squad</button>
+
+                            <Link to="/paginas/CadastrarSquad">
+                                <button>Crie seu squad</button>
+                            </Link>
+                            
                         </div>
 
                     </div>
@@ -142,12 +147,27 @@ function Home({ squads, pesquisaQuery }) {
                 </>
 
             ) : (
-                <div className="squad_grid">
-                    {squads.map((cards) => cards.nome.toLowerCase().includes(pesquisaQuery.toLowerCase()) && (
-                        <CardSquad card={cards} key={cards.id} />
-                    ))}
-                </div>
+    <div className="secao_pesquisa">
+        <h3 className="titulo_secao">Resultados para: "{pesquisaQuery}"</h3>
+        <div className="squad_grid">
+            {squads
+                .filter((squad) => {
+                    const nomeSquad = squad.nome ? squad.nome.toLowerCase() : "";
+                    const busca = pesquisaQuery.toLowerCase();
+                    return nomeSquad.includes(busca);
+                })
+                .map((squad) => (
+                    <CardSquad card={squad} key={squad.id} />
+                ))
+            }
+            
+            {/* Mensagem caso não encontre nada */}
+            {squads.filter(s => s.nome?.toLowerCase().includes(pesquisaQuery.toLowerCase())).length === 0 && (
+                <p className="sem-resultados">Nenhum squad encontrado com esse nome.</p>
             )}
+        </div>
+    </div>
+)}
         </div>
     )
 }
