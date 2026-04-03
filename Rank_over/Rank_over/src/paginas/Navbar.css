@@ -96,3 +96,40 @@
         width: 200px;
     }
 }
+
+/* Estado inicial: Escondida fora da tela */
+.navside {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 80px; /* Largura da barra */
+    height: 100vh;
+    background-color: #1a1a1a;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 80px; /* Espaço para o botão não cobrir os ícones */
+    border-right: 1px solid #333;
+    z-index: 1000;
+    
+    transition: transform 0.3s ease-in-out;
+    transform: translateX(-100%); /* Joga ela toda para a esquerda */
+}
+
+/* Quando tem a classe .ativa, ela volta para a posição original */
+.navside.ativa {
+    transform: translateX(0);
+}
+
+/* Botão que abre a barra */
+.btn-menu {
+    background: none;
+    border: none;
+    color: #ff4d00;
+    font-size: 2rem;
+    cursor: pointer;
+    z-index: 1001; /* Fica em cima da sidebar */
+    position: fixed;
+    left: 20px;
+    top: 15px;
+}

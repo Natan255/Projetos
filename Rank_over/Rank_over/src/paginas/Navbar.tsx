@@ -1,7 +1,29 @@
 import "./Navbar.css";
 import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { db } from "../firebaseConfig";
+import { doc, onSnapshot } from "firebase/firestore";
+import MeusSquadsSide from "../componentes/MeusSquadsSide";
 
 function Navbar({ pesquisaQuery, setPesquisa, squads, usuario }) {
+    const [idsSeguidos, setIdsSeguidos] = useState([]);
+    const [sidebarAberta, setSidebarAberta] = useState(false);
+    const toggleSidebar = () => setSidebarAberta(!sidebarAberta);
+
+    useEffect(() => {
+        if (!usuario) {
+            setIdsSeguidos([]);
+            return;
+        }
+
+        const unsubscribe = onSnapshot(doc(db, "usuarios", usuario.uid), (doc) => {
+            if (doc.exists()) {
+                setIdsSeguidos(doc.data().squads_seguindo || []);
+            }
+        });
+
+        return () => unsubscribe();
+    }, [usuario]);
 
   
     const handleSearch = (e) => {
@@ -11,6 +33,14 @@ function Navbar({ pesquisaQuery, setPesquisa, squads, usuario }) {
 
     return (
         <nav className="navbar-container">
+            <button className="btn-menu" onClick={toggleSidebar}>
+                {sidebarAberta ? "✕" : "☰"}
+            </button>
+
+            <div className={`navside ${sidebarAberta ? "ativa" : ""}`}>
+                {usuario && <MeusSquadsSide squads={squads} idsSeguidos={idsSeguidos} />}
+            </div>
+            
             <div className="logo">
                 <Link to="/">
                     <img src="/rank-lar.png" alt="Rank Over Logo" />

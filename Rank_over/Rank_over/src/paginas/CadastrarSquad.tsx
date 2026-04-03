@@ -3,7 +3,7 @@ import { db, auth } from "../firebaseConfig";
 import { collection, addDoc, serverTimestamp, doc, updateDoc, arrayUnion} from "firebase/firestore"; //pra poder editar sem apagar
 import { useNavigate } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
-
+import AlertaMsg from "../componentes/AlertaMsg";
 
 import "./CadastrarSquad.css";
 
@@ -16,6 +16,7 @@ function CadastrarSquad() {
     const [fotoPerfil, setFotoPerfil] = useState("");
     const [fotoBanner, setFotoBanner] = useState("");
     const [fotoCapa, setFotoCapa] = useState("");
+    const [mostrarSucesso, setMostrarSucesso] = useState(false);
     
     const [enviando, setEnviando] = useState(false);
     const navigate = useNavigate();
@@ -66,8 +67,7 @@ function CadastrarSquad() {
             await updateDoc(userRef, {
                 squads_admin: arrayUnion(novoSquadId)
             });
-            alert("🔥 Squad fundado com sucesso!");
-            navigate("/");
+            setMostrarSucesso(true)
             
         } catch (error: any) {
             console.error("Erro ao criar squad:", error);
@@ -78,7 +78,16 @@ function CadastrarSquad() {
     };
 
     return (
+        
         <div className="criars-container">
+            {mostrarSucesso && (
+                <AlertaMsg 
+                    MsgTitulo="Concluido!" 
+                    Msg={`Squad criado com sucesso`} 
+                    textoBotao="Voltar ao Perfil"
+                    aoClicar={() => navigate("/")} // Ou navigate(-1)
+                />
+            )}
             <div className="criars">
                 <h1 className="titulo-sessao">Fundar Novo Squad</h1>
                 <form className="criar-form" onSubmit={handleSubmit}>
