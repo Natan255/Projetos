@@ -24,23 +24,21 @@ function Cadastrar() {
             const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
             const user = userCredential.user;
             await setDoc(doc(db, "usuarios", user.uid), {
-            nome: nome,
-            email: email,
-            bio: "Recruta do Rank Over",
-            squads_seguindo: [], // Começa vazio
-            fotoUrl: `https://ui-avatars.com/api/?name=${nome}&background=ff4d00&color=fff`,
-            criadoEm: new Date()
-        });
-        await updateProfile(user, {
-            displayName: nome,
-            photoURL: `https://ui-avatars.com/api/?name=${nome}&background=ff4d00&color=fff`
-        });
-            navigate("/");
-
+                nome: nome,
+                email: email,
+                bio: "Recruta do Rank Over",
+                squads_admin: [],
+                squads_mode:[],
+                squads_seguindo: [], // Começa vazio
+                fotoUrl: `https://ui-avatars.com/api/?name=${nome}&background=ff4d00&color=fff`,
+                criadoEm: new Date()
+            }, { merge: true });
             await updateProfile(user, {
                 displayName: nome,
                 photoURL: `https://ui-avatars.com/api/?name=${nome}&background=ff4d00&color=fff`
             });
+                navigate("/");
+
         } catch (error: any) {
             if (error.code === 'auth/email-already-in-use') {
                 alert("Este e-mail já está sendo usado por outra conta!");
@@ -63,6 +61,8 @@ function Cadastrar() {
             await setDoc(doc(db, "usuarios", user.uid), {
                 nome: user.displayName,
                 email: user.email,
+                squads_admin: [],
+                squads_mode: [],
                 fotoUrl: user.photoURL,
                 // Só define se o documento for novo
                 squads_seguindo: [], 

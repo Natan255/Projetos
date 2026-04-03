@@ -1,3 +1,4 @@
+/* Container Principal */
 .config-container {
     background-color: #0a0a0a;
     min-height: 100vh;
@@ -5,8 +6,10 @@
     justify-content: center;
     align-items: center;
     padding: 20px;
+    font-family: sans-serif; /* Adicione uma fonte limpa */
 }
 
+/* Card Central */
 .config {
     width: 100%;
     max-width: 450px;
@@ -16,58 +19,82 @@
     padding: 30px;
     display: flex;
     flex-direction: column;
-    gap: 15px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+    gap: 12px; /* Espaçamento entre os itens */
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
 }
 
 .config-titulo {
     color: #fff;
-    font-size: 1.5rem;
-    margin-bottom: 20px;
+    font-size: 1.4rem;
+    margin-bottom: 25px;
     text-align: center;
     text-transform: uppercase;
     letter-spacing: 2px;
+    border-bottom: 1px solid #333;
+    padding-bottom: 15px;
 }
 
+/* Reset de Link para não estragar o botão */
+.config a {
+    text-decoration: none;
+    display: block; /* Faz o link ocupar a linha toda */
+    width: 100%;
+}
+
+/* Estilização dos Botões de Opção */
 .config-opcao {
+    width: 100%; /* Garante que o botão preencha o Link */
     background: #222;
     border: 1px solid #444;
     color: #ccc;
-    padding: 15px 20px;
+    padding: 18px 20px;
     border-radius: 8px;
     font-size: 1rem;
+    font-weight: 500;
     cursor: pointer;
     text-align: left;
-    transition: all 0.2s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     justify-content: space-between;
     align-items: center;
+    outline: none;
 }
 
+/* Efeito de Hover */
 .config-opcao:hover {
     background: #2a2a2a;
     border-color: #ff4d00;
     color: #fff;
-    transform: translateX(5px);
+    transform: translateX(8px); /* Deslocamento suave para a direita */
+    box-shadow: -5px 0px 0px #ff4d00; /* Linha de destaque na esquerda */
 }
 
-/* Seta discreta no canto da opção */
+/* Seta discreta no canto */
 .config-opcao::after {
-    content: ">";
+    content: "→"; /* Seta mais moderna que o '>' */
     color: #ff4d00;
-    font-weight: bold;
+    font-size: 1.2rem;
+    opacity: 0.5;
+    transition: opacity 0.3s;
 }
 
+.config-opcao:hover::after {
+    opacity: 1;
+}
+
+/* Botão de Voltar */
 .config-voltar {
-    margin-top: 10px;
+    margin-top: 20px;
     background: transparent;
     border: none;
-    color: #888;
+    color: #666;
     cursor: pointer;
-    text-decoration: underline;
     font-size: 0.9rem;
+    transition: color 0.2s;
+    align-self: center;
 }
 
 .config-voltar:hover {
-    color: #fff;
+    color: #ff4d00;
+    text-decoration: underline;
 }

@@ -8,6 +8,7 @@ import Entrar from './paginas/Entrar'
 import Perfil from './paginas/Perfil'
 import PerfilConfig from './paginas/PerfilConfig'
 import CadastrarSquad from './paginas/CadastrarSquad'
+import AlterarPerfil from './paginas/AlterarPerfil'
 import { useState, useEffect } from "react"
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom"
 import { db } from "./firebaseConfig";
@@ -64,6 +65,8 @@ useEffect(() => {
         <Route path="/paginas/CadastrarSquad" element={<CadastrarSquad/>} />
 
         <Route path='/paginas/Entrar' element={<Entrar />} />
+
+        <Route path="/config/alterar/:campo" element={<AlterarPerfil />} />
 
         <Route path='/paginas/Perfil' element={<Perfil usuario={usuario}/>}/>
 

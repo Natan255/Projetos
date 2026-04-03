@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
 import { db, auth } from "../firebaseConfig";
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { collection, addDoc, serverTimestamp, doc, updateDoc, arrayUnion} from "firebase/firestore"; //pra poder editar sem apagar
 import { useNavigate } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
+
+
 import "./CadastrarSquad.css";
 
 function CadastrarSquad() {
@@ -39,7 +41,7 @@ function CadastrarSquad() {
 
         try {
 
-            await addDoc(collection(db, "squads"), {
+            const docRef = await addDoc(collection(db, "squads"), {
                 nome,
                 descricao,
                 categoria,
@@ -59,9 +61,14 @@ function CadastrarSquad() {
                 },
                 criadoEm: serverTimestamp(),
             });
-
+            const novoSquadId = docRef.id;
+            const userRef = doc(db, "usuarios", auth.currentUser.uid);
+            await updateDoc(userRef, {
+                squads_admin: arrayUnion(novoSquadId)
+            });
             alert("🔥 Squad fundado com sucesso!");
-            navigate("/"); // Volta para a Home para ver o novo squad na lista
+            navigate("/");
+            
         } catch (error: any) {
             console.error("Erro ao criar squad:", error);
             alert("Erro ao criar: " + error.message);

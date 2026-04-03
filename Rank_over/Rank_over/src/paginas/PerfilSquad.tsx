@@ -7,9 +7,12 @@ import { db } from "../firebaseConfig"; // Certifique-se de importar o db
 // Adicionamos 'usuario' nas props que vêm do App.tsx
 function PerfilSquad({ squads, usuario }) {
     const { id } = useParams();
-    const squadSelecionado = squads.find((s) => s.id === id);
 
-    // Verifica se o usuário atual está na lista de seguidores do squad
+    const squadSelecionado = squads.find((s) => s.id === id);
+    const isOwner = usuario?.squads_admin?.includes(id);
+    const isMod = usuario?.squads_mode?.includes(id);
+    const temPermissaoEspecial = isOwner || isMod;
+
     const jaSegue = squadSelecionado?.seguidores?.includes(usuario?.uid);
 
     const listaPosts = [
@@ -63,8 +66,12 @@ function PerfilSquad({ squads, usuario }) {
                         <img src={squadSelecionado.url} alt="Logo" />
                     </div>
                     <div className="Bios_squad">
-                        <h1>{squadSelecionado.nome}</h1>
-                        <p>{squadSelecionado.info}</p>
+                        <h1>
+                            {squadSelecionado.nome} 
+                            {isOwner && <span title="Você é o dono"> 👑</span>}
+                            {isMod && !isOwner && <span title="Você é moderador"> 🛡️</span>}
+                        </h1>
+                        <p>{squadSelecionado.descricao}</p>
                         <div className="tags">
                             <span>#Produtividade</span>
                             <span>#Foco</span>
@@ -75,13 +82,19 @@ function PerfilSquad({ squads, usuario }) {
                         </div>
                     </div>
                     <div className="acoes">
-                        {/* Botão dinâmico: muda texto e cor se já segue */}
-                        <button 
-                            className={jaSegue ? "btn-sair" : "btn-entrar"} 
-                            onClick={gerenciarSeguir}
-                        >
-                            {jaSegue ? "Sair do Squad" : "Entrar no Squad"}
-                        </button>
+
+                        {isOwner || isMod ? (
+                            <button className="btn-config">Configurar Squad</button>
+                            
+                        ) : (
+                            <button 
+                                className={jaSegue ? "btn-sair" : "btn-entrar"} 
+                                onClick={gerenciarSeguir}
+                            >
+                                {jaSegue ? "Sair do Squad" : "Entrar no Squad"}
+                            </button>
+                        )}
+
                     </div>
                 </div>
             </div>

@@ -1,0 +1,98 @@
+/* Container que centraliza tudo na tela */
+.alterar-pagina-container {
+    background-color: #0a0a0a;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    color: #fff;
+}
+
+/* Título Adaptável */
+.alterar-pagina-container h1 {
+    font-size: 1.8rem;
+    margin-bottom: 30px;
+    text-transform: capitalize;
+    letter-spacing: 1px;
+    color: #efefef;
+}
+
+/* Estilização do Input Camaleão */
+.alterar-pagina-container input {
+    width: 100%;
+    max-width: 400px;
+    background-color: #161616;
+    border: 2px solid #333;
+    border-radius: 8px;
+    padding: 15px 20px;
+    color: #fff;
+    font-size: 1.1rem;
+    outline: none;
+    transition: all 0.3s ease;
+    margin-bottom: 25px;
+}
+
+/* Efeito de foco no Input - Brilho Laranja */
+.alterar-pagina-container input:focus {
+    border-color: #ff4d00;
+    box-shadow: 0 0 15px rgba(255, 77, 0, 0.2);
+    background-color: #1a1a1a;
+}
+
+/* Container dos Botões */
+.botoes-acoes {
+    display: flex;
+    gap: 15px;
+    width: 100%;
+    max-width: 400px;
+}
+
+/* Botão Salvar (Destaque) */
+.botoes-acoes button:first-child {
+    flex: 2; /* Fica maior que o cancelar */
+    background-color: #ff4d00;
+    color: #fff;
+    border: none;
+    padding: 15px;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: transform 0.2s, background 0.2s;
+}
+
+.botoes-acoes button:first-child:hover {
+    background-color: #e64500;
+    transform: translateY(-2px);
+}
+
+/* Botão Cancelar (Discreto) */
+.botoes-acoes button:last-child {
+    flex: 1;
+    background-color: transparent;
+    color: #888;
+    border: 1px solid #444;
+    padding: 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.botoes-acoes button:last-child:hover {
+    background-color: #222;
+    color: #fff;
+    border-color: #666;
+}
+
+/* Responsividade para telas pequenas */
+@media (max-width: 480px) {
+    .botoes-acoes {
+        flex-direction: column;
+    }
+    
+    .alterar-pagina-container h1 {
+        font-size: 1.5rem;
+    }
+}
