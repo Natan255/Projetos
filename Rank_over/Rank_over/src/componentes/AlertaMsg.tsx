@@ -5,12 +5,19 @@ interface AlertaProps {
     Msg: string;
     textoBotao?: string; 
     aoClicar?: () => void; 
+    fechar?: () => void;
 }
 
-function AlertaMsg({ MsgTitulo, Msg, textoBotao, aoClicar }: AlertaProps) {
+function AlertaMsg({ MsgTitulo, Msg, textoBotao, aoClicar, fechar }: AlertaProps) {
     return (
         <div className="alertamsg-container">
             <div className="alerta-card">
+                {fechar && (
+                    <button className="btn-fechar-x" onClick={fechar}>
+                        &times;
+                    </button>
+                )}
+
                 <h1>{MsgTitulo}</h1>
                 <p>{Msg}</p>
                 

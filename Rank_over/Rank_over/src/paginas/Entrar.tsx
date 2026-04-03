@@ -3,10 +3,12 @@ import { auth, provider, signInWithPopup, signInWithEmailAndPassword } from "../
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom"
 import "./Entrar.css"
+import AlertaMsg from "../componentes/AlertaMsg";
 
 function Entrar() {
     const [email, setEmail] = useState("");
     const [senha, setSenha] = useState("");
+    const [mostrarSucesso, setMostrarSucesso] = useState(false);
     const navigate = useNavigate();
 
 
@@ -14,11 +16,9 @@ function Entrar() {
         e.preventDefault();
         try {
             await signInWithEmailAndPassword(auth, email, senha);
-            console.log("Login realizado com sucesso!");
             navigate("/");
         } catch (error: any) {
-            console.error("Erro ao entrar:", error.code);
-            alert("E-mail ou senha incorretos.");
+            setMostrarSucesso(true)
         }
     };
 
@@ -31,7 +31,15 @@ function Entrar() {
         }
     };
     return (
+        
         <div className="enter-container">
+            {mostrarSucesso && (
+                <AlertaMsg 
+                    MsgTitulo="Erro :(" 
+                    Msg={`Email ou senha incorreto`} 
+                   fechar={() => setMostrarSucesso(false)}
+                />
+            )}
             <div className="auth-card">
                 <div className="auth-title">
                     <h1>Entre no Rank Over</h1>

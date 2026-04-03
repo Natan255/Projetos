@@ -21,7 +21,8 @@
 }
 
 .logo img {
-    height: 50px; /* Ajustado para caber bem nos 70px da nav */
+    height: 110px; /* Ajustado para caber bem nos 70px da nav */
+    width: 170px;
     transition: transform 0.3s ease;
 }
 
