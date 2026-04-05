@@ -1,0 +1,153 @@
+/* Container Principal */
+.config-membros-container {
+    padding: 40px 10%;
+    background-color: #0f0f0f;
+    min-height: 100vh;
+    color: white;
+    font-family: 'Inter', sans-serif;
+}
+
+.config-membros-container h1 {
+    font-size: 2rem;
+    margin-bottom: 30px;
+    border-left: 5px solid #ff4d00;
+    padding-left: 15px;
+    text-transform: uppercase;
+}
+
+/* Caixa de Adição (Input + Botão) */
+.add-membro-box {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 40px;
+    background: #1a1a1a;
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid #333;
+}
+
+.add-membro-box input {
+    flex: 1;
+    background: #0f0f0f;
+    border: 1px solid #444;
+    padding: 12px;
+    border-radius: 8px;
+    color: white;
+    outline: none;
+    transition: 0.3s;
+}
+
+.add-membro-box input:focus {
+    border-color: #ff4d00;
+}
+
+.add-membro-box button {
+    background: #ff4d00;
+    color: white;
+    border: none;
+    padding: 0 25px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.add-membro-box button:hover {
+    background: #ff6a2a;
+    transform: scale(1.02);
+}
+
+/* Lista de Usuários */
+.lista-membros {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.lista-membros h3 {
+    color: #888;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+}
+
+/* Linha de Gestão (Onde fica o card + botões) */
+.linha-gestao-usuario {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #1a1a1a;
+    padding: 10px 20px;
+    border-radius: 12px;
+    border: 1px solid transparent;
+    transition: 0.3s;
+}
+
+.linha-gestao-usuario:hover {
+    border-color: #333;
+    background: #222;
+}
+
+/* Botões de Ação (Direita) */
+.botoes-gestao {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-promover {
+    background: rgba(255, 193, 7, 0.1);
+    color: #ffc107;
+    border: 1px solid #ffc107;
+    padding: 8px 15px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-promover:hover {
+    background: #ffc107;
+    color: #000;
+}
+
+.btn-banir {
+    background: rgba(255, 68, 68, 0.1);
+    color: #ff4444;
+    border: 1px solid #ff4444;
+    padding: 8px 15px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-banir:hover {
+    background: #ff4444;
+    color: white;
+}
+
+/* Botão Voltar (Fim da página) */
+.btn-voltar {
+    margin-top: 40px;
+    background: transparent;
+    color: #888;
+    border: 1px solid #333;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-voltar:hover {
+    color: white;
+    border-color: #ff4d00;
+}
+
+/* Estados de Vazio/Carregando */
+.vazio, .loading {
+    color: #555;
+    text-align: center;
+    padding: 20px;
+    font-style: italic;
+}

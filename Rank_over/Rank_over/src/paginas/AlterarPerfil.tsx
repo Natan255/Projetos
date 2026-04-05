@@ -11,7 +11,7 @@ function AlterarPerfil() {
     const navigate = useNavigate();
     const [valor, setValor] = useState("");
     const [carregando, setCarregando] = useState(false);
-    const [mostrarSucesso, setMostrarSucesso] = useState(false);
+    const [mostrarAlerta, setMostrarAlerta] = useState(false);
 
     const configs: Record<string, { titulo: string; tipo: string }> = {
         nome: { titulo: "Nome de Usuário", tipo: "text" },
@@ -53,7 +53,7 @@ function AlterarPerfil() {
                 await updatePassword(user, valor);
             }
 
-            setMostrarSucesso(true);
+            setMostrarAlerta(true);
         } catch (error: any) {
             console.error("Erro ao atualizar:", error);
             alert("Erro: " + error.message);
@@ -64,7 +64,7 @@ function AlterarPerfil() {
 
     return (
         <div className="alterar-pagina-container">
-            {mostrarSucesso && (
+            {mostrarAlerta && (
                 <AlertaMsg 
                     MsgTitulo="Sucesso!" 
                     Msg={`${atual.titulo} atualizado com sucesso.`} 

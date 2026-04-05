@@ -16,7 +16,7 @@ function CadastrarSquad() {
     const [fotoPerfil, setFotoPerfil] = useState("");
     const [fotoBanner, setFotoBanner] = useState("");
     const [fotoCapa, setFotoCapa] = useState("");
-    const [mostrarSucesso, setMostrarSucesso] = useState(false);
+    const [mostrarAlerta, setMostrarAlerta] = useState(false);
     
     const [enviando, setEnviando] = useState(false);
     const navigate = useNavigate();
@@ -67,7 +67,7 @@ function CadastrarSquad() {
             await updateDoc(userRef, {
                 squads_admin: arrayUnion(novoSquadId)
             });
-            setMostrarSucesso(true)
+            setMostrarAlerta(true)
             
         } catch (error: any) {
             console.error("Erro ao criar squad:", error);
@@ -80,7 +80,7 @@ function CadastrarSquad() {
     return (
         
         <div className="criars-container">
-            {mostrarSucesso && (
+            {mostrarAlerta && (
                 <AlertaMsg 
                     MsgTitulo="Concluido!" 
                     Msg={`Squad criado com sucesso`} 

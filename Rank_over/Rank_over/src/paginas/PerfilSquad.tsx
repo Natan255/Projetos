@@ -2,15 +2,16 @@ import { useParams } from "react-router-dom";
 import "./PerfilSquad.css";
 import PostSquad from "../componentes/PostSquad";
 import { doc, updateDoc, arrayUnion, arrayRemove } from "firebase/firestore";
+import { useNavigate } from "react-router-dom";
 import { db } from "../firebaseConfig"; // Certifique-se de importar o db
 
 // Adicionamos 'usuario' nas props que vêm do App.tsx
 function PerfilSquad({ squads, usuario }) {
     const { id } = useParams();
-
+    const navigate = useNavigate();
     const squadSelecionado = squads.find((s) => s.id === id);
-    const isOwner = usuario?.squads_admin?.includes(id);
-    const isMod = usuario?.squads_mode?.includes(id);
+    const isOwner = squadSelecionado?.idCriador === usuario?.uid;
+    const isMod = squadSelecionado?.moderadores?.includes(usuario?.uid);
     const temPermissaoEspecial = isOwner || isMod;
 
     const jaSegue = squadSelecionado?.seguidores?.includes(usuario?.uid);
@@ -82,11 +83,15 @@ function PerfilSquad({ squads, usuario }) {
                         </div>
                     </div>
                     <div className="acoes">
+                        {/* Se for Dono ou Mod, mostra o botão de Configurar */}
+                        {temPermissaoEspecial && (
+                            <button className="btn-config" onClick={() => navigate(`/paginas/PerfilSquadconfig/${id}`)}>
+                                ⚙️ Configurar Squad
+                            </button>
+                        )}
 
-                        {isOwner || isMod ? (
-                            <button className="btn-config">Configurar Squad</button>
-                            
-                        ) : (
+                        {/* Botão de Entrar/Sair só aparece para quem NÃO é o dono */}
+                        {!isOwner && (
                             <button 
                                 className={jaSegue ? "btn-sair" : "btn-entrar"} 
                                 onClick={gerenciarSeguir}
@@ -94,7 +99,6 @@ function PerfilSquad({ squads, usuario }) {
                                 {jaSegue ? "Sair do Squad" : "Entrar no Squad"}
                             </button>
                         )}
-
                     </div>
                 </div>
             </div>
