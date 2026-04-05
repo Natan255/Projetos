@@ -117,7 +117,7 @@ function Home({ squads, pesquisaQuery }) {
                     <div className="rodape">
                         <div className="rodape_conteudo">
                             <div className="rodape_info">
-                                <h2>RANK<span>OVER</span></h2>
+                                <h2>KLYMB</h2>
                                 <p>Domine sua rotina, suba no ranking e conquiste seus objetivos com a melhor comunidade de foco.</p>
                             </div>
                             <div className="rodape_links">

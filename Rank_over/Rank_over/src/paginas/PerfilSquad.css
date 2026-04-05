@@ -220,11 +220,11 @@
     background: #1a1a1a;
     border: 1px solid #333;
     color: #fff;
-    width: 45px;
-    height: 45px;
+    width: 100px;
+    height: 50px;
     border-radius: 10px;
     cursor: pointer;
-    font-size: 1.5rem;
+    font-size: 1rem;
     display: flex;
     align-items: center;
     justify-content: center;

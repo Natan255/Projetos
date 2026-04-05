@@ -1,0 +1,158 @@
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(6px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.modal-container {
+    background: #111; /* Fundo quase preto */
+    width: 95%;
+    max-width: 550px;
+    border-radius: 20px;
+    border: 1px solid #2a2a2a;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6);
+    animation: modalScale 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes modalScale {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.modal-legenda {
+    padding: 15px 25px;
+    background: #1a1a1a;
+    border-bottom: 1px solid #222;
+}
+
+.modal-legenda h3 {
+    margin: 0;
+    color: #666;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-weight: 800;
+}
+
+
+.modal-titulo {
+    padding: 20px 25px 5px 25px;
+}
+
+.modal-titulo textarea {
+    width: 100%;
+    min-height: 45px;
+    background: transparent;
+    border: none;
+    color: #ff4d00; /* Laranja Rank Over */
+    font-size: 1.6rem;
+    font-weight: 900;
+    font-family: 'Inter', sans-serif;
+    resize: none;
+    outline: none;
+    line-height: 1.2;
+}
+
+.modal-titulo textarea::placeholder {
+    color: rgba(255, 77, 0, 0.2);
+}
+
+.modal-conteudo {
+    padding: 0 25px 25px 25px;
+}
+
+.modal-conteudo textarea {
+    width: 100%;
+    min-height: 140px;
+    background: transparent;
+    border: none;
+    color: #bbb;
+    font-size: 1.1rem;
+    font-family: inherit;
+    resize: none;
+    outline: none;
+    line-height: 1.6;
+}
+
+.modal-conteudo textarea::placeholder {
+    color: #444;
+}
+.modal-opcoes {
+    padding: 20px 25px;
+    background: #0d0d0d;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 12px;
+    border-top: 1px solid #222;
+}
+
+.modal-opcoes button {
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+    text-transform: uppercase;
+}
+
+/* Botão ENVIAR */
+.modal-opcoes button:nth-child(1) {
+    background: #ff4d00;
+    color: white;
+    box-shadow: 0 4px 15px rgba(255, 77, 0, 0.3);
+}
+
+.modal-opcoes button:nth-child(1):hover {
+    background: #ff6a2a;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 77, 0, 0.4);
+}
+
+/* Botão FECHAR */
+.modal-opcoes button:nth-child(2) {
+    background: #222;
+    color: #999;
+}
+
+.modal-opcoes button:nth-child(2):hover {
+    background: #333;
+    color: white;
+}
+
+/* Botão ANEXAR */
+.modal-opcoes button:nth-child(3) {
+    background: transparent;
+    color: #ff4d00;
+    border: 1.5px solid #ff4d00;
+    padding: 10px 22px; /* Ajuste por causa da borda */
+}
+
+.modal-opcoes button:nth-child(3):hover {
+    background: rgba(255, 77, 0, 0.1);
+}
+
+/* Responsividade para celulares pequenos */
+@media (max-width: 480px) {
+    .modal-opcoes {
+        flex-direction: column-reverse;
+        width: 100%;
+    }
+    .modal-opcoes button {
+        width: 100%;
+    }
+}

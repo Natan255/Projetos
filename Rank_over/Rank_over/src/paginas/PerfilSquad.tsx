@@ -1,6 +1,8 @@
 import { useParams } from "react-router-dom";
+import { useState, useEffect } from "react";
 import "./PerfilSquad.css";
 import PostSquad from "../componentes/PostSquad";
+import Modal from "../componentes/Modal";
 import { doc, updateDoc, arrayUnion, arrayRemove } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import { db } from "../firebaseConfig"; // Certifique-se de importar o db
@@ -13,8 +15,9 @@ function PerfilSquad({ squads, usuario }) {
     const isOwner = squadSelecionado?.idCriador === usuario?.uid;
     const isMod = squadSelecionado?.moderadores?.includes(usuario?.uid);
     const temPermissaoEspecial = isOwner || isMod;
+    const [modalAberto, setModalAberto] = useState(false);
 
-    const jaSegue = squadSelecionado?.seguidores?.includes(usuario?.uid);
+    const jaSegue = squadSelecionado?.membros?.includes(usuario?.uid);
 
     const listaPosts = [
         { id: 1, userName: "Marcos_Foco", userImg: "https://i.pravatar.cc/150?u=1", title: "Cronograma de estudos", text: "Organizei um Notion brabo!", like: 25, comments: 8 },
@@ -37,7 +40,7 @@ function PerfilSquad({ squads, usuario }) {
                     squads_seguindo: arrayUnion(squadSelecionado.id)
                 });
                 await updateDoc(squadRef, {
-                    seguidores: arrayUnion(usuario.uid)
+                    membros: arrayUnion(usuario.uid)
                 });
                 console.log("Agora você segue este squad!");
             } else {
@@ -45,13 +48,17 @@ function PerfilSquad({ squads, usuario }) {
                     squads_seguindo: arrayRemove(squadSelecionado.id)
                 });
                 await updateDoc(squadRef, {
-                    seguidores: arrayRemove(usuario.uid)
+                    membros: arrayRemove(usuario.uid)
                 });
                 console.log("Você saiu do squad.");
             }
         } catch (error) {
             console.error("Erro na operação:", error);
         }
+    };
+
+    const salvarPostNoFirebase = (conteudo) => {
+        console.log("Salvando no banco:", conteudo);
     };
 
     if (!squadSelecionado) {
@@ -76,9 +83,8 @@ function PerfilSquad({ squads, usuario }) {
                         <div className="tags">
                             <span>#Produtividade</span>
                             <span>#Foco</span>
-                            {/* Mostra a contagem real de seguidores */}
                             <span >
-                                🔥 {squadSelecionado.seguidores?.length || 0} Membros
+                                🔥 {squadSelecionado.membros?.length || 0} Membros
                             </span>
                         </div>
                     </div>
@@ -116,8 +122,13 @@ function PerfilSquad({ squads, usuario }) {
 
             <div className="Topicos_squad">
                 <div className="Topicos_config">
-                    <button className="Filtro">-</button>
-                    <button className="Postar">+</button>
+                    <button className="Filtro">Filtrar</button>
+                    <button className="Postar" onClick={() => setModalAberto(true)}>Postar</button>
+                    <Modal 
+                        isOpen={modalAberto} 
+                        onClose={() => setModalAberto(false)} 
+                        aoPostar={salvarPostNoFirebase}
+                    />
                 </div>
                 <div className="Topicos">
                     <h3 className="titulo_discussao">Discussões do Squad</h3>
