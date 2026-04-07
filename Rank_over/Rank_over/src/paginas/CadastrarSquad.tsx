@@ -39,6 +39,11 @@ function CadastrarSquad() {
         setEnviando(true);
 
         const metricaFinal = metrica === "Outros" ? outraMetrica : metrica;
+        const avatarPadrao = `https://ui-avatars.com/api/?name=${encodeURIComponent(nome)}&background=ff4d00&color=fff&size=512`;
+    
+        const fotoPerfilFinal = fotoPerfil.trim() === "" ? avatarPadrao : fotoPerfil;
+        const fotoBannerFinal = fotoBanner.trim() === "" ? avatarPadrao : fotoBanner;
+        const fotoCapaFinal = fotoCapa.trim() === "" ? fotoCapa : fotoCapa;
 
         try {
 
@@ -47,9 +52,9 @@ function CadastrarSquad() {
                 descricao,
                 categoria,
                 metrica: metricaFinal,
-                fotoPerfil,
-                fotoBanner,
-                fotoCapa,
+                fotoPerfil: fotoPerfilFinal,
+                fotoBanner: fotoBannerFinal,
+                fotoCapa: fotoCapaFinal,
                 idCriador: auth.currentUser.uid,
                 nomeCriador: auth.currentUser.displayName,
                 membros: [auth.currentUser.uid],
@@ -57,12 +62,21 @@ function CadastrarSquad() {
                 postsCount: 0,
                 visualizacoes: 0,
                 status: "ativo",
-                rankingGeral: {
-                    [auth.currentUser.uid]: 0
-                },
                 criadoEm: serverTimestamp(),
             });
-            const novoSquadId = docRef.id;
+            const novoSquadId = docRef.id
+
+            const docRefDois = await addDoc(collection(db, "squads", novoSquadId, "ranking"),{
+                uid: auth.currentUser.uid,
+                nome: auth.currentUser.displayName || "Membro",
+                fotoUrl: auth.currentUser.photoURL || "",
+                pontos: 0 ,
+                cargo: "adm",
+                ultimaAtividade: serverTimestamp()
+
+
+            })
+            
             const userRef = doc(db, "usuarios", auth.currentUser.uid);
             await updateDoc(userRef, {
                 squads_admin: arrayUnion(novoSquadId)

@@ -1,0 +1,112 @@
+/* --- CONTAINER PRINCIPAL --- */
+.gerenciapost-container {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 20px;
+    min-height: 100vh;
+}
+
+.divisao {
+    color: #fff;
+    font-size: 1.8rem;
+    margin-bottom: 30px;
+    border-left: 5px solid #ff4d00;
+    padding-left: 15px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* --- MENSAGEM DE LISTA VAZIA --- */
+.gerenciapost-container > p {
+    color: #666;
+    text-align: center;
+    font-style: italic;
+    margin-top: 50px;
+}
+
+/* --- CARD DE SOLICITAÇÃO --- */
+.solicitacao-card {
+    background: #111; /* Fundo bem escuro */
+    border: 1px solid #222;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 25px;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Efeito de "Pendente" no card */
+.solicitacao-card::before {
+    content: "PENDENTE";
+    position: absolute;
+    top: 10px;
+    right: -30px;
+    background: #ff4d00;
+    color: #000;
+    font-size: 0.7rem;
+    font-weight: bold;
+    padding: 5px 40px;
+    transform: rotate(45deg);
+    box-shadow: 0 0 10px rgba(255, 77, 0, 0.4);
+}
+
+.solicitacao-card:hover {
+    border-color: rgba(255, 77, 0, 0.3);
+    transform: translateY(-2px);
+}
+
+/* --- ÁREA DE BOTÕES (MODERAÇÃO) --- */
+.acoes-moderacao {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #222;
+}
+
+/* Botão Aprovar (Usando sua classe .Postar) */
+.acoes-moderacao .Postar {
+    background: #ff4d00;
+    color: #000;
+    border: none;
+    padding: 10px 25px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+}
+
+.acoes-moderacao .Postar:hover {
+    background: #ff6a26;
+    box-shadow: 0 0 15px rgba(255, 77, 0, 0.4);
+    transform: scale(1.05);
+}
+
+/* Botão Recusar (Usando sua classe .btn-config) */
+.acoes-moderacao .btn-config {
+    background: transparent;
+    color: #ff3333; /* Vermelho para atenção */
+    border: 1px solid #ff3333;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.acoes-moderacao .btn-config:hover {
+    background: rgba(255, 51, 51, 0.1);
+    color: #ff5555;
+    border-color: #ff5555;
+}
+
+/* --- AJUSTE NO COMPONENTE INTERNO --- */
+/* Garante que o PostSquad se ajuste bem dentro do card de moderação */
+.solicitacao-card .postsquad-container { /* Ajuste conforme a classe do seu PostSquad */
+    background: transparent !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+}ç

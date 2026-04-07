@@ -8,9 +8,13 @@ function Modal({ isOpen, onClose, aoPostar }) {
     if (!isOpen) return null;
 
     const handleEnviar = () => {
-        aoPostar(texto);
+        if (titulo.trim() === "" || texto.trim() === "") {
+            alert("Preencha todos os campos!");
+            return;
+        }
+        aoPostar({titulo, texto});
+        setTitulo("");
         setTexto("");
-        onClose();
     };
 
     return (

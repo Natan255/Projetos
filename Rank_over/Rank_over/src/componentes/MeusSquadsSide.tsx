@@ -10,7 +10,7 @@ function MeusSquadsSide({ squads, idsSeguidos }) {
             {meusSquads.map(squad => (
                 <Link key={squad.id} to={`/paginas/PerfilSquad/${squad.id}`} title={squad.nome}>
                     <div className="squad-mini-icon">
-                        <img src={squad.url} alt={squad.nome} />
+                        <img src={squad.fotoPerfil} alt={squad.nome} />
                     </div>
                 </Link>
             ))}

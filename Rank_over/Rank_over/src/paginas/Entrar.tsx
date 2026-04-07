@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { auth, provider, signInWithPopup, signInWithEmailAndPassword } from "../firebaseConfig";
+import { setDoc, doc } from "firebase/firestore";
+import { db, auth, provider, signInWithPopup, signInWithEmailAndPassword } from "../firebaseConfig";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom"
 import "./Entrar.css"
@@ -23,13 +24,28 @@ function Entrar() {
     };
 
     const handleGoogleLogin = async () => {
-        try {
-            await signInWithPopup(auth, provider);
-            navigate("/");
-        } catch (error) {
-            console.error(error);
-        }
-    };
+    try {
+        const result = await signInWithPopup(auth, provider);
+        const user = result.user;
+
+        await setDoc(doc(db, "usuarios", user.uid), {
+            nome: user.displayName,
+            email: user.email,
+            bio: "Recruta do Rank Over",
+            squads_admin: [],
+            squads_mode: [],
+            squads_seguindo: [], 
+            fotoUrl: user.photoURL,
+            criadoEm: new Date()
+        }, { merge: true });
+
+        // 3. Só depois de salvar tudo, navega para a Home
+        navigate("/");
+        
+    } catch (error) {
+        console.error("Erro no login Google:", error);
+    }
+};
     return (
         
         <div className="enter-container">

@@ -35,6 +35,8 @@
     align-items: center;
     gap: 12px;
     margin-bottom: 15px;
+    cursor: pointer;
+    transition: transform 0.2s;
 }
 
 .Foto_perfil img {
@@ -47,6 +49,8 @@
 }
 
 .Foto_perfil:hover img {
+    transform: scale(1.05); /* Dá um leve zoom quando passa o mouse */
+    filter: brightness(1.2);
     border-color: #ff4d00; /* A foto "acende" no seu laranja ao passar o mouse */
 }
 

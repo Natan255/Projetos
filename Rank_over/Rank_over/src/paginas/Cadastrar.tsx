@@ -29,7 +29,7 @@ function Cadastrar() {
                 bio: "Recruta do Rank Over",
                 squads_admin: [],
                 squads_mode:[],
-                squads_seguindo: [], // Começa vazio
+                squads_seguindo: [],
                 fotoUrl: `https://ui-avatars.com/api/?name=${nome}&background=ff4d00&color=fff`,
                 criadoEm: new Date()
             }, { merge: true });
@@ -61,11 +61,12 @@ function Cadastrar() {
             await setDoc(doc(db, "usuarios", user.uid), {
                 nome: user.displayName,
                 email: user.email,
+                bio: "Recruta do Rank Over",
                 squads_admin: [],
                 squads_mode: [],
-                fotoUrl: user.photoURL,
-                // Só define se o documento for novo
                 squads_seguindo: [], 
+                fotoUrl: user.photoURL,
+                criadoEm: new Date()
             }, { merge: true });
 
             navigate("/");

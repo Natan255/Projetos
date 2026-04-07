@@ -11,7 +11,7 @@
 .Fundo_perfil_squad{
     position: relative;
     width: 100%;
-    height: 400px;
+    height: 200px;
     background: linear-gradient(to bottom, transparent, #0f0f0f);
 }
 
@@ -26,7 +26,146 @@
     z-index: 1;
 }
 
+.perfil-header {/* --- Container Principal --- */
+.perfil-container {
+    background-color: #0f0f0f;
+    min-height: 100vh;
+    color: white;
+    font-family: 'Inter', sans-serif;
+    padding-bottom: 30px;
+}
+
+/* --- Seção de Topo (Capa e Bio Reduzidas) --- */
+.Fundo_perfil_squad {
+    position: relative;
+    width: 100%;
+    height: 250px; /* Reduzido de 400px */
+    background: linear-gradient(to bottom, transparent, #0f0f0f);
+}
+
+.capa-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(0.4) blur(1px);
+    position: absolute;
+    top: 0;
+    z-index: 1;
+}
+
 .perfil-header {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center; /* Centralizado verticalmente */
+    padding: 0 8%;
+    height: 100%;
+    gap: 20px;
+    transform: translateY(40px); /* Ajuste fino da posição */
+}
+
+/* --- Foto de Perfil Menor --- */
+.Foto_perfil_squad {
+    width: 120px; /* Reduzido de 180px */
+    height: 120px;
+    border-radius: 50%;
+    border: 3px solid #ff4d00;
+    overflow: hidden;
+    background-color: #1a1a1a;
+    box-shadow: 0 0 15px rgba(255, 77, 0, 0.2);
+    flex-shrink: 0;
+}
+
+/* --- Texto da Bio Compacto --- */
+.Bios_squad h1 {
+    font-size: 1.8rem; /* Reduzido de 2.5rem */
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.Bios_squad p {
+    color: #bbb;
+    margin: 2px 0 10px;
+    font-size: 0.9rem;
+    max-width: 450px;
+    line-height: 1.4;
+}
+
+.tags span {
+    padding: 3px 10px; /* Menor */
+    font-size: 0.7rem;
+}
+
+/* --- Botões de Ação Menores --- */
+.btn-entrar, .btn-sair, .btn-config {
+    padding: 8px 20px; /* Compacto */
+    font-size: 0.85rem;
+    border-radius: 6px;
+}
+
+.acoes {
+    display: flex;
+    gap: 10px;
+    margin-left: auto; /* Joga os botões para a direita */
+}
+
+/* --- SEÇÃO DO RANKING (Mais Slim) --- */
+.Rank_secao {
+    margin: 60px 10% 0; /* Margem menor */
+}
+
+.Rank_secao h2 {
+    font-size: 1.2rem;
+    border-left: 4px solid #ff4d00;
+    padding-left: 12px;
+    margin-bottom: 15px;
+}
+
+.membro-rank {
+    padding: 12px 20px; /* Reduzido de 20px 30px */
+    gap: 15px;
+}
+
+.posicao {
+    font-size: 1.1rem;
+    width: 40px;
+}
+
+.nome {
+    font-size: 1rem;
+}
+
+.producao {
+    font-size: 0.85rem;
+    padding: 5px 12px;
+}
+
+/* --- TÓPICOS E FEED --- */
+.Topicos_squad {
+    padding: 30px 10%;
+    gap: 15px;
+}
+
+.Topicos_config {
+    max-width: 700px;
+    margin-bottom: 0;
+}
+
+.Filtro, .Postar {
+    width: 90px;
+    height: 38px; /* Reduzido de 50px */
+    font-size: 0.9rem;
+}
+
+.Topicos {
+    max-width: 700px; /* Feed mais estreito estilo Reddit */
+}
+
+.titulo_discussao {
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+}
     position: relative;
     z-index: 2;
     display: flex;
@@ -259,5 +398,84 @@
     gap: 20px;
 }
 
+.divisao {
+    color: white;
+    font-size: 1.4rem;
+    padding-bottom: 10px; /* Espaço entre o texto e a linha */
+    border-bottom: 2px solid #ff4d00; /* Linha laranja */
+    width: 100%; /* Faz a linha ocupar toda a largura do container */
+    margin-bottom: 20px; /* Espaço para os posts que virão abaixo */
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
 
+
+/* --- ESTILO GERAL DO RANKING --- */
+.membro-rank {
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
+    border-radius: 8px;
+    background: #141414; /* Cor de fundo padrão para os demais */
+    border: 1px solid #1a1a1a;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    margin-bottom: 8px;
+}
+
+
+/* 1º LUGAR - Laranja Intenso e Glow */
+.primeiro-lugar {
+    background: linear-gradient(90deg, #ff4d00, #030303) !important;
+    border: 1px solid rgba(255, 77, 0, 0.6) !important;
+    box-shadow: 0 0 20px rgba(255, 77, 0, 0.2), inset 0 0 10px rgba(255, 77, 0, 0.05);
+    transform: scale(1.02);
+}
+
+.primeiro-lugar .producao { 
+    background: #ff4d00 !important; 
+    color: #000 !important; 
+    font-weight: 900;
+}
+
+
+.segundo-lugar {
+    background: linear-gradient(90deg, #9d2f00, #030303) !important;
+    border: 1px solid rgba(255, 77, 0, 0.35) !important;
+}
+.segundo-lugar .producao { 
+    background: rgba(255, 77, 0, 0.15) !important; 
+    color: #ff4d00 !important; 
+    border: 1px solid #ff4d00;
+}
+
+/* 3º LUGAR - Laranja Sutil */
+.terceiro-lugar {
+    background: linear-gradient(90deg, #3d1301da, #030303) !important;
+    border: 1px solid rgba(255, 77, 0, 0.2) !important;
+}
+.terceiro-lugar .producao { 
+    color: #ff4d00 !important;
+    border-bottom: 1px solid rgba(255, 77, 0, 0.4);
+}
+
+/* --- EFEITO AO PASSAR O MOUSE --- */
+.membro-rank:hover {
+    transform: translateX(8px);
+    background: #1c1c1c;
+    border-color: #ff4d00;
+}
+
+/* Ajuste nos textos padrões do ranking */
+.nome {
+    flex: 1;
+    font-weight: 500;
+    margin-left: 15px;
+}
+
+.posicao {
+    width: 45px;
+    font-weight: 900;
+    display: flex;
+    justify-content: center;
+}
 

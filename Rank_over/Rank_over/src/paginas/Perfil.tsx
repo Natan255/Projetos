@@ -1,31 +1,37 @@
 import "./Perfil.css"
 import type { User } from "firebase/auth";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams} from "react-router-dom";
 import { auth, db } from "../firebaseConfig";
 import { useEffect, useState } from "react";
 import { doc, onSnapshot } from "firebase/firestore";
 
 interface PerfilProps {
     usuario: User | null;
+    squads: any[];
 }
 
-function Perfil({ usuario }: PerfilProps) {
+function Perfil({ usuario, squads }: PerfilProps) {
     const navigate = useNavigate();
+    const { idUsuario } = useParams();
     const [dadosExtras, setDadosExtras] = useState<any>(null);
-
+    const [dadosUsuarioAlvo, setDadosUsuarioAlvo] = useState<any>(null);
+    const idParaBuscar = idUsuario || usuario?.uid;
+    const eMeuPerfil = !idUsuario || idUsuario === usuario?.uid;
     useEffect(() => {
-        if (!usuario) return;
+        if (!idParaBuscar) return;
 
-        // "Vigia" os dados do usuário no Firestore (Bio, Nível, Squads Seguidos)
-        const unsubscribe = onSnapshot(doc(db, "usuarios", usuario.uid), (doc) => {
-            if (doc.exists()) {
-                setDadosExtras(doc.data());
+        const unsubscribe = onSnapshot(doc(db, "usuarios", idParaBuscar), (docSnap) => {
+            if (docSnap.exists()) {
+                setDadosExtras(docSnap.data());
             }
         });
 
         return () => unsubscribe();
-    }, [usuario]);
+    }, [idParaBuscar]); // Recarrega se o ID mudar
 
+    
+
+    if (!idParaBuscar) return <h2>Carregando perfil...</h2>;
     const handleSair = async () => {
         try {
             await auth.signOut();
@@ -43,7 +49,7 @@ function Perfil({ usuario }: PerfilProps) {
                 <div className="perfil-header-user">
                     <div className="perfil-foto">
                         <img
-                            src={usuario.photoURL || "https://via.placeholder.com/150"}
+                            src={dadosExtras?.fotoUrl || dadosExtras?.photoURL || "https://via.placeholder.com/150"}
                             alt="foto-user"
                             referrerPolicy="no-referrer"
                         />
@@ -54,15 +60,20 @@ function Perfil({ usuario }: PerfilProps) {
                         {/* Agora a bio vem do banco de dados! */}
                         <h3 className="perfil-bio-text">{dadosExtras?.bio || "Recruta do Rank Over"}</h3>
                     </div>
+                    
 
                     <div className="perfil-squad-quant">
                         {/* Contador real baseado no array de squads seguindo */}
                         <p>{dadosExtras?.squads_seguindo?.length || 0}</p>
                         <span>Squads</span>
                     </div>
-
-                    <button onClick={() => navigate("/paginas/PerfilConfig")} style={{fontSize: '2.3rem', background: 'none', border: 'none', cursor: 'pointer'}}>⚙️</button>
-                    <button className="perfil-sair" onClick={handleSair}>Sair</button>
+                    
+                    {eMeuPerfil && (
+                        <>
+                            <button onClick={() => navigate("/paginas/PerfilConfig")} style={{fontSize: '2.3rem', background: 'none', border: 'none', cursor: 'pointer'}}>⚙️</button>
+                            <button className="perfil-sair" onClick={handleSair}>Sair</button>
+                        </>
+                    )}
                 </div>
 
                 <div className="perfil-posts">

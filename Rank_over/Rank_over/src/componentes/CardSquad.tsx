@@ -16,7 +16,7 @@ function CardSquad({ card }) {
             <p>{card.nome}</p>
             
             <div className="card_bg">
-                <img src={card.url} alt={card.name} />
+                <img src={card.fotoBanner} alt={card.name} />
             </div>
             
             <div className="card_enter">

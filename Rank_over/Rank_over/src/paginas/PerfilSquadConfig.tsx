@@ -40,6 +40,14 @@ function PerfilSquadConfig() {
                     <button className="config-opcao">Gerenciar usuario</button>
                 </Link>
 
+                <Link to={`/squadconfig/solicitacao/${id}/entrada`}>
+                    <button className="config-opcao">Solicitação de entrada no squad </button>
+                </Link>
+
+                <Link to={`/squadconfig/solicitacao/${id}/post`}>
+                    <button className="config-opcao">Solicitação de post no squad </button>
+                </Link>
+
                 <button className="config-voltar" onClick={() => navigate(-1)}>
                     ← Voltar ao perfil
                 </button>

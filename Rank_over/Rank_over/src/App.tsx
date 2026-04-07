@@ -18,13 +18,14 @@ import { db } from "./firebaseConfig";
 import { collection, onSnapshot } from "firebase/firestore";
 import { auth } from "./firebaseConfig";
 import { onAuthStateChanged, type User } from "firebase/auth";
+import GerenciaPostSquadConfig from './paginas/GerenciaPostSquadConfig'
 
 
 
 function App() {
   const [pesquisaQuery, setPesquisa] = useState("");
   const [usuario, setUsuario] = useState<User | null>(null);
-  const [squads, setSquads] = useState([]);
+  const [squads, setSquads] = useState<any[]>([]);
 
 useEffect(() => {
 
@@ -61,7 +62,7 @@ useEffect(() => {
 
         <Route path="/paginas/Squads" element={<Squads squads={squads} />} />
 
-        <Route path="/paginas/PerfilSquad/:id" element={<PerfilSquad squads={squads} usuario={usuario} />} />
+        
 
         <Route path='/paginas/Cadastrar' element={<Cadastrar />} />
 
@@ -71,13 +72,23 @@ useEffect(() => {
 
         <Route path="/config/alterar/:campo" element={<AlterarPerfil />} />
 
-        <Route path="/squadconfig/alterar/:id/:campo" element={<AlterarPerfilSquad />} />
+        
 
-        <Route path='/paginas/Perfil' element={<Perfil usuario={usuario}/>}/>
+
+
+        <Route path="/paginas/PerfilSquad/:id" element={<PerfilSquad squads={squads} usuario={usuario} />} />
 
         <Route path='/squadconfig/administrar/:id/:campo' element={<MembroSquadConfig/>}/>
 
+        <Route path='/squadconfig/solicitacao/:id/:campo' element={<GerenciaPostSquadConfig/>}/>
 
+        <Route path="/squadconfig/alterar/:id/:campo" element={<AlterarPerfilSquad />} />
+
+
+        <Route path='/paginas/Perfil'element={<Perfil usuario={usuario} squads={squads} />} />
+
+        <Route path="/paginas/Perfil/:idUsuario" element={<Perfil usuario={usuario} squads={squads} />} />
+    
         <Route path="/paginas/PerfilConfig" element={<PerfilConfig usuario={usuario} />} />
 
         <Route path="/paginas/PerfilSquadconfig/:id" element={<PerfilSquadConfig />} />

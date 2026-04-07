@@ -12,7 +12,6 @@ function MembroSquadConfig() {
     const [usuariosDetalhados, setUsuariosDetalhados] = useState<any[]>([]);
 
 
-    // 1. Busca os dados básicos do Squad
     useEffect(() => {
         const carregarSquad = async () => {
             if (!id) return;
@@ -40,7 +39,6 @@ function MembroSquadConfig() {
                 setUsuariosDetalhados([]);
                 return;
             }
-
             try {
                 const usersRef = collection(db, "usuarios");
                 const q = query(usersRef, where("__name__", "in", listaIds));
