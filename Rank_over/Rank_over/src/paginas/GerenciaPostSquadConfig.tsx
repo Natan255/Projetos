@@ -6,7 +6,7 @@ import PostSquad from "../componentes/PostSquad";
 import "./GerenciarPostSquadConfig.css"
 
 function GerenciaPostSquadConfig() {
-    const { id } = useParams(); // ID do Squad
+    const { id } = useParams();
     const [solicitacoes, setSolicitacoes] = useState([]);
 
     useEffect(() => {
@@ -29,19 +29,16 @@ function GerenciaPostSquadConfig() {
                 titulo: post.titulo,
                 texto: post.texto,
                 idSquad: id,
-                idAutor: post.idAutor, // ID de quem pediu o post
+                idAutor: post.idAutor,
                 nomeAutor: post.nomeAutor || "Membro", 
                 fotoAutor: post.fotoAutor || "",
                 likes: [],
                 comentários: 0, 
                 compartilhamento: 0,
-                criadoEm: serverTimestamp(), // Data da aprovação
+                criadoEm: serverTimestamp(),
             });
 
-            // 2. Deletar a solicitação (limpar a fila)
             await deleteDoc(doc(db, "squads", id, "solicitacoes_posts", post.id));
-            
-            alert("Post aprovado com sucesso!");
 
         } catch (error) {
             console.error("Erro ao aprovar post:", error);

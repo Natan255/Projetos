@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import "./PerfilSquad.css";
 import PostSquad from "../componentes/PostSquad";
 import Modal from "../componentes/Modal";
-import {addDoc, doc, setDoc, updateDoc, arrayUnion, arrayRemove, collection, query, where, orderBy, getDocs, serverTimestamp, onSnapshot, deleteDoc } from "firebase/firestore";
+import { getDoc, addDoc, doc, setDoc, updateDoc, arrayUnion, arrayRemove, collection, query, where, orderBy, getDocs, serverTimestamp, onSnapshot, deleteDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import { db } from "../firebaseConfig";
 
@@ -20,6 +20,7 @@ function PerfilSquad({ squads, usuario }) {
     const [modalAberto, setModalAberto] = useState(false);
     const [posts, setPosts] = useState([])
     const [ranking, setRanking] = useState([]);
+    const [solicitacaoPend, setSolicitacaoPend] = useState(false);
 
     const jaSegue = squadSelecionado?.membros?.includes(usuario?.uid);
     const consultarRanking = async (squadId) => {
@@ -69,11 +70,33 @@ function PerfilSquad({ squads, usuario }) {
             });
 
             setModalAberto(false);
-            alert("Sua solicitação foi enviada para o administrador!");
+
         } catch (error) {
             console.error("Erro ao solicitar post:", error);
         }
     };
+
+    const solicitarEntrada = async () => {
+
+        try{
+            const docRef = doc(db, "squads", id, "solicitacao_entrada", usuario.uid);
+        
+            await setDoc(docRef, {
+                uid: usuario.uid,
+                nome: usuario.displayName || "Membro", // displayName é o padrão do Firebase Auth
+                foto: usuario.photoURL || "",
+                dataSolicitacao: serverTimestamp()
+            });
+            
+            setSolicitacaoPend(true)
+
+        }catch (error) {
+            console.error("Erro ao solicitar:", error);
+        }
+
+
+
+    }
 
     const salvarPost = async (dadosDoModal: { titulo: string, texto: string }) => {
         try {
@@ -132,14 +155,10 @@ function PerfilSquad({ squads, usuario }) {
                 await updateDoc(squadRef, { membros: arrayRemove(usuario.uid) });
                 await deleteDoc(rankingMemberRef); 
                 
-                console.log("Usuário removido do Squad e do Ranking.");
             } 
             else {
-                // --- LÓGICA DE ENTRAR ---
                 await updateDoc(userRef, { squads_seguindo: arrayUnion(id) });
                 await updateDoc(squadRef, { membros: arrayUnion(usuario.uid) });
-
-                // Adiciona no ranking com 0 pontos
                 await setDoc(rankingMemberRef, {
                     uid: usuario.uid,
                     nome: usuario.displayName || "Membro",
@@ -149,7 +168,6 @@ function PerfilSquad({ squads, usuario }) {
                     ultimaAtividade: serverTimestamp()
                 });
 
-                console.log("Usuário adicionado ao Squad e ao Ranking.");
             }
         } catch (error) {
             console.error("Erro na operação:", error);
@@ -192,6 +210,28 @@ function PerfilSquad({ squads, usuario }) {
         return () => unsubscribeRanking();
     }, [id]);
 
+
+    useEffect(() => {
+        const verificarStatus = async () => {
+            // Corrigido: usamos 'usuario' que vem das props
+            if (!usuario || !id || jaSegue) return;
+
+            try {
+                // Referência para o documento do usuário na sub-coleção de solicitações
+                const docRef = doc(db, "squads", id, "solicitacao_entrada", usuario.uid);
+                const docSnap = await getDoc(docRef);
+
+                if (docSnap.exists()) {
+                    setSolicitacaoPend(true);
+                }
+            } catch (error) {
+                console.error("Erro ao verificar status de solicitação:", error);
+            }
+        };
+
+        verificarStatus();
+    }, [id, usuario, jaSegue]);
+
     if (!squadSelecionado) {
         return
     }
@@ -225,10 +265,24 @@ function PerfilSquad({ squads, usuario }) {
                                 ⚙️ Configurar Squad
                             </button>
                         )}
+
                         {!isOwner && (
-                            <button className={jaSegue ? "btn-sair" : "btn-entrar"} onClick={gerenciarSeguir}>
-                                {jaSegue ? "Sair do Squad" : "Entrar no Squad"}
-                            </button>
+                            <>
+                                {jaSegue ? (
+                                    <button className="btn-sair" onClick={gerenciarSeguir}>
+                                        Sair do Squad
+                                    </button>
+                                ) : solicitacaoPend ? (
+                                    <button className="btn-pendente" disabled>
+                                        ⏳ Aguardando Aprovação
+                                    </button>
+                                ) : (
+                                    /* ESTADO 3: Ainda não solicitou */
+                                    <button className="btn-entrar" onClick={solicitarEntrada}>
+                                        Entrar no Squad
+                                    </button>
+                                )}
+                            </>
                         )}
                     </div>
                 </div>
@@ -236,35 +290,45 @@ function PerfilSquad({ squads, usuario }) {
 
             <div className="Rank_secao">
                 <h2>🏆 Ranking de Produção de {squadSelecionado.nome}</h2>
-                <div className="Rank_lista">
-                    {ranking.length > 0 ? (
-                        ranking.map((membro, index) => {
-                            let classeDestaque = "";
-                            if (index === 0) classeDestaque = "primeiro-lugar";
-                            if (index === 1) classeDestaque = "segundo-lugar";
-                            if (index === 2) classeDestaque = "terceiro-lugar";
 
-                            return (
-                                <div key={membro.uid} className={`membro-rank ${classeDestaque}`}>
-                                    
-                                    <span className="posicao">
-                                        {index === 0 ? "🥇" : index === 1 ? "🥈" : index === 2 ? "🥉" : `${index + 1}º`}
-                                    </span>
+                {ranking.length > 0 ? (
+                    <div className="Rank_container">
+                        
+                        {/* --- BLOCO DO PÓDIO (TOP 3) --- */}
+                        <div className="Podio_container">
+                            {ranking.slice(0, 3).map((membro, index) => {
+                                const classes = ["primeiro", "segundo", "terceiro"];
+                                const medalhas = ["🥇", "🥈", "🥉"];
+                                const ordemVisual = index === 0 ? 2 : index === 1 ? 1 : 3;
 
-                                    <span className="nome">
-                                        {membro.nome}
-                                    </span>
+                                return (
+                                    <div key={membro.uid} className={`card-podio ${classes[index]}`} style={{ order: ordemVisual }}>
+                                        <div className="medalha">{medalhas[index]}</div>
+                                        <span className="nome">{membro.nome}</span>
+                                        <span className="producao">
+                                            {membro.pontos} {squadSelecionado.metrica}
+                                        </span>
+                                    </div>
+                                );
+                            })}
+                        </div>
 
+                        {/* --- LISTA DO RESTANTE (4º em diante) --- */}
+                        <div className="Rank_lista">
+                            {ranking.slice(3).map((membro, index) => (
+                                <div key={membro.uid} className="membro-rank">
+                                    <span className="posicao">{index + 4}º</span>
+                                    <span className="nome">{membro.nome}</span>
                                     <span className="producao">
                                         {membro.pontos} {squadSelecionado.metrica}
                                     </span>
                                 </div>
-                            );
-                        })
-                    ) : (
-                        <p>Nenhum dado de ranking disponível.</p>
-                    )}
-                </div>
+                            ))}
+                        </div>
+                    </div>
+                ) : (
+                    <p>Nenhum dado de ranking disponível.</p>
+                )}
             </div>
             
             <div className="Topicos_squad">

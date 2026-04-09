@@ -2,7 +2,7 @@ import "./UsuariosLista.css";
 import { Link } from "react-router-dom";
 
 
-function UsuariosLista({ id, nome, foto}) {
+function UsuariosLista({ id, nome, foto, acaoAceitar}) {
     return (
         <div className="usuariolist-container">
             <div className="usuariolist-foto">
@@ -10,12 +10,16 @@ function UsuariosLista({ id, nome, foto}) {
             </div>
             
             <div className="usuariolist-info">
-                <Link to={`/perfil/${id}`} className="usuariolist-nome">
+                <Link to={`/paginas/perfil/${id}`} className="usuariolist-nome">
                     {nome}
                 </Link>
             </div>
 
-            {/* Aqui você pode passar "children" no futuro para botões de 'Remover' ou 'Seguir' */}
+            {acaoAceitar && (
+                <button className="btn-aceitar-squad" onClick={acaoAceitar}>
+                    ✅ Aceitar
+                </button>
+            )}
         </div>
     );
 }

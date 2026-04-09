@@ -12,6 +12,7 @@ import AlterarPerfil from './paginas/AlterarPerfil'
 import AlterarPerfilSquad from './paginas/AlterarPerfilSquad'
 import PerfilSquadConfig from './paginas/PerfilSquadConfig'
 import MembroSquadConfig from './paginas/MembroSquadConfig'
+import GerenciarEntradaSquadConfig from './paginas/GerenciarEntradaSquadConfig'
 import { useState, useEffect } from "react"
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom"
 import { db } from "./firebaseConfig";
@@ -80,14 +81,16 @@ useEffect(() => {
 
         <Route path='/squadconfig/administrar/:id/:campo' element={<MembroSquadConfig/>}/>
 
-        <Route path='/squadconfig/solicitacao/:id/:campo' element={<GerenciaPostSquadConfig/>}/>
+        <Route path='/squadconfig/solicitacao/:id/post' element={<GerenciaPostSquadConfig/>}/>
+
+        <Route path='/squadconfig/solicitacao/:id/entrada' element={<GerenciarEntradaSquadConfig/>}/>
 
         <Route path="/squadconfig/alterar/:id/:campo" element={<AlterarPerfilSquad />} />
 
 
-        <Route path='/paginas/Perfil'element={<Perfil usuario={usuario} squads={squads} />} />
+        <Route path='/paginas/perfil'element={<Perfil usuario={usuario} squads={squads} />} />
 
-        <Route path="/paginas/Perfil/:idUsuario" element={<Perfil usuario={usuario} squads={squads} />} />
+        <Route path="/paginas/perfil/:idUsuario" element={<Perfil usuario={usuario} squads={squads} />} />
     
         <Route path="/paginas/PerfilConfig" element={<PerfilConfig usuario={usuario} />} />
 

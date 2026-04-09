@@ -280,6 +280,19 @@
     box-shadow: 0 5px 15px rgba(255, 77, 0, 0.2);
 }
 
+.btn-pendente {
+    background-color: #2a2a2a;
+    color: #ffffff; /* Dourado/Amarelo para indicar espera */
+    border: 1px solid #fffef9;
+    border-radius: 20px;
+    height: 30px;
+    opacity: 0.8;
+}
+
+.btn-pendente:hover {
+    transform: none; /* Remove animação de clique */
+}
+
 /* --- SEÇÃO DO RANKING --- */
 .Rank_secao {
     margin: 100px 10% 0;
@@ -410,72 +423,99 @@
 }
 
 
-/* --- ESTILO GERAL DO RANKING --- */
+/* Container que engloba tudo */
+.Rank_container {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+}
+
+/* --- ESTILO DO PÓDIO --- */
+.Podio_container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end; /* Alinha os cards na base */
+    gap: 15px;
+    margin-bottom: 20px;
+    padding: 20px 0;
+}
+
+.card-podio {
+    background: #1a1a1a;
+    width: 150px;
+    padding: 20px;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    border: 1px solid #333;
+    transition: transform 0.3s ease;
+}
+
+/* Alturas diferentes para o efeito de escada */
+.card-podio.primeiro {
+    height: 300px;
+    width: 300px;
+    background: linear-gradient(180deg, #ff4d00, #000000);
+    border-color: #ff4d00;
+    box-shadow: 0 0 20px rgba(255, 77, 0, 0.2);
+    z-index: 2;
+}
+
+.card-podio.segundo { height: 200px; width: 300px; background: linear-gradient(180deg, #ff4d0080, #000000); }
+.card-podio.terceiro { height: 150px; width: 300px; background: linear-gradient(180deg, #ff4d0019, #000000); }
+
+.card-podio .medalha {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+}
+
+.card-podio .nome {
+    font-weight: bold;
+    font-size: 1rem;
+    margin-bottom: 8px;
+    color: #fff;
+}
+
+.card-podio .producao {
+    font-size: 0.8rem;
+    background: #ff4d00;
+    color: #000;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-weight: 900;
+}
+
+/* --- ESTILO DA LISTA (RESTANTE) --- */
+.Rank_lista {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
 .membro-rank {
     display: flex;
     align-items: center;
     padding: 12px 20px;
+    background: #141414;
+    border: 1px solid #222;
     border-radius: 8px;
-    background: #141414; /* Cor de fundo padrão para os demais */
-    border: 1px solid #1a1a1a;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    margin-bottom: 8px;
 }
 
-
-/* 1º LUGAR - Laranja Intenso e Glow */
-.primeiro-lugar {
-    background: linear-gradient(90deg, #ff4d00, #030303) !important;
-    border: 1px solid rgba(255, 77, 0, 0.6) !important;
-    box-shadow: 0 0 20px rgba(255, 77, 0, 0.2), inset 0 0 10px rgba(255, 77, 0, 0.05);
-    transform: scale(1.02);
+.membro-rank .posicao {
+    width: 50px;
+    color: #888;
+    font-weight: bold;
 }
 
-.primeiro-lugar .producao { 
-    background: #ff4d00 !important; 
-    color: #000 !important; 
-    font-weight: 900;
-}
-
-
-.segundo-lugar {
-    background: linear-gradient(90deg, #9d2f00, #030303) !important;
-    border: 1px solid rgba(255, 77, 0, 0.35) !important;
-}
-.segundo-lugar .producao { 
-    background: rgba(255, 77, 0, 0.15) !important; 
-    color: #ff4d00 !important; 
-    border: 1px solid #ff4d00;
-}
-
-/* 3º LUGAR - Laranja Sutil */
-.terceiro-lugar {
-    background: linear-gradient(90deg, #3d1301da, #030303) !important;
-    border: 1px solid rgba(255, 77, 0, 0.2) !important;
-}
-.terceiro-lugar .producao { 
-    color: #ff4d00 !important;
-    border-bottom: 1px solid rgba(255, 77, 0, 0.4);
-}
-
-/* --- EFEITO AO PASSAR O MOUSE --- */
-.membro-rank:hover {
-    transform: translateX(8px);
-    background: #1c1c1c;
-    border-color: #ff4d00;
-}
-
-/* Ajuste nos textos padrões do ranking */
-.nome {
+.membro-rank .nome {
     flex: 1;
-    font-weight: 500;
-    margin-left: 15px;
 }
 
-.posicao {
-    width: 45px;
-    font-weight: 900;
-    display: flex;
-    justify-content: center;
+.membro-rank .producao {
+    background: #222;
+    padding: 5px 12px;
+    border-radius: 4px;
+    font-size: 0.85rem;
 }
-

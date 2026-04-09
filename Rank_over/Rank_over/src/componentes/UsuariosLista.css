@@ -1,24 +1,34 @@
 .usuariolist-container {
     display: flex;
     align-items: center;
-    background: #1a1a1a;
-    padding: 12px;
-    border-radius: 8px;
+    background: linear-gradient(145deg, #1e1e1e, #141414); /* Gradiente suave */
+    padding: 15px 20px;
+    border-radius: 12px;
     gap: 15px;
-    border: 1px solid #333;
-    transition: 0.3s;
+    border: 1px solid #2a2a2a;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    margin-bottom: 10px;
 }
 
 .usuariolist-container:hover {
     border-color: #ff4d00;
+    transform: translateX(5px); /* Move levemente para a direita no hover */
+    box-shadow: 0 4px 15px rgba(255, 77, 0, 0.1);
 }
 
+/* Foto com efeito de borda */
 .usuariolist-foto {
-    width: 50px;
-    height: 50px;
+    width: 55px;
+    height: 55px;
     border-radius: 50%;
     overflow: hidden;
-    border: 2px solid #ff4d00;
+    border: 2px solid #333;
+    transition: 0.3s;
+    flex-shrink: 0; /* Impede a foto de amassar em telas menores */
+}
+
+.usuariolist-container:hover .usuariolist-foto {
+    border-color: #ff4d00;
 }
 
 .usuariolist-foto img {
@@ -27,19 +37,61 @@
     object-fit: cover;
 }
 
+/* Informações do Usuário */
+.usuariolist-info {
+    flex: 1; /* Faz as informações ocuparem o espaço central */
+    display: flex;
+    flex-direction: column;
+}
+
 .usuariolist-nome {
-    color: white;
-    font-weight: bold;
+    color: #ffffff;
+    font-weight: 700;
     text-decoration: none;
     font-size: 1.1rem;
+    letter-spacing: 0.5px;
+    transition: 0.2s;
 }
 
 .usuariolist-nome:hover {
     color: #ff4d00;
 }
 
-.usuariolist-bio {
-    color: #888;
-    font-size: 0.85rem;
-    margin-top: 2px;
+/* Botão de Aceitar Estilizado */
+.btn-aceitar-squad {
+    background: #ff4d00;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 800;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 10px rgba(255, 77, 0, 0.2);
+}
+
+.btn-aceitar-squad:hover {
+    background: #ff6a26;
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(255, 77, 0, 0.3);
+}
+
+.btn-aceitar-squad:active {
+    transform: scale(0.95);
+}
+
+/* Responsividade Básica */
+@media (max-width: 480px) {
+    .usuariolist-container {
+        padding: 10px;
+    }
+    
+    .btn-aceitar-squad {
+        padding: 8px 12px;
+        font-size: 0.8rem;
+    }
 }
