@@ -22,7 +22,7 @@
 
 .logo img {
     height: 110px; /* Ajustado para caber bem nos 70px da nav */
-    width: 170px;
+    width: 110px;
     transition: transform 0.3s ease;
 }
 

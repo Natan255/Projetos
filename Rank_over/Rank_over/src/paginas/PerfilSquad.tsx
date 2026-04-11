@@ -334,7 +334,7 @@ function PerfilSquad({ squads, usuario }) {
             <div className="Topicos_squad">
                 <h3 className="divisao"></h3>
                 <div className="Topicos_config">
-                    <button className="Filtro">Filtrar</button>
+                    <button className="prova">Prova</button>
                     <button className="Postar" onClick={() => setModalAberto(true)}>Postar</button>
                     <Modal 
                         isOpen={modalAberto} 
