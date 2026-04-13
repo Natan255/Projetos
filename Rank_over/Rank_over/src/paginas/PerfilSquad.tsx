@@ -1,6 +1,7 @@
 import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import "./PerfilSquad.css";
+import ExpansaoPost from "./ExpansaoPost";
 import PostSquad from "../componentes/PostSquad";
 import Modal from "../componentes/Modal";
 import { getDoc, addDoc, doc, setDoc, updateDoc, arrayUnion, arrayRemove, collection, query, where, orderBy, getDocs, serverTimestamp, onSnapshot, deleteDoc } from "firebase/firestore";
@@ -21,7 +22,6 @@ function PerfilSquad({ squads, usuario }) {
     const [posts, setPosts] = useState([])
     const [ranking, setRanking] = useState([]);
     const [solicitacaoPend, setSolicitacaoPend] = useState(false);
-
     const jaSegue = squadSelecionado?.membros?.includes(usuario?.uid);
     const consultarRanking = async (squadId) => {
        
@@ -344,14 +344,15 @@ function PerfilSquad({ squads, usuario }) {
                 </div>
                 <div className="Topicos">
                     
-                    <div className="mural-posts">
+                    <div className="mural-posts" >
                         {posts.length > 0 ? (
                             posts.map((post) => {
                                 
                                 const euCurti = post.quemDeuLike?.includes(usuario?.uid);
 
                                 return (
-                                    <PostSquad 
+                                    <div onClick={() => navigate(`/post/${post.id}`)} style={{ cursor: 'pointer' }}>
+                                        <PostSquad 
                                         key={post.id}
                                         id={post.id} 
                                         idAutor={post.idAutor}
@@ -363,12 +364,17 @@ function PerfilSquad({ squads, usuario }) {
                                         likes={post.quemDeuLike?.length || 0}
                                         jaDeuLike={euCurti}
                                         aoDarLike={() => gerenciarLike(post.id, euCurti)}
-                                    />
+                                        
+                                        
+                                        />
+                                    </div>
+                                    
                                 );
                             })
                         ) : (
                             <p>Nenhum post ainda. Seja o primeiro!</p>
                         )}
+
                     </div>
                 </div>
             </div>

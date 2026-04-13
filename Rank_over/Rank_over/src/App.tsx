@@ -13,6 +13,7 @@ import AlterarPerfilSquad from './paginas/AlterarPerfilSquad'
 import PerfilSquadConfig from './paginas/PerfilSquadConfig'
 import MembroSquadConfig from './paginas/MembroSquadConfig'
 import GerenciarEntradaSquadConfig from './paginas/GerenciarEntradaSquadConfig'
+import ExpansaoPost from './paginas/ExpansaoPost'
 import { useState, useEffect } from "react"
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom"
 import { db } from "./firebaseConfig";
@@ -73,8 +74,7 @@ useEffect(() => {
 
         <Route path="/config/alterar/:campo" element={<AlterarPerfil />} />
 
-        
-
+        <Route path="/post/:idPost" element={<ExpansaoPost usuario={usuario} />} />
 
 
         <Route path="/paginas/PerfilSquad/:id" element={<PerfilSquad squads={squads} usuario={usuario} />} />

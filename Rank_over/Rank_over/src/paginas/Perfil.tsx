@@ -1,9 +1,10 @@
 import "./Perfil.css"
+import PostSquad from "../componentes/PostSquad";
 import type { User } from "firebase/auth";
 import { useNavigate, useParams} from "react-router-dom";
 import { auth, db } from "../firebaseConfig";
 import { useEffect, useState } from "react";
-import { doc, onSnapshot } from "firebase/firestore";
+import { doc, onSnapshot,collection, query, where, getDocs, orderBy } from "firebase/firestore";
 
 interface PerfilProps {
     usuario: User | null;
@@ -14,9 +15,43 @@ function Perfil({ usuario, squads }: PerfilProps) {
     const navigate = useNavigate();
     const { idUsuario } = useParams();
     const [dadosExtras, setDadosExtras] = useState<any>(null);
+    const [meusPosts, setMeusPosts] = useState<any[]>([]);
     const [dadosUsuarioAlvo, setDadosUsuarioAlvo] = useState<any>(null);
     const idParaBuscar = idUsuario || usuario?.uid;
     const eMeuPerfil = !idUsuario || idUsuario === usuario?.uid;
+
+    const buscarMeusPosts = async (userId) => {
+        try {
+            const postsRef = collection(db, "posts");
+            const q = query(
+                postsRef, 
+                where("idAutor", "==", userId),
+                orderBy("criadoEm", "desc")
+            );
+
+            const querySnapshot = await getDocs(q);
+            const postsData = querySnapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+            }));
+
+            return postsData;
+        } catch (error) {
+            console.error("Erro ao buscar posts: ", error);
+        }
+    };
+
+    useEffect(() => {
+        if (!idParaBuscar) return;
+
+        const carregarPosts = async () => {
+            const posts = await buscarMeusPosts(idParaBuscar);
+            if (posts) setMeusPosts(posts);
+        };
+
+        carregarPosts();
+    }, [idParaBuscar]);
+
     useEffect(() => {
         if (!idParaBuscar) return;
 
@@ -27,7 +62,7 @@ function Perfil({ usuario, squads }: PerfilProps) {
         });
 
         return () => unsubscribe();
-    }, [idParaBuscar]); // Recarrega se o ID mudar
+    }, [idParaBuscar]);
 
     
 
@@ -57,13 +92,11 @@ function Perfil({ usuario, squads }: PerfilProps) {
 
                     <div className="perfil-bio">
                         <h1 className="perfil-nome-user">{dadosExtras?.nome || usuario.displayName}</h1>
-                        {/* Agora a bio vem do banco de dados! */}
                         <h3 className="perfil-bio-text">{dadosExtras?.bio || "Recruta do Rank Over"}</h3>
                     </div>
                     
 
                     <div className="perfil-squad-quant">
-                        {/* Contador real baseado no array de squads seguindo */}
                         <p>{dadosExtras?.squads_seguindo?.length || 0}</p>
                         <span>Squads</span>
                     </div>
@@ -77,11 +110,26 @@ function Perfil({ usuario, squads }: PerfilProps) {
                 </div>
 
                 <div className="perfil-posts">
-                    <h3 style={{color: 'white', marginBottom: '20px'}}>Meus Squads</h3>
-                    {dadosExtras?.squads_seguindo?.length > 0 ? (
-                        <p style={{ color: '#ff4d00' }}>Você está em {dadosExtras.squads_seguindo.length} squads!</p>
+                    {meusPosts.length > 0 ? (
+                        meusPosts.map((post) => (
+                            <PostSquad 
+                                key={post.id}
+                                id={post.id}
+                                idAutor={post.idAutor}
+                                titulo={post.titulo}
+                                texto={post.texto}
+                                likes={post.likes}
+                                comentarios={post.comentarios}
+                                autor={post.nomeAutor}
+                                fotoAutor={post.fotoAutor}
+                                jaDeuLike={post.quemDeuLike?.includes(usuario?.uid)}
+                                aoDarLike={() => console.log("Lógica de like aqui")} 
+                            />
+                        ))
                     ) : (
-                        <p style={{ color: '#555' }}>Nenhum squad seguido ainda...</p>
+                        <p style={{color: 'gray', textAlign: 'center', marginTop: '20px', width: '100%'}}>
+                            Este recruta ainda não fez publicações.
+                        </p>
                     )}
                 </div>
             </div>

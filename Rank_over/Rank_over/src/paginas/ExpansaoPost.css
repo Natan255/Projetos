@@ -1,0 +1,133 @@
+
+.expansao-container {
+    background: #121212;
+    border: 1px solid #333;
+    border-radius: 12px;
+    padding: 20px;
+    max-width: 1000px;
+    margin: 20px auto;
+    color: #e0e0e0;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.expansao-squadmembro {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.avatar-membro {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    border: 2px solid #ff4500; /* Laranja agressivo */
+    object-fit: cover;
+}
+
+.nome-membro {
+    font-weight: bold;
+    font-size: 1.1rem;
+    color: #fff;
+}
+
+.data-post {
+    color: #888;
+    font-size: 0.85rem;
+}
+
+.expansao-conteudo {
+    height: 200px;
+    margin-bottom: 30px;
+}
+
+.expansao-titulo {
+    font-size: 1.8rem;
+    color: #ff4500; /* Cor de destaque */
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.expansao-texto-corpo {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: #ccc;
+    white-space: pre-wrap; /* Mantém as quebras de linha do usuário */
+}
+
+.divisor {
+    border: 0;
+    height: 1px;
+    background: linear-gradient(to right, transparent, #333, transparent);
+    margin: 20px 0;
+}
+
+.expansao-comentarios h3 {
+    font-size: 1rem;
+    margin-bottom: 15px;
+    color: #fff;
+}
+
+.lista-comentarios {
+    max-height: 400px;
+    overflow-y: auto;
+    margin-bottom: 20px;
+    padding-right: 10px;
+}
+
+.lista-comentarios::-webkit-scrollbar {
+    width: 6px;
+}
+.lista-comentarios::-webkit-scrollbar-thumb {
+    background: #333;
+    border-radius: 10px;
+}
+
+.sem-comentarios {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+}
+
+
+.novo-comentario {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #1a1a1a;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #222;
+}
+
+.novo-comentario img {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+}
+
+.novo-comentario input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: #fff;
+    outline: none;
+    padding: 5px;
+}
+
+.novo-comentario button {
+    background: #ff4500;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.novo-comentario button:hover {
+    background: #ff5722;
+    transform: scale(1.05);
+}
