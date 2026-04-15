@@ -14,6 +14,10 @@
     transform: scale(1.01);
 }
 
+.Conteudo_Post{
+    cursor: pointer;
+}
+
 /* Título e Texto */
 .Conteudo_Post h1 {
     font-size: 1.2rem;

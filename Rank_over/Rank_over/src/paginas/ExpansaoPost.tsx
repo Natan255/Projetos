@@ -1,7 +1,7 @@
 import "./ExpansaoPost.css";
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { doc, onSnapshot } from "firebase/firestore";
+import { collection, onSnapshot, addDoc, serverTimestamp, doc, updateDoc, increment } from "firebase/firestore";
 import { db } from "../firebaseConfig";
 
 function ExpansaoPost({ usuario }) {
@@ -9,7 +9,26 @@ function ExpansaoPost({ usuario }) {
     const { idPost } = useParams(); 
     const [dadosPost, setDadosPost] = useState(null);
     const [carregando, setCarregando] = useState(true);
+    const [texto, setTexto] = useState("")
 
+    const adicionarComentario = async () => {
+        const comentRef = collection(db, "posts", idPost, "comentarios")
+        await addDoc(comentRef, {
+
+            autorId: usuario.uid,
+            nomeAutor: usuario.displayName,
+            fotoAutor: usuario.photoURL,
+            texto: texto,
+            criadoEm: serverTimestamp(),
+            respondendoA: null
+
+        })
+        const postRef = doc(db, "posts", idPost);
+        await updateDoc(postRef, {
+            comentários: increment(1) 
+        });
+
+    }
     useEffect(() => {
         if (!idPost) return;
 
@@ -61,8 +80,8 @@ function ExpansaoPost({ usuario }) {
 
                 <div className="novo-comentario">
                     <img src={usuario?.photoURL || "https://via.placeholder.com/150"} alt="sua foto" />
-                    <input type="text" placeholder="Escreva um comentário..." />
-                    <button>Enviar</button>
+                    <input type="text" placeholder="Escreva um comentário..." onChange={(e) => setTexto(e)}/>
+                    <button onClick={() => adicionarComentario()}>Enviar</button>
                 </div>
             </div>
         </div>

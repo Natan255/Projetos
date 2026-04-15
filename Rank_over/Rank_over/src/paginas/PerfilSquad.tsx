@@ -351,7 +351,7 @@ function PerfilSquad({ squads, usuario }) {
                                 const euCurti = post.quemDeuLike?.includes(usuario?.uid);
 
                                 return (
-                                    <div onClick={() => navigate(`/post/${post.id}`)} style={{ cursor: 'pointer' }}>
+
                                         <PostSquad 
                                         key={post.id}
                                         id={post.id} 
@@ -364,10 +364,9 @@ function PerfilSquad({ squads, usuario }) {
                                         likes={post.quemDeuLike?.length || 0}
                                         jaDeuLike={euCurti}
                                         aoDarLike={() => gerenciarLike(post.id, euCurti)}
-                                        
+
                                         
                                         />
-                                    </div>
                                     
                                 );
                             })

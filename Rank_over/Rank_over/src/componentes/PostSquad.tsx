@@ -1,9 +1,10 @@
+import { useState } from "react";
 import "./Cardsquad.css"
 import "./PostSquad.css"
 import { useNavigate } from "react-router-dom"
 
-// Adicione 'jaDeuLike' e 'aoDarLike' nas props aqui:
-function PostSquad({id, idAutor, titulo, texto, likes, comentarios, autor, fotoAutor, jaDeuLike, aoDarLike }) {
+
+function PostSquad({id, idAutor, titulo, texto, likes, comentarios, autor, fotoAutor, jaDeuLike, aoDarLike}) {
     const navigate = useNavigate();
 
     if (!titulo && !texto) return null;
@@ -19,7 +20,7 @@ function PostSquad({id, idAutor, titulo, texto, likes, comentarios, autor, fotoA
                 <p>{autor || "Membro"}</p>
             </div>
 
-            <div className="Conteudo_Post">
+            <div className="Conteudo_Post" onClick={() => navigate(`/post/${id}`)}>
                 <h1>{titulo}</h1>
                 <p>{texto}</p>
             </div>
@@ -31,10 +32,12 @@ function PostSquad({id, idAutor, titulo, texto, likes, comentarios, autor, fotoA
                     <span className="count">{likes}</span>
                 </button>
 
-                <button className="btn_interacao btn_comment">
+                <button className="btn_interacao btn_comment" onClick={() => navigate(`/post/${id}`)} >
                     <span className="icon">💬</span>
                     <span className="count">{comentarios || 0}</span>
                 </button>
+
+               
             </div>
         </div>
     );
