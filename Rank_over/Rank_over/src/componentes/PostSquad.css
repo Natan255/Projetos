@@ -95,7 +95,6 @@
 
 .btn_interacao .icon {
     font-size: 1.1rem;
-    filter: grayscale(1); /* Deixa o emoji cinza por padrão */
     transition: 0.3s;
 }
 

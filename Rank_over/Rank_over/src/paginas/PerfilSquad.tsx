@@ -4,9 +4,10 @@ import "./PerfilSquad.css";
 import ExpansaoPost from "./ExpansaoPost";
 import PostSquad from "../componentes/PostSquad";
 import Modal from "../componentes/Modal";
-import { getDoc, addDoc, doc, setDoc, updateDoc, arrayUnion, arrayRemove, collection, query, where, orderBy, getDocs, serverTimestamp, onSnapshot, deleteDoc } from "firebase/firestore";
+import { getDoc, addDoc, doc, setDoc, updateDoc, arrayUnion, arrayRemove, collection, query, where, orderBy, getDocs, serverTimestamp, onSnapshot, deleteDoc, increment } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import { db } from "../firebaseConfig";
+import { like } from "firebase/firestore/pipelines";
 
 
 function PerfilSquad({ squads, usuario }) {
@@ -23,6 +24,7 @@ function PerfilSquad({ squads, usuario }) {
     const [ranking, setRanking] = useState([]);
     const [solicitacaoPend, setSolicitacaoPend] = useState(false);
     const jaSegue = squadSelecionado?.membros?.includes(usuario?.uid);
+
     const consultarRanking = async (squadId) => {
        
         const rankingRef = collection(db, "squads", squadId, "ranking");
@@ -42,12 +44,14 @@ function PerfilSquad({ squads, usuario }) {
         try {
             if (jaDeuLike) {
                 await updateDoc(postRef, {
-                    quemDeuLike: arrayRemove(usuario.uid)
+                    quemDeuLike: arrayRemove(usuario.uid),
+                    likes: increment(-1)
                 });
             } else {
 
                 await updateDoc(postRef, {
-                    quemDeuLike: arrayUnion(usuario.uid)
+                    quemDeuLike: arrayUnion(usuario.uid),
+                    likes: increment(1)
                 });
             }
         } catch (error) {
@@ -55,7 +59,7 @@ function PerfilSquad({ squads, usuario }) {
         }
     };
 
-    const solicitarPost = async (dadosDoPost) => { // dadosDoPost vem do seu componente Modal
+    const solicitarPost = async (dadosDoPost) => {
         if (!usuario || !id) return;
 
         try {
@@ -106,10 +110,10 @@ function PerfilSquad({ squads, usuario }) {
                 texto: dadosDoModal.texto,
                 idSquad: id,
                 idAutor: usuario.uid,
-                nomeAutor: usuario.displayName || "Membro", // Salva o nome real
+                nomeAutor: usuario.displayName || "Membro",
                 fotoAutor: usuario.photoURL || "",
-                likes: [],
-                comentários: 0, 
+                comentários: 0,
+                likes: 0,
                 compartilhamento: 0,
                 criadoEm: serverTimestamp(),
             });
@@ -361,7 +365,7 @@ function PerfilSquad({ squads, usuario }) {
                                         comentarios={post.comentários} 
                                         autor={post.nomeAutor} 
                                         fotoAutor={post.fotoAutor}
-                                        likes={post.quemDeuLike?.length || 0}
+                                        likes={post.likes}
                                         jaDeuLike={euCurti}
                                         aoDarLike={() => gerenciarLike(post.id, euCurti)}
 

@@ -20,6 +20,7 @@ function ExpansaoPost({ usuario }) {
             fotoAutor: usuario.photoURL,
             texto: texto,
             criadoEm: serverTimestamp(),
+            likes: 0,
             respondendoA: null
 
         })
