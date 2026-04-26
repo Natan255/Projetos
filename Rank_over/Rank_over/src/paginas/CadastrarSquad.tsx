@@ -26,8 +26,8 @@ function CadastrarSquad() {
 
     const [exigirFoto, setExigirFoto] = useState(false);
     const [exigirResumo, setExigirResumo] = useState(false);
-    const [exigirCronometro, setExigirCronometro] = useState(false);
     const [exigirGithub, setExigirGithub] = useState(false);
+    const [exigirForest, setExigirForest] = useState(false)
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -59,6 +59,13 @@ function CadastrarSquad() {
                 nome,
                 descricao,
                 categoria,
+                regras: {
+                    exigirFoto: exigirFoto,
+                    exigirResumo: exigirResumo,
+                    exigirGithub: exigirGithub,
+                    exigirForest: exigirForest
+        
+                },
                 metrica: metricaFinal,
                 fotoPerfil: fotoPerfilFinal,
                 fotoBanner: fotoBannerFinal,
@@ -204,7 +211,7 @@ function CadastrarSquad() {
 
                                 <div className="input-group">
                                     <p>Verificação de app Forest?</p>
-                                    <select value={exigirResumo ? "Sim" : "Nao"} onChange={(e) => setExigirResumo(e.target.value === "Sim")}>
+                                    <select value={exigirForest ? "Sim" : "Nao"} onChange={(e) => setExigirForest(e.target.value === "Sim")}>
                                         <option value="Nao">Não</option>
                                         <option value="Sim">Sim</option>
                                     </select>

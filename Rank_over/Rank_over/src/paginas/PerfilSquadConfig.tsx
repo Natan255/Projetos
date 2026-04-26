@@ -1,7 +1,7 @@
 import { useParams, useNavigate, Link } from "react-router-dom";
 
 function PerfilSquadConfig() {
-    const { id } = useParams(); // Pega o ID do squad que veio do perfil
+    const { id } = useParams();
     const navigate = useNavigate();
 
     return (
@@ -9,7 +9,6 @@ function PerfilSquadConfig() {
             <div className="config">
                 <h2 className="config-titulo">Configurações da exibição do Squad</h2>
                 
-                {/* Agora incluímos o ID na rota para o próximo componente saber quem editar */}
                 <Link to={`/squadconfig/alterar/${id}/nome`}>
                     <button className="config-opcao">Alterar Nome</button>
                 </Link>
@@ -46,6 +45,9 @@ function PerfilSquadConfig() {
 
                 <Link to={`/squadconfig/solicitacao/${id}/post`}>
                     <button className="config-opcao">Solicitação de post no squad </button>
+                </Link>
+                <Link to={`/squadconfig/solicitacao/${id}/prova`}>
+                    <button className="config-opcao">Solicitação de prova no squad </button>
                 </Link>
 
                 <button className="config-voltar" onClick={() => navigate(-1)}>

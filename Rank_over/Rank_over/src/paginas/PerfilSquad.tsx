@@ -10,6 +10,8 @@ import { db } from "../firebaseConfig";
 import { like } from "firebase/firestore/pipelines";
 
 
+//FAZER DEPOIS A PROVA VIRAR UM POST PARA TODO O SQUAD VER, E O P ST
+
 function PerfilSquad({ squads, usuario }) {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -87,7 +89,7 @@ function PerfilSquad({ squads, usuario }) {
         
             await setDoc(docRef, {
                 uid: usuario.uid,
-                nome: usuario.displayName || "Membro", // displayName é o padrão do Firebase Auth
+                nome: usuario.displayName || "Membro",
                 foto: usuario.photoURL || "",
                 dataSolicitacao: serverTimestamp()
             });
@@ -338,7 +340,7 @@ function PerfilSquad({ squads, usuario }) {
             <div className="Topicos_squad">
                 <h3 className="divisao"></h3>
                 <div className="Topicos_config">
-                    <button className="prova">Prova</button>
+                    <button className="prova" onClick={() => navigate(`/paginas/Prova/${id}`)}>Prova</button>
                     <button className="Postar" onClick={() => setModalAberto(true)}>Postar</button>
                     <Modal 
                         isOpen={modalAberto} 

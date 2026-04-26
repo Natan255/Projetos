@@ -13,7 +13,9 @@ import AlterarPerfilSquad from './paginas/AlterarPerfilSquad'
 import PerfilSquadConfig from './paginas/PerfilSquadConfig'
 import MembroSquadConfig from './paginas/MembroSquadConfig'
 import GerenciarEntradaSquadConfig from './paginas/GerenciarEntradaSquadConfig'
+import GerenciarProvaSquadConfig from './paginas/GerenciarProvaSquadConfig'
 import ExpansaoPost from './paginas/ExpansaoPost'
+import Prova from './paginas/Prova'
 import { useState, useEffect } from "react"
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom"
 import { db } from "./firebaseConfig";
@@ -81,11 +83,15 @@ useEffect(() => {
 
         <Route path='/squadconfig/administrar/:id/:campo' element={<MembroSquadConfig/>}/>
 
+        <Route path='/squadconfig/solicitacao/:id/prova' element={<GerenciarProvaSquadConfig/>}/>
+
         <Route path='/squadconfig/solicitacao/:id/post' element={<GerenciaPostSquadConfig/>}/>
 
         <Route path='/squadconfig/solicitacao/:id/entrada' element={<GerenciarEntradaSquadConfig/>}/>
 
         <Route path="/squadconfig/alterar/:id/:campo" element={<AlterarPerfilSquad />} />
+
+        <Route path="/paginas/Prova/:id" element={<Prova usuario={usuario} squads={squads} />} />
 
 
         <Route path='/paginas/perfil'element={<Perfil usuario={usuario} squads={squads} />} />

@@ -1,0 +1,110 @@
+/* Prova.css */
+
+.container-prova {
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 30px;
+    background-color: #1a1a1a; /* Fundo escuro padrão */
+    border-radius: 12px;
+    border: 1px solid #333;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    color: #fff;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.prova-header {
+    text-align: center;
+    margin-bottom: 30px;
+    border-bottom: 2px solid #ff4d00; /* Laranja Rank Over */
+    padding-bottom: 15px;
+}
+
+.prova-header h1 {
+    font-size: 1.8rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+}
+
+.prova-header p {
+    color: #aaa;
+    font-size: 0.9rem;
+}
+
+.prova-header strong {
+    color: #ff4d00;
+}
+
+.form-prova {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.input-group label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #ccc;
+}
+
+.input-group input, 
+.input-group textarea {
+    padding: 12px;
+    background-color: #0f0f0f;
+    border: 1px solid #444;
+    border-radius: 6px;
+    color: #fff;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.input-group input:focus, 
+.input-group textarea:focus {
+    outline: none;
+    border-color: #ff4d00;
+    box-shadow: 0 0 8px rgba(255, 77, 0, 0.3);
+}
+
+.input-group textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.btn-enviar-prova {
+    margin-top: 10px;
+    padding: 15px;
+    background-color: #ff4d00;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    font-size: 1rem;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.btn-enviar-prova:hover {
+    background-color: #e64500;
+    transform: translateY(-2px);
+}
+
+.btn-enviar-prova:active {
+    transform: translateY(0);
+}
+
+/* Estilo para quando o Squad não é encontrado */
+.error-msg {
+    text-align: center;
+    color: #ff4444;
+    padding: 50px;
+    background: #2a1111;
+    border-radius: 8px;
+    margin: 20px;
+}
