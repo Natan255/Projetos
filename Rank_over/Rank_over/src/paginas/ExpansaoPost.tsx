@@ -9,6 +9,7 @@ function ExpansaoPost({ usuario }) {
     const { idPost } = useParams(); 
     const [dadosPost, setDadosPost] = useState(null);
     const [carregando, setCarregando] = useState(true);
+    const [comentarios, setComentarios] = useState([]); // Novo estado
     const [texto, setTexto] = useState("")
 
     const adicionarComentario = async () => {
@@ -26,24 +27,38 @@ function ExpansaoPost({ usuario }) {
         })
         const postRef = doc(db, "posts", idPost);
         await updateDoc(postRef, {
-            comentários: increment(1) 
+            comentarios: increment(1) 
         });
 
     }
+
     useEffect(() => {
         if (!idPost) return;
-
         const unsubscribe = onSnapshot(doc(db, "posts", idPost), (docSnap) => {
             if (docSnap.exists()) {
                 setDadosPost({ id: docSnap.id, ...docSnap.data() });
-            } else {
-                console.log("Post não encontrado!");
             }
             setCarregando(false);
+        });
+        return () => unsubscribe();
+    }, [idPost]);
+
+    useEffect(() => {
+        if (!idPost) return;
+        
+        const q = collection(db, "posts", idPost, "comentarios");
+        
+        const unsubscribe = onSnapshot(q, (snapshot) => {
+            const lista = snapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            }));
+            setComentarios(lista);
         });
 
         return () => unsubscribe();
     }, [idPost]);
+
 
     if (carregando) return <div className="loading">Carregando post...</div>;
     if (!dadosPost) return <div className="error">Post não encontrado ou removido.</div>;
@@ -72,17 +87,39 @@ function ExpansaoPost({ usuario }) {
             <hr className="divisor" />
 
             <div className="expansao-comentarios">
-
-                <h3>Comentários ({dadosPost.comentários || 0})</h3>
+                <h3>Comentários ({dadosPost.comentarios || 0})</h3>
                 
                 <div className="lista-comentarios">
-                    <p className="sem-comentarios">Ainda não há comentários. Seja o primeiro!</p>
+                    {comentarios.length > 0 ? (
+                        comentarios.map((coment) => (
+                            <div key={coment.id} className="item-comentario">
+                                <img 
+                                    src={coment.fotoAutor || "https://via.placeholder.com/40"} 
+                                    alt="autor" 
+                                />
+                                <div className="texto-comentario">
+                                    <strong>{coment.nomeAutor}</strong>
+                                    <p>{coment.texto}</p>
+                                </div>
+                            </div>
+                        ))
+                    ) : (
+                        <p className="sem-comentarios">Ainda não há comentários. Seja o primeiro!</p>
+                    )}
                 </div>
 
                 <div className="novo-comentario">
-                    <img src={usuario?.photoURL || "https://via.placeholder.com/150"} alt="sua foto" />
-                    <input type="text" placeholder="Escreva um comentário..." onChange={(e) => setTexto(e)}/>
-                    <button onClick={() => adicionarComentario()}>Enviar</button>
+                    <img 
+                        src={usuario?.photoURL || "https://via.placeholder.com/150"} 
+                        alt="sua foto" 
+                    />
+                    <input 
+                        type="text" 
+                        value={texto} // Importante para limpar o campo depois de enviar
+                        placeholder="Escreva um comentário..." 
+                        onChange={(e) => setTexto(e.target.value)}
+                    />
+                    <button onClick={adicionarComentario}>Enviar</button>
                 </div>
             </div>
         </div>

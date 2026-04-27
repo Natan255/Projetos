@@ -57,12 +57,13 @@ function GerenciarProvaSquadConfig() {
             const textoFinal = linhasTexto.join("\n");
 
             await addDoc(postsRef, {
-                titulo: `🏆 Nova conquista de ${solicitacao.nome}!`,
+                titulo: `Nova conquista de ${solicitacao.nome}!`,
                 texto: textoFinal,
                 idSquad: id,
                 idAutor: solicitacao.id,
                 nomeAutor: solicitacao.nome,
                 fotoAutor: solicitacao.fotoPerfil || "",
+                tipo: "conquista",
                 likes: [],
                 comentarios: 0,
                 compartilhamento: 0,

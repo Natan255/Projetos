@@ -14,8 +14,40 @@
     transform: scale(1.01);
 }
 
+
+/* Estilo exclusivo para CONQUISTA */
+.post-conquista {
+    border: 1px solid #ff4d00; /* Borda laranja */
+    background: linear-gradient(145deg, #1a1a1a, #25120a); /* Degradê sutil para o laranja */
+    box-shadow: 0 0 15px rgba(255, 77, 0, 0.2); /* Brilho externo */
+    position: relative;
+    overflow: hidden;
+}
+
+/* Efeito de "faixa" ou brilho no título se for conquista */
+.post-conquista h1 {
+    color: #ff4d00;
+    text-shadow: 0 0 5px rgba(255, 77, 0, 0.5);
+}
+
+/* Opcional: Um pequeno detalhe no topo para destacar */
+.post-conquista::before {
+    content: "CONQUISTA";
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: #ff4d00;
+    color: #fff;
+    font-size: 0.6rem;
+    font-weight: bold;
+    padding: 2px 8px;
+    border-bottom-left-radius: 8px;
+    text-transform: uppercase;
+}
+
 .Conteudo_Post{
     cursor: pointer;
+    text-align: left;
 }
 
 /* Título e Texto */
@@ -29,6 +61,7 @@
 
 .Conteudo_Post p {
     color: #999;
+    white-space: pre-wrap;
     line-height: 1.6;
     font-size: 1.1rem;
 }

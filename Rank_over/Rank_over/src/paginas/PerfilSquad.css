@@ -80,7 +80,6 @@
 .Bios_squad h1 {
     font-size: 1.8rem; /* Reduzido de 2.5rem */
     margin: 0;
-    text-transform: uppercase;
     letter-spacing: 1px;
 }
 
@@ -197,7 +196,6 @@
 .Bios_squad h1 {
     font-size: 2.5rem;
     margin: 0;
-    text-transform: uppercase;
     letter-spacing: 2px;
 }
 

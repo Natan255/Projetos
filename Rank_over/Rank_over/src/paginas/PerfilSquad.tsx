@@ -355,6 +355,7 @@ function PerfilSquad({ squads, usuario }) {
                             posts.map((post) => {
                                 
                                 const euCurti = post.quemDeuLike?.includes(usuario?.uid);
+                                const conq = post.tipo?.includes("conquista");
 
                                 return (
 
@@ -364,10 +365,11 @@ function PerfilSquad({ squads, usuario }) {
                                         idAutor={post.idAutor}
                                         titulo={post.titulo} 
                                         texto={post.texto} 
-                                        comentarios={post.comentários} 
+                                        comentarios={post.comentarios} 
                                         autor={post.nomeAutor} 
                                         fotoAutor={post.fotoAutor}
                                         likes={post.likes}
+                                        conquista={conq}
                                         jaDeuLike={euCurti}
                                         aoDarLike={() => gerenciarLike(post.id, euCurti)}
 
