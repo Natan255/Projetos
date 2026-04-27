@@ -33,7 +33,7 @@ function GerenciaPostSquadConfig() {
                 nomeAutor: post.nomeAutor || "Membro", 
                 fotoAutor: post.fotoAutor || "",
                 likes: [],
-                comentários: 0, 
+                comentarios: 0, 
                 compartilhamento: 0,
                 criadoEm: serverTimestamp(),
             });
