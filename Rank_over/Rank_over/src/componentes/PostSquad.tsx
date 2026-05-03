@@ -22,7 +22,6 @@ function PostSquad({id, idAutor, titulo, texto, likes, comentarios, autor, fotoA
             </div>
 
             <div className="Conteudo_Post" onClick={() => navigate(`/post/${id}`)}>
-                {/* Você pode até adicionar um selo visual aqui */}
                 <h1>{conquista ? `🏆 ${titulo}` : titulo}</h1>
                 <p>{texto}</p>
             </div>
