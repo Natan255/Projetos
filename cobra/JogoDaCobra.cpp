@@ -1,10 +1,9 @@
 #include <iostream>
-#include <cstdlib>
-#include <string>
 #include <vector>
 #include <ctime>
 #include <unistd.h>
 #include <ncurses.h>
+
 using namespace std;
 
 struct Posicao
@@ -15,12 +14,11 @@ struct Posicao
 struct Cobra
 {
     vector<Posicao> corpo;
-    int tamanho;
 };
 
 void mostrarTabuleiro(char tabuleiro[20][20])
 {
-    clear();
+    move(0, 0); // evita piscar
     for (int i = 0; i < 20; i++)
     {
         for (int j = 0; j < 20; j++)
@@ -34,121 +32,127 @@ void mostrarTabuleiro(char tabuleiro[20][20])
 
 void gerarMaca(char tabuleiro[20][20])
 {
-    srand(time(0));
-    int linha = rand() % 18 + 1;
-    int coluna = rand() % 18 + 1;
+    int linha, coluna;
+    do
+    {
+        linha = rand() % 18 + 1;
+        coluna = rand() % 18 + 1;
+    } while (tabuleiro[linha][coluna] != ' ');
+
     tabuleiro[linha][coluna] = 'M';
 }
 
 void moverCobra(Cobra &c, char tabuleiro[20][20], char direcao)
 {
-    Posicao caudaAntiga = c.corpo.back();
-    tabuleiro[caudaAntiga.i][caudaAntiga.j] = ' ';
 
+    Posicao novaCabeca = c.corpo[0];
     if (direcao == 'd')
-    {
-        c.corpo[0].j++;
-    }
+        novaCabeca.j++;
     if (direcao == 'a')
-    {
-        c.corpo[0].j--;
-    }
+        novaCabeca.j--;
     if (direcao == 'w')
-    {
-        c.corpo[0].i--;
-    }
+        novaCabeca.i--;
     if (direcao == 's')
-    {
-        c.corpo[0].i++;
-    }
+        novaCabeca.i++;
 
+    if (tabuleiro[novaCabeca.i][novaCabeca.j] == 'M')
+    {
+
+        c.corpo.insert(c.corpo.begin(), novaCabeca);
+        gerarMaca(tabuleiro);
+    }
+    else
+    {
+        Posicao caudaAntiga = c.corpo.back();
+        tabuleiro[caudaAntiga.i][caudaAntiga.j] = ' ';
+
+        for (int i = c.corpo.size() - 1; i > 0; i--)
+        {
+            if (novaCabeca.i == c.corpo[i].i && novaCabeca.j == c.corpo[i].j)
+                ;
+            c.corpo[i] = c.corpo[i - 1];
+        }
+        c.corpo[0] = novaCabeca;
+    }
     tabuleiro[c.corpo[0].i][c.corpo[0].j] = 'o';
 }
 
 int verificarColisao(Cobra &c)
 {
-    if (c.corpo[0].j == 0 || c.corpo[0].j == 19 || c.corpo[0].i == 0 || c.corpo[0].i == 19) // verifica se a cabeça bateu na paredet
+    // Colisão com parede
+    if (c.corpo[0].j <= 0 || c.corpo[0].j >= 19 || c.corpo[0].i <= 0 || c.corpo[0].i >= 19)
     {
         return 1;
+    }
+
+    for (int i = c.corpo.size() - 1; i > 0; i--)
+    {
+        if (c.corpo[0].i == c.corpo[i].i && c.corpo[0].j == c.corpo[i].j){
+            return 1;
+        }
+            
     }
 
     return 0;
 }
 
-int gameLoop(char tabuleiro[20][20], Cobra &c, char &direcao)
-{
-    int tecla = getch();
-
-    if (tecla != ERR)
-    {
-        if ((tecla == 'w' && direcao != 's') ||
-            (tecla == 's' && direcao != 'w') ||
-            (tecla == 'a' && direcao != 'd') ||
-            (tecla == 'd' && direcao != 'a'))
-        {
-            direcao = tecla;
-        }
-    }
-    mostrarTabuleiro(tabuleiro);
-    usleep(300000);
-    moverCobra(c, tabuleiro, direcao);
-    clear();
-
-    if (verificarColisao(c) == 1)
-    {
-        return 1;
-    }
-    else
-    {
-        return 0;
-    }
-}
-
 int main()
 {
-
+    srand(time(0));
     initscr();
     cbreak();
     noecho();
     keypad(stdscr, TRUE);
-    nodelay(stdscr, TRUE); // Não trava o jogo esperando tecla
+    nodelay(stdscr, TRUE);
     curs_set(0);
 
-    char tabuleiro[20][20] = {'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x',
-                              'x', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'x',
-                              'x', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'x',
-                              'x', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'x',
-                              'x', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'x',
-                              'x', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'x',
-                              'x', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'x',
-                              'x', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'x',
-                              'x', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'x',
-                              'x', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'x',
-                              'x', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'x',
-                              'x', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'x',
-                              'x', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'x',
-                              'x', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'x',
-                              'x', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'x',
-                              'x', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'x',
-                              'x', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'x',
-                              'x', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'x',
-                              'x', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'x',
-                              'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x'};
+    char tabuleiro[20][20];
+    for (int i = 0; i < 20; i++)
+    {
+        for (int j = 0; j < 20; j++)
+        {
+            if (i == 0 || i == 19 || j == 0 || j == 19)
+                tabuleiro[i][j] = 'x';
+            else
+                tabuleiro[i][j] = ' ';
+        }
+    }
+
     Cobra c;
     c.corpo.push_back({10, 10});
+    tabuleiro[10][10] = 'o';
+
+    gerarMaca(tabuleiro); // Gera a primeira maçã
+
     char direcao = 'd';
-    bool fim = false;
+    while (true)
+    {
+        int tecla = getch();
+        if (tecla != ERR)
+        {
+            if (tecla == 'q')
+                break;
+            if (tecla == 'w' && direcao != 's')
+                direcao = tecla;
+            if (tecla == 's' && direcao != 'w')
+                direcao = tecla;
+            if (tecla == 'a' && direcao != 'd')
+                direcao = tecla;
+            if (tecla == 'd' && direcao != 'a')
+                direcao = tecla;
+        }
 
-    int continua = gameLoop(tabuleiro, c, direcao);
+        moverCobra(c, tabuleiro, direcao);
 
-    while (continua == 0)
-    {   
-        continua = gameLoop(tabuleiro, c, direcao);
+        if (verificarColisao(c))
+            break;
+
+        mostrarTabuleiro(tabuleiro);
+        usleep(150000);
     }
-    
-    endwin(); // FINALIZA A NCURSES ANTES DE SAIR
-    printf("Game Over! Voce bateu na parede.\n");
 
+    endwin();
+    printf("Game Over! Score: %ld\n", c.corpo.size());
     return 0;
 }
 /*
