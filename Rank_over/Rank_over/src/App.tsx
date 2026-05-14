@@ -9,7 +9,6 @@ import Perfil from './paginas/Perfil'
 import PerfilConfig from './paginas/PerfilConfig'
 import CadastrarSquad from './paginas/CadastrarSquad'
 import AlterarPerfil from './paginas/AlterarPerfil'
-import AlterarPerfilSquad from './paginas/AlterarPerfilSquad'
 import PerfilSquadConfig from './paginas/PerfilSquadConfig'
 import MembroSquadConfig from './paginas/MembroSquadConfig'
 import GerenciarEntradaSquadConfig from './paginas/GerenciarEntradaSquadConfig'
@@ -88,8 +87,6 @@ useEffect(() => {
         <Route path='/squadconfig/solicitacao/:id/post' element={<GerenciaPostSquadConfig/>}/>
 
         <Route path='/squadconfig/solicitacao/:id/entrada' element={<GerenciarEntradaSquadConfig/>}/>
-
-        <Route path="/squadconfig/alterar/:id/:campo" element={<AlterarPerfilSquad />} />
 
         <Route path="/paginas/Prova/:id" element={<Prova usuario={usuario} squads={squads} />} />
 

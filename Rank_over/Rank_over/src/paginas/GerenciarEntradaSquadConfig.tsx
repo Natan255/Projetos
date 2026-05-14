@@ -3,6 +3,7 @@ import UsuariosLista from "../componentes/UsuariosLista";
 import { collection, getDocs, doc, updateDoc, deleteDoc, arrayUnion, setDoc, serverTimestamp } from "firebase/firestore";
 import { useParams } from "react-router-dom";
 import { db } from "../firebaseConfig";
+import "./GerenciarEntradaSquadConfig.css";
 
 function GerenciaEntradaSquadConfig() {
     const { id } = useParams();
@@ -31,11 +32,15 @@ function GerenciaEntradaSquadConfig() {
 
     const aceitarUsuario = async (user) => {
         try {
+            const userRef = doc(db, "usuarios", user.uid);
             const squadRef = doc(db, "squads", id);
             const rankingMemberRef = doc(db, "squads", id, "ranking", user.uid);
             await updateDoc(squadRef, {
                 membros: arrayUnion(user.uid)
             });
+            await updateDoc(userRef, {
+            squads_seguindo: arrayUnion(id)
+        });
 
             await setDoc(rankingMemberRef, {
                 uid: user.uid,

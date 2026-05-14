@@ -1,0 +1,102 @@
+/* GerenciaEntradaSquadConfig.css */
+
+.gerenciar-container {
+    max-width: 700px;
+    margin: 40px auto;
+    padding: 30px;
+    background-color: #1a1a1a;
+    border-radius: 12px;
+    border: 1px solid #333;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    color: #fff;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.gerenciar-container h3 {
+    text-align: center;
+    margin-bottom: 30px;
+    border-bottom: 2px solid #ff4d00;
+    padding-bottom: 15px;
+    font-size: 1.6rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #fff;
+}
+
+/* Container que envolve a lista de solicitações */
+.solicitacoes-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Estilização para quando não houver solicitações */
+.gerenciar-container > p {
+    text-align: center;
+    color: #888;
+    font-style: italic;
+    margin-top: 20px;
+}
+
+/* Customização para o componente UsuariosLista dentro desta página */
+/* Caso o UsuariosLista aceite uma className ou tenha uma estrutura interna previsível */
+.UsuariosLista-item {
+    background-color: #0f0f0f;
+    border: 1px solid #444;
+    border-radius: 8px;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.UsuariosLista-item:hover {
+    border-color: #ff4d00;
+    background-color: #151515;
+}
+
+/* Estilo para o botão de aceitar dentro do UsuariosLista */
+/* Você pode passar essas classes como props ou estilizar o botão diretamente */
+.btn-aceitar-usuario {
+    background-color: #2ecc71;
+    color: white;
+    padding: 8px 18px;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-aceitar-usuario:hover {
+    background-color: #27ae60;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(46, 204, 113, 0.2);
+}
+
+/* Responsividade */
+@media (max-width: 600px) {
+    .gerenciar-container {
+        margin: 20px;
+        padding: 20px;
+    }
+
+    .UsuariosLista-item {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+}
+
+/* Feedback de carregamento */
+.loading-text {
+    text-align: center;
+    color: #ff4d00;
+    font-weight: bold;
+    margin-top: 50px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}

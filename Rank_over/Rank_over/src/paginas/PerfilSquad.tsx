@@ -1,7 +1,6 @@
 import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import "./PerfilSquad.css";
-import ExpansaoPost from "./ExpansaoPost";
 import PostSquad from "../componentes/PostSquad";
 import Modal from "../componentes/Modal";
 import { getDoc, addDoc, doc, setDoc, updateDoc, arrayUnion, arrayRemove, collection, query, where, orderBy, getDocs, serverTimestamp, onSnapshot, deleteDoc, increment } from "firebase/firestore";
@@ -10,22 +9,24 @@ import { db } from "../firebaseConfig";
 import { like } from "firebase/firestore/pipelines";
 
 
-//FAZER DEPOIS A PROVA VIRAR UM POST PARA TODO O SQUAD VER, E O P ST
+
 
 function PerfilSquad({ squads, usuario }) {
     const { id } = useParams();
     const navigate = useNavigate();
 
-    const squadSelecionado = squads.find((s) => s.id === id);
-    const isOwner = squadSelecionado?.idCriador === usuario?.uid;
-    const isMod = squadSelecionado?.moderadores?.includes(usuario?.uid);
-    const temPermissaoEspecial = isOwner || isMod;
+
+    
 
     const [modalAberto, setModalAberto] = useState(false);
     const [posts, setPosts] = useState([])
     const [ranking, setRanking] = useState([]);
     const [solicitacaoPend, setSolicitacaoPend] = useState(false);
-    const jaSegue = squadSelecionado?.membros?.includes(usuario?.uid);
+    const [squadSelecionado, setSquadSelecionado] = useState(null);
+    const isOwner = squadSelecionado?.idCriador === usuario?.uid;
+    const isMod = squadSelecionado?.moderadores?.includes(usuario?.uid);
+    const temPermissaoEspecial = isOwner || isMod;
+    const jaSegue = squadSelecionado?.membros?.includes(usuario?.uid);  
 
     const consultarRanking = async (squadId) => {
        
@@ -147,7 +148,6 @@ function PerfilSquad({ squads, usuario }) {
 
     const gerenciarSeguir = async () => {
         if (!usuario) return alert("Logue primeiro!");
-        if (!usuario) return alert("Logue primeiro!");
         if (!id) return;
         if (!squadSelecionado) return;
 
@@ -155,15 +155,18 @@ function PerfilSquad({ squads, usuario }) {
         const squadRef = doc(db, "squads", id);
         const rankingMemberRef = doc(db, "squads", id, "ranking", usuario.uid);
 
+
         try {
             if (jaSegue === true) {
-                await updateDoc(userRef, { squads_seguindo: arrayRemove(id) });
+                await updateDoc(userRef, { squads_seguindo: arrayRemove(String(id)) });
                 await updateDoc(squadRef, { membros: arrayRemove(usuario.uid) });
                 await deleteDoc(rankingMemberRef); 
                 
+                
             } 
             else {
-                await updateDoc(userRef, { squads_seguindo: arrayUnion(id) });
+
+                await updateDoc(userRef, { squads_seguindo: arrayUnion(String(id)) });
                 await updateDoc(squadRef, { membros: arrayUnion(usuario.uid) });
                 await setDoc(rankingMemberRef, {
                     uid: usuario.uid,
@@ -202,6 +205,19 @@ function PerfilSquad({ squads, usuario }) {
 
     useEffect(() => {
         if (!id) return;
+        const squadRef = doc(db, "squads", id);
+        const unsubscribe = onSnapshot(squadRef, (docSnap) => {
+            if (docSnap.exists()) {
+
+                setSquadSelecionado({ id: docSnap.id, ...docSnap.data() });
+            }
+        });
+
+        return () => unsubscribe();
+    }, [id]);
+
+    useEffect(() => {
+        if (!id) return;
         const rankingRef = collection(db, "squads", id, "ranking");
         const qRanking = query(rankingRef, orderBy("pontos", "desc"));
 
@@ -229,6 +245,8 @@ function PerfilSquad({ squads, usuario }) {
 
                 if (docSnap.exists()) {
                     setSolicitacaoPend(true);
+                } else {
+                    setSolicitacaoPend(false);
                 }
             } catch (error) {
                 console.error("Erro ao verificar status de solicitação:", error);

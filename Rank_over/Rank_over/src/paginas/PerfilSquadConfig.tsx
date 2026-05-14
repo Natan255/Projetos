@@ -31,10 +31,6 @@ function PerfilSquadConfig() {
 
                 <h2 className="config-titulo">Configurações dos membros Squad</h2>
 
-                <Link to={`/squadconfig/alterar/${id}/mode`}>
-                    <button className="config-opcao">Gerenciar moderadores</button>
-                </Link>
-
                 <Link to={`/squadconfig/administrar/${id}/administrar`}>
                     <button className="config-opcao">Gerenciar usuario</button>
                 </Link>
