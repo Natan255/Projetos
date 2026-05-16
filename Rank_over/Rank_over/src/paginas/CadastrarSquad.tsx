@@ -6,6 +6,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import AlertaMsg from "../componentes/AlertaMsg";
 
 import "./CadastrarSquad.css";
+import Squads from "./Squads";
 
 function CadastrarSquad() {
     const [nome, setNome] = useState("");
@@ -28,6 +29,7 @@ function CadastrarSquad() {
     const [exigirResumo, setExigirResumo] = useState(false);
     const [exigirGithub, setExigirGithub] = useState(false);
     const [exigirForest, setExigirForest] = useState(false)
+    const [exigirContajg, setExigirContajg] = useState("")
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -63,7 +65,8 @@ function CadastrarSquad() {
                     exigirFoto: exigirFoto,
                     exigirResumo: exigirResumo,
                     exigirGithub: exigirGithub,
-                    exigirForest: exigirForest
+                    exigirForest: exigirForest,
+                    exigirContajg: exigirContajg
         
                 },
                 metrica: metricaFinal,
@@ -94,7 +97,8 @@ function CadastrarSquad() {
             
             const userRef = doc(db, "usuarios", auth.currentUser.uid);
             await updateDoc(userRef, {
-                squads_admin: arrayUnion(novoSquadId)
+                squads_admin: arrayUnion(novoSquadId),
+                squads_seguindo: arrayUnion(novoSquadId)
             });
             setMostrarAlerta(true)
             
@@ -176,19 +180,15 @@ function CadastrarSquad() {
                                     required
                                 />
                             </div>
+
+                            
                         )}
                     </div>
 
                     <div className="input-prova-container">
                         <h3 className="titulo-sessao-pequeno">Regras de Verificação</h3>
                         
-                        <div className="input-group">
-                            <p>Solicitar Foto/Print?</p>
-                            <select value={exigirFoto ? "Sim" : "Nao"} onChange={(e) => setExigirFoto(e.target.value === "Sim")}>
-                                <option value="Nao">Não</option>
-                                <option value="Sim">Sim (Obrigatório)</option>
-                            </select>
-                        </div>
+                        
                         {(categoria === "Estudos" ) && (
                             <>
                                 
@@ -198,6 +198,14 @@ function CadastrarSquad() {
                                     <select value={exigirResumo ? "Sim" : "Nao"} onChange={(e) => setExigirResumo(e.target.value === "Sim")}>
                                         <option value="Nao">Não</option>
                                         <option value="Sim">Sim</option>
+                                    </select>
+                                </div>
+
+                                <div className="input-group">
+                                    <p>Solicitar Foto/Print?</p>
+                                    <select value={exigirFoto ? "Sim" : "Nao"} onChange={(e) => setExigirFoto(e.target.value === "Sim")}>
+                                        <option value="Nao">Não</option>
+                                        <option value="Sim">Sim (Obrigatório)</option>
                                     </select>
                                 </div>
 
@@ -223,43 +231,40 @@ function CadastrarSquad() {
                             <div className="input-prova-container">
                                 <div className="input-group">
                                     <p>Modalidade Esportiva</p>
-                                    <select value={subCategoria} onChange={(e) => setSubCategoria(e.target.value)}>
-                                        <option value="Corrida">🏃 Corrida / Caminhada</option>
-                                        <option value="Ciclismo">🚴 Ciclismo</option>
-                                        <option value="Academia">🏋️ Musculação / Crossfit</option>
-                                        <option value="Futebol">⚽ Futebol</option>
+                                    <input type="text" placeholder="Ex: Corrida, Ciclismo, Academia..." value={subCategoria} onChange={(e) => setSubCategoria(e.target.value)} />
+                                </div>
+                                <div className="input-group">
+                                    <p>Solicitar Foto/Print?</p>
+                                    <select value={exigirFoto ? "Sim" : "Nao"} onChange={(e) => setExigirFoto(e.target.value === "Sim")}>
+                                        <option value="Nao">Não</option>
+                                        <option value="Sim">Sim (Obrigatório)</option>
+                                    </select>
+                                </div>
+                
+                                <div className="input-group">
+                                    <p>Solicitar Localização (Check-in)?</p>
+                                    <select>
+                                        <option value="Nao">Não</option>
+                                        <option value="Sim">Sim (Validar GPS)</option>
                                     </select>
                                 </div>
 
-                                {(subCategoria === "Corrida" || subCategoria === "Ciclismo") && (
-                                    <>
-                                        <div className="input-group">
-                                            <p>Solicitar Localização (Check-in)?</p>
-                                            <select>
-                                                <option value="Nao">Não</option>
-                                                <option value="Sim">Sim (Validar GPS)</option>
-                                            </select>
-                                        </div>
+                                <div className="input-group">
+                                    <p>Sincronizar com Strava?</p>
+                                    <select>
+                                        <option value="Nao">Não</option>
+                                        <option value="Sim">Sim (Validar Atividade)</option>
+                                    </select>
+                                </div>
 
-                                        <div className="input-group">
-                                            <p>Sincronizar com Strava?</p>
-                                            <select>
-                                                <option value="Nao">Não</option>
-                                                <option value="Sim">Sim (Validar Atividade)</option>
-                                            </select>
-                                        </div>
-                                    </>
-                                )}
+                                <div className="input-group">
+                                    <p>Verificar com Google Fit / Apple Health?</p>
+                                    <select>
+                                        <option value="Nao">Não</option>
+                                        <option value="Sim">Sim (Validar Tempo de Treino)</option>
+                                    </select>
+                                </div>
 
-                                {subCategoria === "Academia" && (
-                                    <div className="input-group">
-                                        <p>Verificar com Google Fit / Apple Health?</p>
-                                        <select>
-                                            <option value="Nao">Não</option>
-                                            <option value="Sim">Sim (Validar Tempo de Treino)</option>
-                                        </select>
-                                    </div>
-                                )}
 
                                 <div className="input-group">
                                     <p>Validar Dieta (MyFitnessPal)?</p>
@@ -271,60 +276,118 @@ function CadastrarSquad() {
                             </div>
                         )}
 
+                        {categoria === "Outros" && (
+                            <>
+                                <div className="input-group">
+                                    <p>Solicitar Foto/Print?</p>
+                                    <select value={exigirFoto ? "Sim" : "Nao"} onChange={(e) => setExigirFoto(e.target.value === "Sim")}>
+                                        <option value="Nao">Não</option>
+                                        <option value="Sim">Sim (Obrigatório)</option>
+                                    </select>
+                                </div>
+
+                                <div className="input-group">
+                                    <p>Solicitar Localização (Check-in)?</p>
+                                    <select>
+                                        <option value="Nao">Não</option>
+                                        <option value="Sim">Sim (Validar GPS)</option>
+                                    </select>
+                                </div>
+
+                                <div className="input-group">
+                                    <p>Sincronizar com Strava?</p>
+                                    <select>
+                                        <option value="Nao">Não</option>
+                                        <option value="Sim">Sim (Validar Atividade)</option>
+                                    </select>
+                                </div>
+
+                                <div className="input-group">
+                                    <p>Verificar com Google Fit / Apple Health?</p>
+                                    <select>
+                                        <option value="Nao">Não</option>
+                                        <option value="Sim">Sim (Validar Tempo de Treino)</option>
+                                    </select>
+                                </div>
+
+
+                                <div className="input-group">
+                                    <p>Validar Dieta (MyFitnessPal)?</p>
+                                    <select>
+                                        <option value="Nao">Não</option>
+                                        <option value="Sim">Sim (Importar Macros)</option>
+                                    </select>
+                                </div>
+
+                                <div className="input-group">
+                                    <p>Solicitar Foto/Print?</p>
+                                    <select value={exigirFoto ? "Sim" : "Nao"} onChange={(e) => setExigirFoto(e.target.value === "Sim")}>
+                                        <option value="Nao">Não</option>
+                                        <option value="Sim">Sim (Obrigatório)</option>
+                                    </select>
+                                </div>
+
+                                <div className="input-group">
+                                    <p>Verificação de GitHub?</p>
+                                    <select value={exigirGithub ? "Sim" : "Nao"} onChange={(e) => setExigirGithub(e.target.value === "Sim")}>
+                                        <option value="Nao">Não</option>
+                                        <option value="Sim">Sim (Validar Commits)</option>
+                                    </select>
+                                </div>
+
+                                <div className="input-group">
+                                    <p>Verificação de app Forest?</p>
+                                    <select value={exigirForest ? "Sim" : "Nao"} onChange={(e) => setExigirForest(e.target.value === "Sim")}>
+                                        <option value="Nao">Não</option>
+                                        <option value="Sim">Sim</option>
+                                    </select>
+                                </div>
+
+                                <div className="input-group">
+                                    <p>Caso seu jogo esteja nessa lista ele possui suporte para uma gestao dos membros mais facilitado</p>
+                                    <select>
+                                        <option value="Valorant">Valorant</option>
+                                        <option value="League of Legends">League of Legends</option>
+                                        <option value="Fortinite">Fortinite</option>
+                                        <option value="The Finals">The Finals</option>
+                                        <option value="Call of Duty">Call of Duty</option>
+                                    </select>
+                                </div>
+                            
+                            </>
+                            
+                        )}
+
                         
 
                         {categoria === "Gaming" && (
                             <>
                                 <div className="input-group">
                                     <p>Jogo Principal do Squad</p>
-                                    <select value={subCategoria} onChange={(e) => setSubCategoria(e.target.value)}>
-                                        <option value="">Selecione um jogo...</option>
-                                        <option value="LoL">League of Legends</option>
-                                        <option value="valorant">Valorant</option>
-                                        <option value="cs2">CS2</option>
-                                        <option value="fortnite">Fortnite</option>
-                                        <option value="chess">Chess</option>
-                                        <option value="outro">Outro</option>
+                                    <input type="text" placeholder="CS2, Valorant, Fortinet..." value={subCategoria} onChange={(e) => setSubCategoria(e.target.value) } />
+                                    
+                                </div>
+
+                                <div className="input-group">
+                                    <p>Solicitar Foto/Print/Video?</p>
+                                    <select value={exigirFoto ? "Sim" : "Nao"} onChange={(e) => setExigirFoto(e.target.value === "Sim")}>
+                                        <option value="Nao">Não</option>
+                                        <option value="Sim">Sim (Obrigatório)</option>
+                                    </select>
+                                </div>
+                                
+                                <div className="input-group">
+                                    <p>Caso seu jogo esteja nessa lista ele possui suporte para uma gestao dos membros mais facilitado</p>
+                                    <select value={exigirContajg}  onChange={(e) => setExigirContajg(e.target.value)}>
+                                        <option value="Outro">Outro</option>
+                                        <option value="Valorant">Valorant</option>
+                                        <option value="League of Legends">League of Legends</option>
+                                        <option value="Fortinite">Fortinite</option>
+                                        <option value="The Finals">The Finals</option>
+                                        <option value="Call of Duty">Call of Duty</option>
                                     </select>
                                 </div>
 
-                                {subCategoria === "LoL" && (
-                                    <div className="input-group">
-                                        <p>Critério de XP para LoL</p>
-                                        <select>
-                                            <option value="vitoria">Vitória (+50 XP)</option>
-                                            <option value="kda">KDA (Kills/Assists)</option>
-                                            <option value="objetivos">Objetivos (Torres/Dragões)</option>
-                                            <option value="tempo">Tempo de Partida (Minutos)</option>
-                                            <option value="mvp">Destaque (MVP pela API)</option>
-                                            <option value="partida">Apenas concluir partida</option>
-                                        </select>
-                                    </div>
-                                )}
-
-                                {(subCategoria === "valorant" || subCategoria === "cs2" || subCategoria === "fortnite") && (
-                                    <div className="input-group">
-                                        <p>Critério de XP para FPS</p>
-                                        <select>
-                                            <option value="vitoria">Vitória (+50 XP)</option>
-                                            <option value="headshot">Tiros na cabeça (HS %)</option>
-                                            <option value="kda">Total de Abates (Kills)</option>
-                                            <option value="mvp">MVP da Rodada</option>
-                                            <option value="partida">Apenas concluir partida</option>
-                                        </select>
-                                    </div>
-                                )}
-
-                                {subCategoria === "chess" && (
-                                    <div className="input-group">
-                                        <p>Critério de XP para Xadrez</p>
-                                        <select >
-                                            <option value="vitoria">Vitória (+30 XP)</option>
-                                            <option value="elo">Aumento de Rating (Elo)</option>
-                                            <option value="precisao">Precisão da Partida (%)</option>
-                                        </select>
-                                    </div>
-                                )}
                             </>
                         )}
                     </div>
