@@ -15,11 +15,8 @@ function PerfilSquad({ squads, usuario }) {
     const { id } = useParams();
     const navigate = useNavigate();
 
-
-    
-
     const [modalAberto, setModalAberto] = useState(false);
-    const [posts, setPosts] = useState([])
+    const [posts, setPosts] = useState([]);
     const [ranking, setRanking] = useState([]);
     const [solicitacaoPend, setSolicitacaoPend] = useState(false);
     const [squadSelecionado, setSquadSelecionado] = useState(null);

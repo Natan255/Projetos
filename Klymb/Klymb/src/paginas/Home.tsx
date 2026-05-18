@@ -3,7 +3,7 @@ import CardSquad from "../componentes/CardSquad";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Link } from "react-router-dom";
 import { Navigation, Pagination, Autoplay } from 'swiper/modules';
-import { collection, query, orderBy, onSnapshot } from "firebase/firestore";
+import { collection, query, orderBy, onSnapshot, doc, updateDoc, arrayRemove, increment, arrayUnion } from "firebase/firestore";
 import { db } from "../firebaseConfig";
 import "./Home.css";
 import PostSquad from "../componentes/PostSquad";
@@ -22,6 +22,28 @@ function Home({ squads, pesquisaQuery, usuario }) {
         "https://picsum.photos/id/20/1200/400",
         "https://picsum.photos/id/30/1200/400"
     ];
+    const gerenciarLike = async (postId, jaDeuLike) => {
+            
+        const postRef = doc(db, "posts", postId);
+        if (!usuario) return alert("Logue para curtir!");
+    
+        try {
+            if (jaDeuLike) {
+                await updateDoc(postRef, {
+                    quemDeuLike: arrayRemove(usuario.uid),
+                    likes: increment(-1)
+                });
+            } else {
+    
+                await updateDoc(postRef, {
+                    quemDeuLike: arrayUnion(usuario.uid),
+                    likes: increment(1)
+                });
+            }
+        } catch (error) {
+            console.error("Erro ao processar like:", error);
+        }
+    };
 
     useEffect(() => {
         const postsRef = collection(db, "posts");
@@ -65,6 +87,7 @@ function Home({ squads, pesquisaQuery, usuario }) {
                                 postsGlobais.map((post) => {
 
                                     const squadDoPost = squads.find(s => s.id === post.idSquad);
+                                    const euCurti = post.quemDeuLike?.includes(usuario?.uid);
                                     
                                     return (
                                         <PostSquad
@@ -79,9 +102,8 @@ function Home({ squads, pesquisaQuery, usuario }) {
                                             fotoAutor={post.fotoAutor}
                                             conquista={post.isConquista || post.conquista}
                                             jaDeuLike={post.jaDeuLike}
-                                            aoDarLike={() => {
-                                                console.log("Dar like no post:", post.id);
-                                            }}
+                                            aoDarLike={() => gerenciarLike(post.id, euCurti)}
+                                            squadId={post.idSquad}
                                         />
                                     );
                                 })
@@ -122,7 +144,7 @@ function Home({ squads, pesquisaQuery, usuario }) {
                                 {squadsPopulares.map((squad, index) => (
                                     <div key={squad.id} className="sidebar-squad-item">
                                         <span className="squad-index">{index + 1}</span>
-                                        <Link to={`/squad/${squad.id}`} className="squad-item-link">
+                                        <Link to={`/paginas/PerfilSquad/${squad.id}`} className="squad-item-link">
                                             {squad.nome}
                                         </Link>
                                     </div>
@@ -130,7 +152,7 @@ function Home({ squads, pesquisaQuery, usuario }) {
                             </div>
                         </div>
                         <footer className="sidebar-footer">
-                            <p>&copy; 2026 Rank Over. KLYMB Produtividade.</p>
+                            <p>&copy; 2026 KLYMB Produtividade.</p>
                         </footer>
                     </aside>
 
