@@ -53,7 +53,7 @@
     display: flex;
     flex-direction: column;
     gap: 16px;
-    max-width: 720px;
+    max-width: 1024px;
     width: 100%;
     justify-self: center; /* Centralização absoluta do bloco do feed */
 }
@@ -102,6 +102,24 @@
 
 
 /* --- COLUNA DE VOTOS LATERAL (DENTRO DO CARD) --- */
+
+/* Cor da bolinha ativa */
+.sidebar-banner .swiper-pagination-bullet-active {
+    background: #ff4d00 !important;
+    box-shadow: 0 0 8px rgba(255, 77, 0, 0.5); /* Efeito brilhante opcional */
+}
+
+/* Cor das bolinhas inativas */
+.sidebar-banner .swiper-pagination-bullet {
+    background: #ffffff; /* Fica branco/cinza discreto quando não está selecionado */
+
+}
+
+/* Cor das bolinhas inativas ao passar o mouse */
+.sidebar-banner .swiper-pagination-bullet:hover {
+    background: #ff4d00;
+
+}
 .post-sidebar-votes {
     width: 45px;
     background-color: #0c0c0c;
@@ -217,6 +235,9 @@
     display: flex;
     flex-direction: column;
     gap: 16px;
+    position: sticky;
+    top: 30px; /* Distância do topo da tela quando começar o scroll */
+    height: max-content;
 }
 
 .sidebar-widget {

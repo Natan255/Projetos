@@ -3,11 +3,15 @@
    ========================================================================== */
 
 /* Container do Post */
+
 .Estrutura_post {
     background: linear-gradient(145deg, #151515, #0f0f0f);
     border: 1px solid #222;
     border-radius: 12px; 
-    padding: 18px;       
+    padding: 24px;              
+    max-width: 1000px;           /* DEFINE A LARGURA MÁXIMA (Ajuste como preferir) */
+    width: 100%;                /* Garante que ele seja responsivo */
+    margin: 0 auto 30px auto;
     transition: all 0.3s ease;
     box-shadow: 0 8px 24px rgba(0,0,0,0.5);
     display: flex;
@@ -124,6 +128,10 @@
 .Conteudo_Post {
     cursor: pointer;
     text-align: left;
+    display: -webkit-box;
+    -webkit-line-clamp: 15;
+    -webkit-box-orient: vertical;  
+    overflow: hidden;
 }
 
 .Conteudo_Post h1 {

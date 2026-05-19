@@ -6,6 +6,7 @@ import Modal from "../componentes/Modal";
 import { getDoc, addDoc, doc, setDoc, updateDoc, arrayUnion, arrayRemove, collection, query, where, orderBy, getDocs, serverTimestamp, onSnapshot, deleteDoc, increment } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import { db } from "../firebaseConfig";
+import PostVotacaoSquad from "../componentes/VotoSquad";
 import { like } from "firebase/firestore/pipelines";
 
 
@@ -365,16 +366,41 @@ function PerfilSquad({ squads, usuario }) {
                 </div>
                 <div className="Topicos">
                     
-                    <div className="mural-posts" >
+                    <div className="mural-posts">
                         {posts.length > 0 ? (
                             posts.map((post) => {
-                                
                                 const euCurti = post.quemDeuLike?.includes(usuario?.uid);
+                                if (post.tipo === "conquistaVoto") {
+                                     return (
+                                        <PostVotacaoSquad 
+                                            key={post.id}
+                                            id={post.id}
+                                            idAutor={post.idAutor}
+                                            titulo={post.titulo}
+                                            texto={post.texto}
+                                            autor={post.nomeAutor}
+                                            fotoAutor={post.fotoAutor}
+                                            squadId={post.idSquad}
+                                            votosPositivos={post.votosPositivos || []}
+                                            votosNegativos={post.votosNegativos || []}
+                                            statusVotacao={post.statusVotacao || "aberta"}
+                                            usuario={usuario}
+                                            // Adicione estas três linhas abaixo para alimentar as interações sociais do novo componente:
+                                            likes={post.likes}
+                                            comentarios={post.comentarios}
+                                            jaDeuLike={euCurti}
+                                            aoDarLike={() => gerenciarLike(post.id, euCurti)}
+                                            encerraEm={post.encerraEm}
+                                            rankingComputado={post.rankingComputado || false}
+                                        />
+                                    );
+                                }
+
+
                                 const conq = post.tipo?.includes("conquista");
 
                                 return (
-
-                                        <PostSquad 
+                                    <PostSquad 
                                         key={post.id}
                                         id={post.id} 
                                         idAutor={post.idAutor}
@@ -387,16 +413,13 @@ function PerfilSquad({ squads, usuario }) {
                                         conquista={conq}
                                         jaDeuLike={euCurti}
                                         aoDarLike={() => gerenciarLike(post.id, euCurti)}
-
-                                        
-                                        />
-                                    
+                                        squadId={post.idSquad} // Garante o ID do squad se o PostSquad original precisar dele
+                                    />
                                 );
                             })
                         ) : (
                             <p>Nenhum post ainda. Seja o primeiro!</p>
                         )}
-
                     </div>
                 </div>
             </div>

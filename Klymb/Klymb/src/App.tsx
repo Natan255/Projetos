@@ -61,7 +61,7 @@ useEffect(() => {
       <Navbar squads={squads} setPesquisa={setPesquisa} pesquisaQuery={pesquisaQuery} usuario={usuario} />
 
       <Routes>
-        <Route path="/" element={<Home squads={squads} pesquisaQuery={pesquisaQuery} />} />
+        <Route path="/" element={<Home squads={squads} pesquisaQuery={pesquisaQuery} usuario={usuario} />} />
 
         <Route path="/paginas/Squads" element={<Squads squads={squads} />} />
 

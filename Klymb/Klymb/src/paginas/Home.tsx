@@ -7,6 +7,7 @@ import { collection, query, orderBy, onSnapshot, doc, updateDoc, arrayRemove, in
 import { db } from "../firebaseConfig";
 import "./Home.css";
 import PostSquad from "../componentes/PostSquad";
+import PostVotacaoSquad from "../componentes/VotoSquad";
 
 import 'swiper/css';
 import 'swiper/css/navigation';
@@ -18,15 +19,15 @@ function Home({ squads, pesquisaQuery, usuario }) {
 
     const squadsPopulares = squads.slice(0, 5);
     const banners = [
-        "https://picsum.photos/id/15/1200/400",
-        "https://picsum.photos/id/20/1200/400",
-        "https://picsum.photos/id/30/1200/400"
+        "kk.png",
+        "ofc2.png",
+        "kll.png"
     ];
     const gerenciarLike = async (postId, jaDeuLike) => {
-            
+        if (!usuario) return alert("Logue para curtir!");    
         const postRef = doc(db, "posts", postId);
-        if (!usuario) return alert("Logue para curtir!");
-    
+        
+
         try {
             if (jaDeuLike) {
                 await updateDoc(postRef, {
@@ -86,8 +87,32 @@ function Home({ squads, pesquisaQuery, usuario }) {
                             {postsGlobais.length > 0 ? (
                                 postsGlobais.map((post) => {
 
-                                    const squadDoPost = squads.find(s => s.id === post.idSquad);
                                     const euCurti = post.quemDeuLike?.includes(usuario?.uid);
+                                    if (post.tipo === "conquistaVoto") {
+                                     return (
+                                        <PostVotacaoSquad 
+                                            key={post.id}
+                                            id={post.id}
+                                            idAutor={post.idAutor}
+                                            titulo={post.titulo}
+                                            texto={post.texto}
+                                            autor={post.nomeAutor}
+                                            fotoAutor={post.fotoAutor}
+                                            squadId={post.idSquad}
+                                            votosPositivos={post.votosPositivos || []}
+                                            votosNegativos={post.votosNegativos || []}
+                                            statusVotacao={post.statusVotacao || "aberta"}
+                                            usuario={usuario}
+                                            // Adicione estas três linhas abaixo para alimentar as interações sociais do novo componente:
+                                            likes={post.likes}
+                                            comentarios={post.comentarios}
+                                            jaDeuLike={euCurti}
+                                            aoDarLike={() => gerenciarLike(post.id, euCurti)}
+                                            encerraEm={post.encerraEm}
+                                            rankingComputado={post.rankingComputado || false}
+                                        />
+                                    );
+                                }
                                     
                                     return (
                                         <PostSquad

@@ -1,0 +1,150 @@
+/* ==========================================================================
+   PostVotacaoSquad.css - Estilo Premium Cyber/Dark para Enquetes
+   ========================================================================== */
+
+/* Reaproveita a estrutura base e adiciona o detalhe de borda roxa/indigo para votações */
+.votacao-squad-card {
+    background: linear-gradient(145deg, #151515, #0f0f0f);
+    border: 1px solid #333;
+    border-radius: 12px; 
+    padding: 24px;              
+    max-width: 1000px;
+    width: 100%;
+    margin: 0 auto 30px auto;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Brilho ao passar o mouse focado na cor da enquete (Indigo) */
+.votacao-squad-card:hover {
+    border-color: #dadbec;
+    transform: scale(1.005);
+}
+
+/* Badge Superior no canto do Card (Semelhante ao ::before da Conquista) */
+.votacao-squad-card::before {
+    content: "VOTAÇÃO EM ABERTO";
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: rgba(238, 238, 247, 0.15);
+    border: 1px solid #dbdbe1;
+    color: #d1d3eb;
+    font-size: 0.6rem;
+    font-weight: 800;
+    padding: 4px 8px;
+    border-radius: 4px;
+    letter-spacing: 0.5px;
+}
+
+/* Quando encerrado, muda o texto e o estilo do Badge superior */
+.votacao-squad-card.encerrado::before {
+    content: "ENCERRADO";
+    background: rgba(255, 255, 255, 0.05);
+    border-color: #444;
+    color: #888;
+}
+
+/* --- ÁREA DA ENQUETE --- */
+.container-enquete-post {
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 8px;
+    padding: 16px;
+    margin: 20px 0 8px 0;
+    border: 1px solid #1a1a1a;
+}
+
+/* Alinhamento Horizontal */
+.botoes-enquete {
+    display: flex;
+    gap: 14px;
+    width: 100%;
+}
+
+/* Botões da Enquete */
+.btn-enquete {
+    flex: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 12px 18px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #aaa;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Hover nos botões ativos */
+.btn-enquete:not(:disabled):hover {
+    background: #222;
+    color: #fff;
+    transform: translateY(-2px);
+}
+
+/* ESTADO ATIVO: Voto Positivo (Seguindo o padrão Laranja/Vermelho do seu app) */
+.btn-enquete-sim.votado-sim {
+    background: rgba(255, 77, 0, 0.08);
+    border-color: #ff4d00;
+    color: #ff4d00;
+    box-shadow: 0 0 12px rgba(255, 77, 0, 0.15);
+}
+
+/* ESTADO ATIVO: Voto Negativo (Corta com um tom de cinza escuro/gelo opaco) */
+.btn-enquete-nao.votado-nao {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: #888;
+    color: #fff;
+    box-shadow: 0 0 12px rgba(255, 255, 255, 0.05);
+}
+
+/* Badges de Contagem de Votos internos do botão */
+.badge-votos {
+    background: #111;
+    border: 1px solid #222;
+    color: #666;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 800;
+    min-width: 28px;
+    text-align: center;
+}
+
+/* Alteração das Badges internas quando selecionado */
+.votado-sim .badge-votos {
+    background: #ff4d00;
+    border-color: #ff4d00;
+    color: #fff;
+}
+
+.votado-nao .badge-votos {
+    background: #fff;
+    border-color: #fff;
+    color: #000;
+}
+
+/* Rodapé indicativo de encerramento */
+.aviso-encerrado {
+    display: block;
+    text-align: center;
+    margin-top: 12px;
+    font-size: 0.75rem;
+    color: #555;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+}
+
+/* Bloqueio de cliques se estiver finalizado */
+.btn-enquete:disabled {
+    cursor: not-allowed;
+    opacity: 0.4;
+    transform: none !important;
+}

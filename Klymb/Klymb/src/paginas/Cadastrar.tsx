@@ -11,6 +11,7 @@ function Cadastrar() {
     const [email, setEmail] = useState("");
     const [senha, setSenha] = useState("");
     const [senhadef, setSenhaDef] = useState("")
+    const [erro, setErro] = useState("");
     const navigate = useNavigate();
 
 
@@ -18,7 +19,12 @@ function Cadastrar() {
         e.preventDefault();
         try {
             if (senha !== senhadef) {
-                alert("As senhas não coincidem! Verifique e tente novamente.");
+                setErro("As senhas não coincidem! Verifique e tente novamente.");
+                return;
+            }
+
+            if (senha.length < 5){
+                setErro("A senha precisa ter pelo menos 5 caracteres.");
                 return;
             }
             const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
@@ -40,14 +46,15 @@ function Cadastrar() {
                 navigate("/");
 
         } catch (error: any) {
+            
             if (error.code === 'auth/email-already-in-use') {
-                alert("Este e-mail já está sendo usado por outra conta!");
+                setErro("Este e-mail já está sendo usado por outra conta!");
             } else if (error.code === 'auth/invalid-email') {
-                alert("O formato do e-mail é inválido.");
+                setErro("O formato do e-mail é inválido.");
             } else if (error.code === 'auth/weak-password') {
-                alert("A senha precisa ter pelo menos 6 caracteres.");
+                setErro("A senha precisa ter pelo menos 6 caracteres no Firebase.");
             } else {
-                alert("Erro ao criar conta: " + error.message);
+                setErro("Erro ao criar conta: " + error.message);
             }
         }
     };
@@ -79,12 +86,14 @@ function Cadastrar() {
         <div className="auth-container">
             <div className="auth-card">
                 <div className="auth-title">
-                    <h1>Cadastre-se no Rank Over</h1>
+                    <h1>Cadastre-se no Klymb</h1>
                 </div>
+
+                {erro && <div className="auth-error-message">{erro}</div>}
 
                 <form className="auth-form" onSubmit={handleEmailSignup} >
                     <input className="auth-input" type="text" placeholder="Nome de usuário" onChange={(e) => setNome(e.target.value)} />
-                    <input className="auth-input" type="email" placeholder="e-mail" onChange={(e) => setEmail(e.target.value)} />
+                    <input className="auth-input" type="email" placeholder="E-mail" onChange={(e) => setEmail(e.target.value)} />
                     <input className="auth-input" type="password" placeholder="Crie uma senha" onChange={(e) => setSenha(e.target.value)} />
                     <input className="auth-input" type="password" placeholder="Confirme a senha" onChange={(e) => setSenhaDef(e.target.value)} />
 

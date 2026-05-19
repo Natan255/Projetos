@@ -13,7 +13,8 @@ function Prova({ usuario, squads }) {
         valorAcao: "",
         fotoUrl: "",
         resumo: "",
-        github: ""
+        github: "",
+        comentario: ""
     });
 
     const handleChange = (e) => {
@@ -28,23 +29,33 @@ function Prova({ usuario, squads }) {
         try {
             const pendProvaRef = doc(db, "squads", id, "solicitacao_prova", usuario.uid);
 
-            await setDoc(pendProvaRef, {
+            // 1. Criamos a estrutura base que serve para ambos os estilos
+            const dadosParaEnviar = {
                 uid: usuario.uid,
                 nome: usuario.displayName || "Usuário",
                 fotoPerfil: usuario.photoURL || "",
-                valorAcao: formData.valorAcao,
-                provas: {
+                valorAcao: Number(formData.valorAcao), // Garante que salva como número
+                status: "pendente",
+                timestamp: serverTimestamp()
+            };
+
+            // 2. Inserimos os dados específicos baseados no estilo do Squad
+            if (squadAtual.estilo === "Votacao") {
+                dadosParaEnviar.comentario = formData.comentario;
+            } else {
+                dadosParaEnviar.provas = {
                     foto: formData.fotoUrl,
                     resumo: formData.resumo,
                     github: formData.github
-                },
-                status: "pendente",
-                timestamp: serverTimestamp()
-            });
+                };
+            }
+
+            // 3. Enviamos o objeto montado para o Firestore
+            await setDoc(pendProvaRef, dadosParaEnviar);
 
             navigate(-1);
         } catch (error) {
-            console.error(error);
+            console.error("Erro ao enviar a prova/votação:", error);
         }
     };
 
@@ -53,53 +64,57 @@ function Prova({ usuario, squads }) {
             <form className="form-prova" onSubmit={handleSubmitProva}>
                 
                 <div className="input-group">
-                    <label>Quantidade de {squadAtual.metrica}</label>
-                    <input 
-                        name="valorAcao"
-                        type="number" 
-                        required 
-                        value={formData.valorAcao} 
-                        onChange={handleChange} 
-                    />
+                    <label>Prova do squad</label>
+                
                 </div>
-
-                {squadAtual.regras?.exigirFoto && (
+                {squadAtual.estilo === "Votacao" && (
                     <div className="input-group">
-                        <label>Foto da Prova</label>
-                        <input 
-                            name="fotoUrl"
-                            type="text" 
-                            value={formData.fotoUrl} 
-                            onChange={handleChange} 
-                            placeholder="Link da imagem" 
-                        />
+                        <input type="text" placeholder="Comentario (opcional dps botar arquivo aqui)" name="comentario" value={formData.comentario} onChange={handleChange} />
                     </div>
+                    
+                )}
+                {squadAtual.estilo === "Pontos" && (
+                    <>
+                        {squadAtual.regras?.exigirFoto && (
+                            <div className="input-group">
+                                <label>Foto da Prova</label>
+                                <input 
+                                    name="fotoUrl"
+                                    type="text" 
+                                    value={formData.fotoUrl} 
+                                    onChange={handleChange} 
+                                    placeholder="Link da imagem" 
+                                />
+                            </div>
+                        )}
+                        
+                        {squadAtual.regras?.exigirResumo && (
+                            <div className="input-group">
+                                <label>Resumo do Estudo</label>
+                                <textarea 
+                                    name="resumo"
+                                    value={formData.resumo} 
+                                    onChange={handleChange} 
+                                    placeholder="O que você aprendeu?" 
+                                />
+                            </div>
+                        )}
+
+                        {squadAtual.regras?.exigirGithub && (
+                            <div className="input-group">
+                                <label>Link do GitHub</label>
+                                <input 
+                                    name="github"
+                                    type="text" 
+                                    value={formData.github} 
+                                    onChange={handleChange} 
+                                    placeholder="Link do repositorio" 
+                                /> 
+                            </div>
+                        )}
+                    </>
                 )}
                 
-                {squadAtual.regras?.exigirResumo && (
-                    <div className="input-group">
-                        <label>Resumo do Estudo</label>
-                        <textarea 
-                            name="resumo"
-                            value={formData.resumo} 
-                            onChange={handleChange} 
-                            placeholder="O que você aprendeu?" 
-                        />
-                    </div>
-                )}
-
-                {squadAtual.regras?.exigirGithub && (
-                    <div className="input-group">
-                        <label>Link do GitHub</label>
-                        <input 
-                            name="github"
-                            type="text" 
-                            value={formData.github} 
-                            onChange={handleChange} 
-                            placeholder="Link do repositorio" 
-                        /> 
-                    </div>
-                )}
 
                 <button type="submit" className="btn-enviar-prova">Enviar Prova</button>
             </form>
