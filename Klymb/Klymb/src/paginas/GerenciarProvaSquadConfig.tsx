@@ -1,14 +1,18 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { collection, getDocs, doc, updateDoc, increment, deleteDoc, addDoc, serverTimestamp, getDoc } from "firebase/firestore";
 import { db } from "../firebaseConfig";
+import { useAlerta } from "../componentes/AlertaProvider";
 import "./GerenciarProvaSquadConfig.css";
+
 
 function GerenciarProvaSquadConfig() {
     const { id } = useParams(); // ID do Squad
     const [solicitacoes, setSolicitacoes] = useState([]);
     const [squadAtual, setSquadAtual] = useState(null); // Estado para guardar a configuração do Squad pai
     const [carregando, setCarregando] = useState(true);
+    const { exibirAlerta } = useAlerta();
+
 
     const buscarDadosESolicitacoes = async () => {
         try {
@@ -97,14 +101,14 @@ function GerenciarProvaSquadConfig() {
                 });
             }
 
-            // 3. Deleta a solicitação de prova concluída
             const provaDocRef = doc(db, "squads", id, "solicitacao_prova", solicitacao.id);
             await deleteDoc(provaDocRef);
-
-            // 4. Atualiza a interface removendo o card
             setSolicitacoes(prev => prev.filter(item => item.id !== solicitacao.id));
+            exibirAlerta(
+                "Prova Aprovada!", 
+                "Um post com a prova foi postado no squad", 
+            );
 
-            alert(estilo === "Votacao" ? "Votação aberta e postada no feed!" : "Prova aprovada e conquista postada no feed!");
 
         } catch (error) {
             console.error("Erro ao aprovar:", error);
@@ -116,7 +120,11 @@ function GerenciarProvaSquadConfig() {
         try {
             await deleteDoc(doc(db, "squads", id, "solicitacao_prova", solicitacaoId));
             setSolicitacoes(prev => prev.filter(item => item.id !== solicitacaoId));
-            alert("Solicitação recusada.");
+            exibirAlerta(
+                "Prova Recusada!", 
+                "Um post com a prova foi postado no squad", 
+
+            );
         } catch (error) {
             console.error(error);
         }
@@ -174,6 +182,7 @@ function GerenciarProvaSquadConfig() {
                             <div className="acoes">
                                 <button onClick={() => aprovarProva(s)} className="btn-aprovar">
                                     {squadAtual?.estilo === "Votacao" ? "Liberar p/ Votação" : "Aceitar"}
+
                                 </button>
                                 <button onClick={() => recusarProva(s.id)} className="btn-recusar">
                                     Recusar

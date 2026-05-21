@@ -3,7 +3,7 @@ import { db, auth } from "../firebaseConfig";
 import { collection, addDoc, serverTimestamp, doc, updateDoc, arrayUnion, setDoc} from "firebase/firestore"; //pra poder editar sem apagar
 import { useNavigate } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
-import AlertaMsg from "../componentes/AlertaMsg";
+
 
 import "./CadastrarSquad.css";
 import Squads from "./Squads";
@@ -137,12 +137,7 @@ function CadastrarSquad() {
         
         <div className="criars-container">
             {mostrarAlerta && (
-                <AlertaMsg 
-                    MsgTitulo="Concluido!" 
-                    Msg={`Squad criado com sucesso`} 
-                    textoBotao="Voltar ao Perfil"
-                    aoClicar={() => navigate("/")} // Ou navigate(-1)
-                />
+                <p>a</p>
             )}
             <div className="criars">
                 <h1 className="titulo-sessao">Fundar Novo Squad</h1>
@@ -189,6 +184,7 @@ function CadastrarSquad() {
                             <option value="Outros">Outros</option>
                         </select>
                     </div>
+    
                     {estilo === "Votacao" && (
                         <>
                             <div className="input-group">
@@ -236,7 +232,7 @@ function CadastrarSquad() {
                         </>
                     )}
 
-                    {estilo === "Pontos" &&(
+                    {(estilo === "Pontos" || estilo === "Constancia") &&(
                         <>
                             <div className="input-group">
                                 <p>Métrica de Rank (O que define quem está no topo?)</p>

@@ -21,7 +21,9 @@ import { db } from "./firebaseConfig";
 import { collection, onSnapshot } from "firebase/firestore";
 import { auth } from "./firebaseConfig";
 import { onAuthStateChanged, type User } from "firebase/auth";
+import AlertaProvider from "./componentes/AlertaProvider";
 import GerenciaPostSquadConfig from './paginas/GerenciaPostSquadConfig'
+import AlterarPerfilSquad from './paginas/AlterarPerfilSquad'
 
 
 
@@ -29,6 +31,7 @@ function App() {
   const [pesquisaQuery, setPesquisa] = useState("");
   const [usuario, setUsuario] = useState<User | null>(null);
   const [squads, setSquads] = useState<any[]>([]);
+  
 
 useEffect(() => {
 
@@ -58,47 +61,53 @@ useEffect(() => {
 
   return (
     <Router>
-      <Navbar squads={squads} setPesquisa={setPesquisa} pesquisaQuery={pesquisaQuery} usuario={usuario} />
+      <AlertaProvider>
+        <Navbar squads={squads} setPesquisa={setPesquisa} pesquisaQuery={pesquisaQuery} usuario={usuario} />
 
-      <Routes>
-        <Route path="/" element={<Home squads={squads} pesquisaQuery={pesquisaQuery} usuario={usuario} />} />
+        <Routes>
+          <Route path="/" element={<Home squads={squads} pesquisaQuery={pesquisaQuery} usuario={usuario} />} />
 
-        <Route path="/paginas/Squads" element={<Squads squads={squads} />} />
+          <Route path="/paginas/Squads" element={<Squads squads={squads} />} />
 
-        
+          <Route path='/paginas/Cadastrar' element={<Cadastrar />} />
 
-        <Route path='/paginas/Cadastrar' element={<Cadastrar />} />
+          <Route path="/paginas/CadastrarSquad" element={<CadastrarSquad/>} />
 
-        <Route path="/paginas/CadastrarSquad" element={<CadastrarSquad/>} />
+          <Route path='/paginas/Entrar' element={<Entrar />} />
 
-        <Route path='/paginas/Entrar' element={<Entrar />} />
+          <Route path="/config/alterar/:campo" element={<AlterarPerfil />} />
 
-        <Route path="/config/alterar/:campo" element={<AlterarPerfil />} />
-
-        <Route path="/post/:idPost" element={<ExpansaoPost usuario={usuario} />} />
-
-
-        <Route path="/paginas/PerfilSquad/:id" element={<PerfilSquad squads={squads} usuario={usuario} />} />
-
-        <Route path='/squadconfig/administrar/:id/:campo' element={<MembroSquadConfig/>}/>
-
-        <Route path='/squadconfig/solicitacao/:id/prova' element={<GerenciarProvaSquadConfig/>}/>
-
-        <Route path='/squadconfig/solicitacao/:id/post' element={<GerenciaPostSquadConfig/>}/>
-
-        <Route path='/squadconfig/solicitacao/:id/entrada' element={<GerenciarEntradaSquadConfig/>}/>
-
-        <Route path="/paginas/Prova/:id" element={<Prova usuario={usuario} squads={squads} />} />
+          <Route path="/post/:idPost" element={<ExpansaoPost usuario={usuario} />} />
 
 
-        <Route path='/paginas/perfil'element={<Perfil usuario={usuario} squads={squads} />} />
+          <Route path="/paginas/PerfilSquad/:id" element={<PerfilSquad squads={squads} usuario={usuario} />} />
 
-        <Route path="/paginas/perfil/:idUsuario" element={<Perfil usuario={usuario} squads={squads} />} />
-    
-        <Route path="/paginas/PerfilConfig" element={<PerfilConfig usuario={usuario} />} />
+          <Route path='/squadconfig/alterar/:id/:campo' element={<AlterarPerfilSquad/>}/>
 
-        <Route path="/paginas/PerfilSquadconfig/:id" element={<PerfilSquadConfig />} />
-      </Routes>
+          <Route path='/squadconfig/administrar/:id/:campo' element={<MembroSquadConfig/>}/>
+
+          <Route path='/squadconfig/solicitacao/:id/prova' element={<GerenciarProvaSquadConfig/>}/>
+
+          <Route path='/squadconfig/solicitacao/:id/post' element={<GerenciaPostSquadConfig/>}/>
+
+          <Route path='/squadconfig/solicitacao/:id/entrada' element={<GerenciarEntradaSquadConfig/>}/>
+
+
+
+          <Route path="/paginas/Prova/:id" element={<Prova usuario={usuario} squads={squads} />} />
+
+
+          <Route path='/paginas/perfil'element={<Perfil usuario={usuario} squads={squads} />} />
+
+          <Route path="/paginas/perfil/:idUsuario" element={<Perfil usuario={usuario} squads={squads} />} />
+      
+          <Route path="/paginas/PerfilConfig" element={<PerfilConfig usuario={usuario} />} />
+
+          <Route path="/paginas/PerfilSquadconfig/:id" element={<PerfilSquadConfig />} />
+
+
+        </Routes>
+      </AlertaProvider>
     </Router>
   );
 }

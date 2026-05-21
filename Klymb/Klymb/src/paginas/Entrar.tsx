@@ -4,7 +4,7 @@ import { db, auth, provider, signInWithPopup, signInWithEmailAndPassword } from 
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom"
 import "./Entrar.css"
-import AlertaMsg from "../componentes/AlertaMsg";
+import AlertaMsg from "../componentes/AlertaProvider";
 
 function Entrar() {
     const [email, setEmail] = useState("");

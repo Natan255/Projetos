@@ -2,12 +2,15 @@ import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { auth, db } from "../firebaseConfig";
 import { collection, onSnapshot, doc, addDoc, deleteDoc, serverTimestamp } from "firebase/firestore";
+import { useAlerta } from "../componentes/AlertaProvider";
+
 import PostSquad from "../componentes/PostSquad";
 import "./GerenciarPostSquadConfig.css"
 
 function GerenciaPostSquadConfig() {
     const { id } = useParams();
     const [solicitacoes, setSolicitacoes] = useState([]);
+    const { exibirAlerta } = useAlerta();
 
     useEffect(() => {
         if (!id) return;
@@ -39,6 +42,11 @@ function GerenciaPostSquadConfig() {
             });
 
             await deleteDoc(doc(db, "squads", id, "solicitacoes_posts", post.id));
+            exibirAlerta(
+                "Post Aprovado!", 
+                "",
+
+            );
 
         } catch (error) {
             console.error("Erro ao aprovar post:", error);
@@ -47,6 +55,12 @@ function GerenciaPostSquadConfig() {
 
     const recusarPost = async (postId) => {
         await deleteDoc(doc(db, "squads", id, "solicitacoes_posts", postId));
+        exibirAlerta(
+                "Post recusado!", 
+                "",
+                "Ok",
+                () => navigate(-1)
+            );
     };
 
     return (

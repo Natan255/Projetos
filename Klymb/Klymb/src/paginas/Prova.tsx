@@ -3,8 +3,10 @@ import { useState } from "react";
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "../firebaseConfig";
 import "./Prova.css";
+import { useAlerta } from "../componentes/AlertaProvider";
 
 function Prova({ usuario, squads }) {
+    const { exibirAlerta } = useAlerta();
     const { id } = useParams(); 
     const navigate = useNavigate();
     const squadAtual = squads.find(s => s.id === id);
@@ -27,6 +29,10 @@ function Prova({ usuario, squads }) {
     const handleSubmitProva = async (e) => {
         e.preventDefault();
         try {
+            if (usuario.uid !== squadAtual.membros.find(m => m.uid === usuario.uid)?.uid) {
+                exibirAlerta("Erro", "Você precisa ser membro do squad para enviar uma prova.");
+            }
+
             const pendProvaRef = doc(db, "squads", id, "solicitacao_prova", usuario.uid);
 
             // 1. Criamos a estrutura base que serve para ambos os estilos
@@ -75,6 +81,10 @@ function Prova({ usuario, squads }) {
                 )}
                 {squadAtual.estilo === "Pontos" && (
                     <>
+                        <div className="input-group">
+                            <input type="number" name="valorAcao" onChange={(e) => handleChange(e)}/>
+                        </div>
+
                         {squadAtual.regras?.exigirFoto && (
                             <div className="input-group">
                                 <label>Foto da Prova</label>

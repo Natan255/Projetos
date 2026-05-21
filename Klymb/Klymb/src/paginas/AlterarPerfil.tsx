@@ -4,7 +4,7 @@ import { auth, db } from "../firebaseConfig";
 import { updateProfile, updatePassword } from "firebase/auth";
 import { doc, updateDoc } from "firebase/firestore";
 import "./AlterarPerfil.css";
-import AlertaMsg from "../componentes/AlertaMsg"
+import AlertaMsg from "../componentes/AlertaProvider"
 
 function AlterarPerfil() {
     const { campo } = useParams();

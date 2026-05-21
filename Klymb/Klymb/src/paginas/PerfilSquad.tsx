@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { db } from "../firebaseConfig";
 import PostVotacaoSquad from "../componentes/VotoSquad";
 import { like } from "firebase/firestore/pipelines";
+import { useAlerta } from "../componentes/AlertaProvider";
 
 
 
@@ -15,7 +16,7 @@ import { like } from "firebase/firestore/pipelines";
 function PerfilSquad({ squads, usuario }) {
     const { id } = useParams();
     const navigate = useNavigate();
-
+    const { exibirAlerta } = useAlerta();
     const [modalAberto, setModalAberto] = useState(false);
     const [posts, setPosts] = useState([]);
     const [ranking, setRanking] = useState([]);
@@ -64,6 +65,20 @@ function PerfilSquad({ squads, usuario }) {
         if (!usuario || !id) return;
 
         try {
+            const squadAtual = squads.find(s => s.id === id);
+
+            if (!squadAtual) {
+                exibirAlerta("Erro", "Squad não encontrado.");
+                return;
+            }
+            
+            const membro = squadAtual.membros?.includes(usuario.uid);
+            
+
+            if (!membro) {
+                exibirAlerta("Erro", "Você precisa ser membro do squad para enviar uma prova.");
+                return;
+            }
             await addDoc(collection(db, "squads", id, "solicitacoes_posts"), {
                 titulo: dadosDoPost.titulo,
                 texto: dadosDoPost.texto,
@@ -260,6 +275,7 @@ function PerfilSquad({ squads, usuario }) {
 
     return (
         <div className="perfil-container">
+            {/* --- HEADER DO PERFIL --- */}
             <div className="Fundo_perfil_squad">
                 <img src={squadSelecionado.fotoCapa} className="capa-img" alt="Capa" />
                 <div className="perfil-header">
@@ -273,12 +289,9 @@ function PerfilSquad({ squads, usuario }) {
                             {isMod && !isOwner && <span title="Você é moderador"> 🛡️</span>}
                         </h1>
                         <p>{squadSelecionado.descricao}</p>
-                        <div className="tags">
-                            <span>#Produtividade</span>
-                            <span>#Foco</span>
-                            <span >
-                                🔥 {squadSelecionado.membros?.length || 0} Membros
-                            </span>
+
+                        <div className="Membros_squad">
+                            {squadSelecionado.membros?.length || 0} Membros
                         </div>
                     </div>
                     <div className="acoes">
@@ -299,7 +312,6 @@ function PerfilSquad({ squads, usuario }) {
                                         ⏳ Aguardando Aprovação
                                     </button>
                                 ) : (
-                                    /* ESTADO 3: Ainda não solicitou */
                                     <button className="btn-entrar" onClick={solicitarEntrada}>
                                         Entrar no Squad
                                     </button>
@@ -310,13 +322,12 @@ function PerfilSquad({ squads, usuario }) {
                 </div>
             </div>
 
+            {/* --- SEÇÃO DO RANKING --- */}
             <div className="Rank_secao">
-                <h2>🏆 Ranking de Produção de {squadSelecionado.nome}</h2>
+                <h2>🏆 Ranking do {squadSelecionado.nome}</h2>
 
                 {ranking.length > 0 ? (
                     <div className="Rank_container">
-                        
-                        {/* --- BLOCO DO PÓDIO (TOP 3) --- */}
                         <div className="Podio_container">
                             {ranking.slice(0, 3).map((membro, index) => {
                                 const classes = ["primeiro", "segundo", "terceiro"];
@@ -335,7 +346,6 @@ function PerfilSquad({ squads, usuario }) {
                             })}
                         </div>
 
-                        {/* --- LISTA DO RESTANTE (4º em diante) --- */}
                         <div className="Rank_lista">
                             {ranking.slice(3).map((membro, index) => (
                                 <div key={membro.uid} className="membro-rank">
@@ -353,78 +363,89 @@ function PerfilSquad({ squads, usuario }) {
                 )}
             </div>
             
+
             <div className="Topicos_squad">
-                <h3 className="divisao"></h3>
-                <div className="Topicos_config">
+                
+
+                <div className="Topicos_header_acoes">
                     <button className="prova" onClick={() => navigate(`/paginas/Prova/${id}`)}>Prova</button>
                     <button className="Postar" onClick={() => setModalAberto(true)}>Postar</button>
                     <Modal 
                         isOpen={modalAberto} 
                         onClose={() => setModalAberto(false)} 
-                        aoPostar={solicitarPost} //aqui era aoPostar
+                        aoPostar={solicitarPost} 
                     />
                 </div>
-                <div className="Topicos">
+                
+                {/* O Grid que divide o layout em duas colunas */}
+                <div className="squad-flex-container">
                     
-                    <div className="mural-posts">
-                        {posts.length > 0 ? (
-                            posts.map((post) => {
-                                const euCurti = post.quemDeuLike?.includes(usuario?.uid);
-                                if (post.tipo === "conquistaVoto") {
-                                     return (
-                                        <PostVotacaoSquad 
+                    {/* Coluna Esquerda: Feed de Novidades */}
+                    <div className="Topicos">
+                        <div className="mural-posts">
+                            {posts.length > 0 ? (
+                                posts.map((post) => {
+                                    const euCurti = post.quemDeuLike?.includes(usuario?.uid);
+                                    if (post.tipo === "conquistaVoto") {
+                                        return (
+                                            <PostVotacaoSquad 
+                                                key={post.id}
+                                                id={post.id}
+                                                idAutor={post.idAutor}
+                                                titulo={post.titulo}
+                                                texto={post.texto}
+                                                autor={post.nomeAutor}
+                                                fotoAutor={post.fotoAutor}
+                                                squadId={post.idSquad}
+                                                votosPositivos={post.votosPositivos || []}
+                                                votosNegativos={post.votosNegativos || []}
+                                                statusVotacao={post.statusVotacao || "aberta"}
+                                                usuario={usuario}
+                                                likes={post.likes}
+                                                comentarios={post.comentarios}
+                                                jaDeuLike={euCurti}
+                                                aoDarLike={() => gerenciarLike(post.id, euCurti)}
+                                                encerraEm={post.encerraEm}
+                                                rankingComputado={post.rankingComputado || false}
+                                            />
+                                        );
+                                    }
+
+                                    const conq = post.tipo?.includes("conquista");
+
+                                    return (
+                                        <PostSquad 
                                             key={post.id}
-                                            id={post.id}
+                                            id={post.id} 
                                             idAutor={post.idAutor}
-                                            titulo={post.titulo}
-                                            texto={post.texto}
-                                            autor={post.nomeAutor}
+                                            titulo={post.titulo} 
+                                            texto={post.texto} 
+                                            comentarios={post.comentarios} 
+                                            autor={post.nomeAutor} 
                                             fotoAutor={post.fotoAutor}
-                                            squadId={post.idSquad}
-                                            votosPositivos={post.votosPositivos || []}
-                                            votosNegativos={post.votosNegativos || []}
-                                            statusVotacao={post.statusVotacao || "aberta"}
-                                            usuario={usuario}
-                                            // Adicione estas três linhas abaixo para alimentar as interações sociais do novo componente:
                                             likes={post.likes}
-                                            comentarios={post.comentarios}
+                                            conquista={conq}
                                             jaDeuLike={euCurti}
                                             aoDarLike={() => gerenciarLike(post.id, euCurti)}
-                                            encerraEm={post.encerraEm}
-                                            rankingComputado={post.rankingComputado || false}
+                                            squadId={post.idSquad} 
                                         />
                                     );
-                                }
-
-
-                                const conq = post.tipo?.includes("conquista");
-
-                                return (
-                                    <PostSquad 
-                                        key={post.id}
-                                        id={post.id} 
-                                        idAutor={post.idAutor}
-                                        titulo={post.titulo} 
-                                        texto={post.texto} 
-                                        comentarios={post.comentarios} 
-                                        autor={post.nomeAutor} 
-                                        fotoAutor={post.fotoAutor}
-                                        likes={post.likes}
-                                        conquista={conq}
-                                        jaDeuLike={euCurti}
-                                        aoDarLike={() => gerenciarLike(post.id, euCurti)}
-                                        squadId={post.idSquad} // Garante o ID do squad se o PostSquad original precisar dele
-                                    />
-                                );
-                            })
-                        ) : (
-                            <p>Nenhum post ainda. Seja o primeiro!</p>
-                        )}
+                                })
+                            ) : (
+                                <p className="sem-posts">Nenhum post ainda. Seja o primeiro!</p>
+                            )}
+                        </div>
                     </div>
+
+
+                    <div className="MuralLateral_Squad">
+                        <h3>Mural Squad</h3>
+                        <p>{squadSelecionado?.mural || "Nenhum aviso importante no mural por enquanto."}</p>
+                    </div>
+
                 </div>
             </div>
         </div>
     );
 }
-
 export default PerfilSquad;

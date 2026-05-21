@@ -4,11 +4,13 @@ import { collection, getDocs, doc, updateDoc, deleteDoc, arrayUnion, setDoc, ser
 import { useParams } from "react-router-dom";
 import { db } from "../firebaseConfig";
 import "./GerenciarEntradaSquadConfig.css";
+import { useAlerta } from "../componentes/AlertaProvider";
 
 function GerenciaEntradaSquadConfig() {
     const { id } = useParams();
     const [solicitacoes, setSolicitacoes] = useState([]);
     const [carregando, setCarregando] = useState(true);
+    const { exibirAlerta } = useAlerta();
 
     useEffect(() => {
         const buscarSolicitacoes = async () => {
@@ -53,6 +55,11 @@ function GerenciaEntradaSquadConfig() {
 
             await deleteDoc(doc(db, "squads", id, "solicitacao_entrada", user.id));
             setSolicitacoes(prev => prev.filter(s => s.id !== user.id));
+            exibirAlerta(
+                "Entrada Aprovada!", 
+                `${user.nome} agora é um membro do squad!`, 
+
+            );
 
         } catch (error) {
             console.error("Erro ao aceitar usuário:", error);

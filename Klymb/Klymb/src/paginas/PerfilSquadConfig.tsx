@@ -10,18 +10,22 @@ function PerfilSquadConfig() {
                 <h2 className="config-titulo">Configurações da exibição do Squad</h2>
                 
                 <Link to={`/squadconfig/alterar/${id}/nome`}>
-                    <button className="config-opcao">Alterar Nome</button>
+                    <button className="config-opcao">Alterar nome</button>
                 </Link>
 
                 <Link to={`/squadconfig/alterar/${id}/descricao`}>
-                    <button className="config-opcao">Alterar Descrição</button>
+                    <button className="config-opcao">Alterar descrição</button>
+                </Link>
+
+                <Link to={`/squadconfig/alterar/${id}/mural`}>
+                    <button className="config-opcao">Alterar mural de avisos</button>
                 </Link>
 
                 <Link to={`/squadconfig/alterar/${id}/fotoBanner`}>
                     <button className="config-opcao">Alterar banner</button>
                 </Link>
 
-                <Link to={`/squadconfig/alterar/${id}/fotoCapa`}>
+                <Link to={`/squadconfig/alterar/${id}/fotoCapa`}>{/*dps tem que mudar aqui */}
                     <button className="config-opcao">Alterar capa</button>
                 </Link>
 

@@ -96,3 +96,65 @@
         font-size: 1.5rem;
     }
 }
+
+/* ==========================================================================
+   ESTILO DO TEXTAREA (Descrição e Mural)
+   ========================================================================== */
+.alterar-textarea {
+    width: 100%;
+    min-height: 120px;
+    max-width: 600px;
+    padding: 15px;
+    background-color: #141414;
+    color: #ffffff;
+    border: 1px solid #252525;
+    border-radius: 8px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    outline: none;
+    resize: vertical; /* Permite esticar apenas para baixo, protegendo a largura */
+    box-sizing: border-box;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+    margin-bottom: 20px;
+}
+
+/* Estado de foco (Quando o usuário clica para digitar) */
+.alterar-textarea:focus {
+    border-color: #ff4d00;
+    background-color: #1a1a1a;
+    box-shadow: 0 0 12px rgba(255, 77, 0, 0.15);
+}
+
+/* Customização do Placeholder */
+.alterar-textarea::placeholder {
+    color: #555555;
+    font-size: 0.9rem;
+}
+
+/* Estado Desabilitado (Durante o salvamento) */
+.alterar-textarea:disabled {
+    background-color: #0b0b0b;
+    border-color: #1a1a1a;
+    color: #555555;
+    cursor: not-allowed;
+}
+
+/* Customização da barra de rolagem interna do textarea (Scrollbar) */
+.alterar-textarea::-webkit-scrollbar {
+    width: 8px;
+}
+
+.alterar-textarea::-webkit-scrollbar-track {
+    background: #141414;
+    border-radius: 0 8px 8px 0;
+}
+
+.alterar-textarea::-webkit-scrollbar-thumb {
+    background: #333;
+    border-radius: 4px;
+}
+
+.alterar-textarea::-webkit-scrollbar-thumb:hover {
+    background: #ff4d00;
+}
