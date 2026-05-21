@@ -34,36 +34,48 @@ function GerenciaEntradaSquadConfig() {
 
     const aceitarUsuario = async (user) => {
         try {
-            const userRef = doc(db, "usuarios", user.uid);
-            const squadRef = doc(db, "squads", id);
-            const rankingMemberRef = doc(db, "squads", id, "ranking", user.uid);
-            await updateDoc(squadRef, {
-                membros: arrayUnion(user.uid)
-            });
-            await updateDoc(userRef, {
-            squads_seguindo: arrayUnion(id)
-        });
+            const usuarioId = user.uid || user.id;
 
-            await setDoc(rankingMemberRef, {
-                uid: user.uid,
-                nome: user.nome,
-                fotoUrl: user.foto || "",
+            if (!usuarioId) {
+                alert("Erro: ID do usuário não encontrado.");
+                return;
+            }
+
+            const userRef = doc(db, "usuarios", usuarioId);
+            const squadRef = doc(db, "squads", id);
+            const rankingMemberRef = doc(db, "squads", id, "ranking", usuarioId);
+            const solicitacaoRef = doc(db, "squads", id, "solicitacao_entrada", usuarioId);
+
+            const batch = writeBatch(db);
+            batch.update(squadRef, {
+                membros: arrayUnion(usuarioId)
+            });
+
+            batch.update(userRef, {
+                squads_seguindo: arrayUnion(id)
+            });
+
+            batch.set(rankingMemberRef, {
+                uid: usuarioId,
+                nome: user.nome || "Recruta Anônimo",
+                fotoUrl: user.foto || user.fotoUrl || "",
                 pontos: 0,
                 cargo: "Recruta",
                 ultimaAtividade: serverTimestamp()
             });
 
-            await deleteDoc(doc(db, "squads", id, "solicitacao_entrada", user.id));
-            setSolicitacoes(prev => prev.filter(s => s.id !== user.id));
+            batch.delete(solicitacaoRef);
+            await batch.commit();
+            setSolicitacoes(prev => prev.filter(s => (s.uid || s.id) !== usuarioId));
+            
             exibirAlerta(
                 "Entrada Aprovada!", 
-                `${user.nome} agora é um membro do squad!`, 
-
+                `${user.nome} agora é um membro do squad!`
             );
 
         } catch (error) {
             console.error("Erro ao aceitar usuário:", error);
-            alert("Erro ao processar a entrada.");
+            alert("Erro ao processar a entrada. Tente novamente.");
         }
     };
 

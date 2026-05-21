@@ -476,6 +476,75 @@
     letter-spacing: 1px;
 }
 
+/* Container da seção dentro do mural */
+.secao-posts-fixados-lateral {
+    margin-top: 25px;
+    border-top: 1px dashed #222;
+    padding-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.secao-posts-fixados-lateral .titulo-secao-fixados {
+    color: #ff4d00;
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+}
+
+.lista-fixados-scroll {
+    max-height: 280px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px; /* Posts bem juntinhos */
+}
+
+/* O CARD MINI CLICÁVEL */
+.mini-post-fixado {
+    background-color: #1a1a1a;
+    border: 1px solid #252525;
+    border-radius: 6px;
+    padding: 10px 12px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+/* Efeito ao passar o mouse (Hover de link ativo) */
+.mini-post-fixado:hover {
+    border-color: #ff4d00;
+    background-color: #222;
+    transform: translateX(3px); /* Dá um mini "pulo" pro lado indicando clique */
+}
+
+.mini-post-fixado h4 {
+    margin: 0;
+    font-size: 0.85rem;
+    color: #fff;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; /* Se o título for gigante, corta com "..." */
+}
+
+.mini-tag-tipo {
+    font-size: 0.65rem;
+    font-weight: bold;
+    color: #ff4d00;
+    text-transform: uppercase;
+}
+
+.mini-autor {
+    font-size: 0.7rem;
+    color: #666;
+}
+
 /* ==========================================================================
    6. RESPONSIVIDADE (MOBILE & TABLET)
    ========================================================================== */

@@ -377,72 +377,109 @@ function PerfilSquad({ squads, usuario }) {
                     />
                 </div>
                 
-                {/* O Grid que divide o layout em duas colunas */}
                 <div className="squad-flex-container">
-                    
-                    {/* Coluna Esquerda: Feed de Novidades */}
-                    <div className="Topicos">
-                        <div className="mural-posts">
-                            {posts.length > 0 ? (
-                                posts.map((post) => {
-                                    const euCurti = post.quemDeuLike?.includes(usuario?.uid);
-                                    if (post.tipo === "conquistaVoto") {
-                                        return (
-                                            <PostVotacaoSquad 
-                                                key={post.id}
-                                                id={post.id}
-                                                idAutor={post.idAutor}
-                                                titulo={post.titulo}
-                                                texto={post.texto}
-                                                autor={post.nomeAutor}
-                                                fotoAutor={post.fotoAutor}
-                                                squadId={post.idSquad}
-                                                votosPositivos={post.votosPositivos || []}
-                                                votosNegativos={post.votosNegativos || []}
-                                                statusVotacao={post.statusVotacao || "aberta"}
-                                                usuario={usuario}
-                                                likes={post.likes}
-                                                comentarios={post.comentarios}
-                                                jaDeuLike={euCurti}
-                                                aoDarLike={() => gerenciarLike(post.id, euCurti)}
-                                                encerraEm={post.encerraEm}
-                                                rankingComputado={post.rankingComputado || false}
-                                            />
-                                        );
-                                    }
+    
+                    {(() => {
 
-                                    const conq = post.tipo?.includes("conquista");
+                        const postsFixados = posts.filter(p => p?.fixado === true);
+                        const postsNormais = posts.filter(p => p?.fixado !== true);
 
-                                    return (
-                                        <PostSquad 
-                                            key={post.id}
-                                            id={post.id} 
-                                            idAutor={post.idAutor}
-                                            titulo={post.titulo} 
-                                            texto={post.texto} 
-                                            comentarios={post.comentarios} 
-                                            autor={post.nomeAutor} 
-                                            fotoAutor={post.fotoAutor}
-                                            likes={post.likes}
-                                            conquista={conq}
-                                            jaDeuLike={euCurti}
-                                            aoDarLike={() => gerenciarLike(post.id, euCurti)}
-                                            squadId={post.idSquad}
-                                            usuarioId={usuario.uid}
-                                        />
-                                    );
-                                })
-                            ) : (
-                                <p className="sem-posts">Nenhum post ainda. Seja o primeiro!</p>
-                            )}
-                        </div>
-                    </div>
+                        const irParaPost = (idDoPost) => {
+                            const elemento = document.getElementById(`post-${idDoPost}`);
+                            if (elemento) {
+                                setTimeout(() => elemento.style.border = '', 2000);
+                            }
+                        };
 
+                        return (
+                            <>
+                                <div className="Topicos">
+                                    <div className="mural-posts">
+                                        <div className="secao-posts-feed">
+                                            {postsNormais.length > 0 ? (
+                                                postsNormais.map((post) => {
+                                                    const euCurti = post.quemDeuLike?.includes(usuario?.uid);
+                                                    
+                                                    // Adicionamos um ID na div/componente para a rolagem funcionar
+                                                    return (
+                                                        <div id={`post-${post.id}`} key={post.id}>
+                                                            {post.tipo === "conquistaVoto" ? (
+                                                                <PostVotacaoSquad 
+                                                                    id={post.id}
+                                                                    idAutor={post.idAutor}
+                                                                    titulo={post.titulo}
+                                                                    texto={post.texto}
+                                                                    autor={post.nomeAutor}
+                                                                    fotoAutor={post.fotoAutor}
+                                                                    squadId={post.idSquad}
+                                                                    votosPositivos={post.votosPositivos || []}
+                                                                    votosNegativos={post.votosNegativos || []}
+                                                                    statusVotacao={post.statusVotacao || "aberta"}
+                                                                    usuario={usuario}
+                                                                    likes={post.likes}
+                                                                    comentarios={post.comentarios}
+                                                                    jaDeuLike={euCurti}
+                                                                    aoDarLike={() => gerenciarLike(post.id, euCurti)}
+                                                                    encerraEm={post.encerraEm}
+                                                                    rankingComputado={post.rankingComputado || false}
+                                                                />
+                                                            ) : (
+                                                                <PostSquad 
+                                                                    id={post.id} 
+                                                                    idAutor={post.idAutor}
+                                                                    titulo={post.titulo} 
+                                                                    texto={post.texto} 
+                                                                    comentarios={post.comentarios} 
+                                                                    autor={post.nomeAutor} 
+                                                                    fotoAutor={post.fotoAutor}
+                                                                    likes={post.likes}
+                                                                    conquista={post.tipo?.includes("conquista")}
+                                                                    jaDeuLike={euCurti}
+                                                                    aoDarLike={() => gerenciarLike(post.id, euCurti)}
+                                                                    squadId={post.idSquad}
+                                                                    usuarioId={usuario?.uid}
+                                                                />
+                                                            )}
+                                                        </div>
+                                                    );
+                                                })
+                                            ) : (
+                                                <p className="sem-posts">Nenhuma atividade recente no feed.</p>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
 
-                    <div className="MuralLateral_Squad">
-                        <h3>Mural Squad</h3>
-                        <p>{squadSelecionado?.mural || "Nenhum aviso importante no mural por enquanto."}</p>
-                    </div>
+                                {/* COLUNA DIREITA: MURAL + MINI FIXADOS CLICÁVEIS */}
+                                <div className="MuralLateral_Squad">
+                                    <h3>Mural Squad</h3>
+                                    <p>{squadSelecionado?.mural || "Nenhum aviso importante no mural por enquanto."}</p>
+
+                                    {/* --- VERSÃO MINI DOS FIXADOS --- */}
+                                    {postsFixados.length > 0 && (
+                                        <div className="secao-posts-fixados-lateral">
+                                            <div className="titulo-secao-fixados">
+                                                📌 Posts Fixados
+                                            </div>
+                                            <div className="lista-fixados-scroll">
+                                                {postsFixados.map(post => (
+                                                    <div 
+                                                        key={post.id} 
+                                                        className="mini-post-fixado"
+                                                        onClick={() => irParaPost(post.id)}
+                                                        title="Clique para ir ao post"
+                                                    >
+                                                        <h4>{post.titulo}</h4>
+                                                        <span className="mini-autor">Por: {post.nomeAutor}</span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            </>
+                        );
+                    })()}
 
                 </div>
             </div>

@@ -31,13 +31,13 @@ function Home({ squads, pesquisaQuery, usuario }) {
         try {
             if (jaDeuLike) {
                 await updateDoc(postRef, {
-                    quemDeuLike: arrayRemove(usuario.uid),
+                    quemDeuLike: arrayRemove(usuario?.uid),
                     likes: increment(-1)
                 });
             } else {
     
                 await updateDoc(postRef, {
-                    quemDeuLike: arrayUnion(usuario.uid),
+                    quemDeuLike: arrayUnion(usuario?.uid),
                     likes: increment(1)
                 });
             }
@@ -62,7 +62,7 @@ function Home({ squads, pesquisaQuery, usuario }) {
 
         return () => unsubscribe();
     }, [filtroAtivo]);
-
+    
     return (
         <div className="home-container">
             {pesquisaQuery === "" ? (
@@ -102,7 +102,7 @@ function Home({ squads, pesquisaQuery, usuario }) {
                                             votosPositivos={post.votosPositivos || []}
                                             votosNegativos={post.votosNegativos || []}
                                             statusVotacao={post.statusVotacao || "aberta"}
-                                            usuario={usuario}
+                                            usuario={usuario == null ? null : usuario}
                                             // Adicione estas três linhas abaixo para alimentar as interações sociais do novo componente:
                                             likes={post.likes}
                                             comentarios={post.comentarios}
@@ -129,7 +129,7 @@ function Home({ squads, pesquisaQuery, usuario }) {
                                             jaDeuLike={post.jaDeuLike}
                                             aoDarLike={() => gerenciarLike(post.id, euCurti)}
                                             squadId={post.idSquad}
-                                            usuarioId={usuario.uid}
+                                            usuarioId={usuario?.uid}
                                         />
                                     );
                                 })

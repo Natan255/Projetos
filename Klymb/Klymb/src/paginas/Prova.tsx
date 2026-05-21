@@ -29,8 +29,10 @@ function Prova({ usuario, squads }) {
     const handleSubmitProva = async (e) => {
         e.preventDefault();
         try {
-            if (usuario.uid !== squadAtual.membros.find(m => m.uid === usuario.uid)?.uid) {
+            const ehMembro = squadAtual?.membros?.includes(usuario.uid);
+            if (!ehMembro) {
                 exibirAlerta("Erro", "Você precisa ser membro do squad para enviar uma prova.");
+                console.log("Usuário não é membro do squad:", usuario.uid);
             }
 
             const pendProvaRef = doc(db, "squads", id, "solicitacao_prova", usuario.uid);

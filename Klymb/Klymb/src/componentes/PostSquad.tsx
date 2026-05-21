@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import "./Cardsquad.css";
 import "./PostSquad.css";
 import { useNavigate } from "react-router-dom";
-import { doc, collection, getDoc, getDocs } from "firebase/firestore";
+import { doc, collection, getDoc, getDocs, deleteDoc, updateDoc } from "firebase/firestore";
 import { db } from "../firebaseConfig";
 
 
@@ -49,6 +49,20 @@ function PostSquad({id, idAutor, titulo, texto, likes, comentarios, autor, fotoA
         navigate(`/paginas/Perfil/${idAutor}`); 
     };
 
+    const deletarPost = async () => {
+        const postref = doc(db, "posts", id);
+        await deleteDoc(postref);
+    };
+
+    const fixarPost = async () => {
+        const postref = doc(db, "posts", id);
+        const post = (await getDoc(postref)).data();
+        if (post?.fixado === true) {
+            await updateDoc(postref, { fixado: false });
+        } else{
+            await updateDoc(postref, { fixado: true });
+        }
+    }
     return (
         <div className={`Estrutura_post ${conquista ? 'post-conquista' : ''}`}>
 
@@ -104,11 +118,11 @@ function PostSquad({id, idAutor, titulo, texto, likes, comentarios, autor, fotoA
                         <div className="menu-dropdown-opcoes">
                             {dadosSquad?.idCriador === usuarioId && (
                                 <>
-                                    <button onClick={() => { /* lógica */ setMenuAberto(false); }}>
+                                    <button onClick={() => { deletarPost(); setMenuAberto(false); }}>
                                         Deletar Post
                                     </button>
 
-                                    <button onClick={() => { /* lógica */ setMenuAberto(false); }}>
+                                    <button onClick={() => { fixarPost(); setMenuAberto(false); }}>
                                         Fixar Post
                                     </button>
                                 </>
