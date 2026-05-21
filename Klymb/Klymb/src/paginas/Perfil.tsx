@@ -5,6 +5,8 @@ import { useNavigate, useParams} from "react-router-dom";
 import { auth, db } from "../firebaseConfig";
 import { useEffect, useState } from "react";
 import { doc, onSnapshot,collection, query, where, getDocs, orderBy } from "firebase/firestore";
+import PostVotacaoSquad from "../componentes/VotoSquad";
+
 
 interface PerfilProps {
     usuario: User | null;
@@ -109,29 +111,62 @@ function Perfil({ usuario, squads }: PerfilProps) {
                     )}
                 </div>
 
-                <div className="perfil-posts">
-                    {meusPosts.length > 0 ? (
-                        meusPosts.map((post) => (
-                            <PostSquad 
-                                key={post.id}
-                                id={post.id}
-                                idAutor={post.idAutor}
-                                titulo={post.titulo}
-                                texto={post.texto}
-                                likes={post.likes}
-                                comentarios={post.comentarios}
-                                autor={post.nomeAutor}
-                                fotoAutor={post.fotoAutor}
-                                jaDeuLike={post.quemDeuLike?.includes(usuario?.uid)}
-                                aoDarLike={() => console.log("Lógica de like aqui")} 
-                            />
-                        ))
-                    ) : (
-                        <p style={{color: 'gray', textAlign: 'center', marginTop: '20px', width: '100%'}}>
-                            Este recruta ainda não fez publicações.
-                        </p>
-                    )}
-                </div>
+                <div className="Topicos">
+                        <div className="mural-posts">
+                            {meusPosts.length > 0 ? (
+                                meusPosts.map((post) => {
+                                    const euCurti = post.quemDeuLike?.includes(usuario?.uid);
+                                    if (post.tipo === "conquistaVoto") {
+                                        return (
+                                            <PostVotacaoSquad 
+                                                key={post.id}
+                                                id={post.id}
+                                                idAutor={post.idAutor}
+                                                titulo={post.titulo}
+                                                texto={post.texto}
+                                                autor={post.nomeAutor}
+                                                fotoAutor={post.fotoAutor}
+                                                squadId={post.idSquad}
+                                                votosPositivos={post.votosPositivos || []}
+                                                votosNegativos={post.votosNegativos || []}
+                                                statusVotacao={post.statusVotacao || "aberta"}
+                                                usuario={usuario}
+                                                likes={post.likes}
+                                                comentarios={post.comentarios}
+                                                jaDeuLike={euCurti}
+                                                aoDarLike={() => gerenciarLike(post.id, euCurti)}
+                                                encerraEm={post.encerraEm}
+                                                rankingComputado={post.rankingComputado || false}
+                                            />
+                                        );
+                                    }
+
+                                    const conq = post.tipo?.includes("conquista");
+
+                                    return (
+                                        <PostSquad 
+                                            key={post.id}
+                                            id={post.id} 
+                                            idAutor={post.idAutor}
+                                            titulo={post.titulo} 
+                                            texto={post.texto} 
+                                            comentarios={post.comentarios} 
+                                            autor={post.nomeAutor} 
+                                            fotoAutor={post.fotoAutor}
+                                            likes={post.likes}
+                                            conquista={conq}
+                                            jaDeuLike={euCurti}
+                                            aoDarLike={() => gerenciarLike(post.id, euCurti)}
+                                            squadId={post.idSquad}
+                                            usuarioId={usuario.uid}
+                                        />
+                                    );
+                                })
+                            ) : (
+                                <p className="sem-posts">Nenhum post ainda. Seja o primeiro!</p>
+                            )}
+                        </div>
+                    </div>
             </div>
         </div>
     )

@@ -2,15 +2,14 @@
    PostSquad.css - Estilo Premium, Compacto e Adaptado ao Firestore
    ========================================================================== */
 
-/* Container do Post */
-
+/* --- 1. CONTAINER DO POST --- */
 .Estrutura_post {
     background: linear-gradient(145deg, #151515, #0f0f0f);
     border: 1px solid #222;
     border-radius: 12px; 
     padding: 24px;              
-    max-width: 1000px;           /* DEFINE A LARGURA MÁXIMA (Ajuste como preferir) */
-    width: 100%;                /* Garante que ele seja responsivo */
+    max-width: 1000px;           
+    width: 100%;                
     margin: 0 auto 30px auto;
     transition: all 0.3s ease;
     box-shadow: 0 8px 24px rgba(0,0,0,0.5);
@@ -18,12 +17,19 @@
     flex-direction: column;
 }
 
+/* Garante que o post ativo/focado fique por cima dos outros na pilha */
+.Estrutura_post:hover,
+.Estrutura_post:focus-within {
+    z-index: 10;
+    position: relative; /* Necessário para o z-index funcionar */
+}
+
 .Estrutura_post:hover {
     border-color: #ff4d00;
     transform: scale(1.005);
 }
 
-/* --- HEADER DO SQUAD E RANKING --- */
+/* --- 2. HEADER DO SQUAD E RANKING --- */
 .Header_squad_info {
     display: flex;
     align-items: center;
@@ -35,11 +41,10 @@
     border: 1px solid #1a1a1a;
 }
 
-/* Informações do Squad (Foto + Nome Lado a Lado) */
 .Foto_squad {
     display: flex;
     align-items: center;
-    gap: 12px; /* Espaço ajustado entre a foto e o texto do squad */
+    gap: 12px; 
 }
 
 .Foto_squad img {
@@ -64,14 +69,12 @@
     filter: brightness(1.1);
 }
 
-/* Container do Mini Ranking Lateral */
 .ranking-squad {
     display: flex;
     gap: 6px;
     align-items: center;
 }
 
-/* Badges dos 3 primeiros do ranking */
 .mini-badge-rank {
     background: #1a1a1a;
     border: 1px solid #333;
@@ -83,19 +86,17 @@
     letter-spacing: -0.2px;
 }
 
-/* Destaque para o Top 1 do Squad */
 .ranking-squad .mini-badge-rank:nth-child(1) {
     border-color: #ff4d00;
     color: #fff;
     background: rgba(255, 77, 0, 0.1);
 }
 
-
-/* --- AUTOR DO POST (Alinhado Horizontalmente) --- */
+/* --- 3. AUTOR DO POST --- */
 .Foto_perfil {
     display: flex;
-    align-items: center; /* Garante o alinhamento vertical perfeito */
-    gap: 8px;            /* Espaço entre a foto de perfil e o nome do membro */
+    align-items: center; 
+    gap: 8px;            
     margin-bottom: 12px;
     cursor: pointer;
     width: fit-content;
@@ -122,8 +123,7 @@
     margin: 0;
 }
 
-
-/* --- CONTEÚDO PRINCIPAL (TÍTULO E TEXTO) --- */
+/* --- 4. CONTEÚDO PRINCIPAL (TÍTULO E TEXTO) --- */
 .Conteudo_Post {
     cursor: pointer;
     text-align: left;
@@ -149,8 +149,7 @@
     margin: 0;
 }
 
-
-/* --- INTERAÇÕES E BOTÕES --- */
+/* --- 5. INTERAÇÕES E BOTÕES COMPATÍVEIS --- */
 .Botoes_interacoes {
     display: flex;
     gap: 12px;
@@ -217,8 +216,86 @@
     color: #0096ff;
 }
 
+/* --- 6. CONTAINER ÂNCORA DOS TRÊS PONTOS --- */
+.container-opcoes-wrapper {
+    position: relative; 
+    margin-left: auto;  /* Joga as opções pro canto direito */
+    display: inline-block;
+}
 
-/* --- VARIANTE EXCLUSIVA PARA CONQUISTA --- */
+.btn_opcoes {
+    background: transparent !important;
+    border: 1px solid transparent !important; 
+    padding: 0 6px !important;                 
+    box-shadow: none !important;
+}
+
+.tres-pontos-container {
+    display: flex;
+    flex-direction: column; 
+    gap: 3px;               
+    justify-content: center;
+    align-items: center;
+    width: 20px;
+    height: 20px;
+}
+
+.tres-pontos-container span {
+    width: 4px;
+    height: 4px;
+    background-color: #666; 
+    border-radius: 50%;     
+    transition: all 0.2s ease;
+}
+
+/* HOVER - TRÊS PONTOS */
+.btn_opcoes:hover {
+    background: transparent !important;
+    transform: scale(1.12); 
+}
+
+.btn_opcoes:hover .tres-pontos-container span {
+    background-color: #ff4d00; 
+    box-shadow: 0 0 10px #ff4d00, 0 0 4px #ff4d00; 
+}
+
+/* --- 7. DROPDOWN (POSICIONADO VIA ÂNCORA) --- */
+.menu-dropdown-opcoes {
+    position: absolute;
+    right: 0;          
+    top: 28px;         /* Mantém encostado perto do botão */
+    background-color: #141414;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    z-index: 9999; 
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.8);
+    width: 140px;
+}
+
+.menu-dropdown-opcoes button {
+    background: transparent;
+    border: none;
+    color: #bbb;
+    padding: 8px 12px;
+    text-align: left;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    width: 100%;
+}
+
+.menu-dropdown-opcoes button:hover {
+    background: rgba(255, 77, 0, 0.1); 
+    color: #ff4d00;                   
+}
+
+/* --- 8. VARIANTE EXCLUSIVA PARA CONQUISTA --- */
 .post-conquista {
     border: 1px solid #ff4d00;
     background: linear-gradient(145deg, #1a1a1a, #25120a);
@@ -241,4 +318,5 @@
     color: #fff;
     font-size: 0.55rem;
     font-weight: bold;
-    padding: 3px
+    padding: 3px;
+}

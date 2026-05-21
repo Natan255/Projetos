@@ -6,10 +6,11 @@ import { doc, collection, getDoc, getDocs } from "firebase/firestore";
 import { db } from "../firebaseConfig";
 
 
-function PostSquad({id, idAutor, titulo, texto, likes, comentarios, autor, fotoAutor, conquista, jaDeuLike, aoDarLike, squadId = null}) {
+function PostSquad({id, idAutor, titulo, texto, likes, comentarios, autor, fotoAutor, conquista, jaDeuLike, aoDarLike, squadId = null, usuarioId = null}) {
     const navigate = useNavigate();
     const [dadosSquad, setDadosSquad] = useState<any>(null);
     const [ranking, setRanking] = useState<any[]>([]);
+    const [menuAberto, setMenuAberto] = useState(false);
     useEffect(() => {
         // Só busca os dados se o squadId for passado
         if (!squadId) return;
@@ -89,6 +90,47 @@ function PostSquad({id, idAutor, titulo, texto, likes, comentarios, autor, fotoA
                     <span className="icon">💬</span>
                     <span className="count">{comentarios || 0}</span>
                 </button>
+
+                <div className="container-opcoes-wrapper">
+                    <button className="btn_interacao btn_opcoes" onClick={() => setMenuAberto(!menuAberto)}>
+                        <div className="tres-pontos-container">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+                    </button>
+
+                    {menuAberto && (
+                        <div className="menu-dropdown-opcoes">
+                            {dadosSquad?.idCriador === usuarioId && (
+                                <>
+                                    <button onClick={() => { /* lógica */ setMenuAberto(false); }}>
+                                        Deletar Post
+                                    </button>
+
+                                    <button onClick={() => { /* lógica */ setMenuAberto(false); }}>
+                                        Fixar Post
+                                    </button>
+                                </>
+                            )}
+
+                            {idAutor === usuarioId && (
+                                <>  
+
+                                    <button onClick={() => { /* lógica */ setMenuAberto(false); }}>
+                                        Editar Post
+                                    </button>
+                                </>
+                            )}
+
+                            
+                            
+                            <button onClick={() => { /* lógica */ setMenuAberto(false); }}>
+                                Reportar
+                            </button>
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
     );

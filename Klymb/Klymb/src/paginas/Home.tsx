@@ -129,6 +129,7 @@ function Home({ squads, pesquisaQuery, usuario }) {
                                             jaDeuLike={post.jaDeuLike}
                                             aoDarLike={() => gerenciarLike(post.id, euCurti)}
                                             squadId={post.idSquad}
+                                            usuarioId={usuario.uid}
                                         />
                                     );
                                 })

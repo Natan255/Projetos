@@ -427,7 +427,8 @@ function PerfilSquad({ squads, usuario }) {
                                             conquista={conq}
                                             jaDeuLike={euCurti}
                                             aoDarLike={() => gerenciarLike(post.id, euCurti)}
-                                            squadId={post.idSquad} 
+                                            squadId={post.idSquad}
+                                            usuarioId={usuario.uid}
                                         />
                                     );
                                 })
