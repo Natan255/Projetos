@@ -113,7 +113,7 @@ function Home({ squads, pesquisaQuery, usuario }) {
                                         />
                                     );
                                 }
-                                    
+                                    const conq = post.tipo?.includes("conquista");
                                     return (
                                         <PostSquad
                                             key={post.id}
@@ -125,7 +125,7 @@ function Home({ squads, pesquisaQuery, usuario }) {
                                             comentarios={post.comentários || post.comentarios || 0}
                                             autor={post.nomeAutor}
                                             fotoAutor={post.fotoAutor}
-                                            conquista={post.isConquista || post.conquista}
+                                            conquista={conq}
                                             jaDeuLike={post.jaDeuLike}
                                             aoDarLike={() => gerenciarLike(post.id, euCurti)}
                                             squadId={post.idSquad}

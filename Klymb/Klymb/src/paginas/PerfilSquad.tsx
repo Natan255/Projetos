@@ -466,7 +466,7 @@ function PerfilSquad({ squads, usuario }) {
                                                     <div 
                                                         key={post.id} 
                                                         className="mini-post-fixado"
-                                                        onClick={() => irParaPost(post.id)}
+                                                        onClick={() => navigate(`/post/${post.id}`)}
                                                         title="Clique para ir ao post"
                                                     >
                                                         <h4>{post.titulo}</h4>

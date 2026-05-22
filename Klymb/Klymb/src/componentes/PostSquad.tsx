@@ -12,12 +12,11 @@ function PostSquad({id, idAutor, titulo, texto, likes, comentarios, autor, fotoA
     const [ranking, setRanking] = useState<any[]>([]);
     const [menuAberto, setMenuAberto] = useState(false);
     useEffect(() => {
-        // Só busca os dados se o squadId for passado
+  
         if (!squadId) return;
 
         const buscarDadosDoSquad = async () => {
             try {
-                // 1. Pegando os dados do Squad (Nome e Foto)
                 const squadRef = doc(db, "squads", squadId);
                 const squadSnap = await getDoc(squadRef);
                 

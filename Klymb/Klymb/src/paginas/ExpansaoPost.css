@@ -1,9 +1,11 @@
-
+/* ==========================================================================
+   TELA EXPANSÃO: CONTAINER PRINCIPAL DO CARD
+   ========================================================================== */
 .expansao-container {
     background: #121212;
-    border: 1px solid #333;
+    border: 1px solid #222;
     border-radius: 12px;
-    padding: 20px;
+    padding: 24px;
     max-width: 1000px;
     margin: 20px auto;
     color: #e0e0e0;
@@ -21,8 +23,16 @@
     width: 45px;
     height: 45px;
     border-radius: 50%;
-    border: 2px solid #ff4500; /* Laranja agressivo */
+    border: 2px solid #ff4500; /* Laranja Rank Over */
     object-fit: cover;
+}
+
+/* Informações alinhadas do cabeçalho */
+.meta-info-post {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
 }
 
 .nome-membro {
@@ -31,46 +41,50 @@
     color: #fff;
 }
 
+/* Tag Exclusiva da Squad no Post Principal */
+.tag-squad {
+    background: rgba(255, 69, 0, 0.15);
+    color: #ff4500;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    border: 1px solid rgba(255, 69, 0, 0.3);
+    letter-spacing: 0.5px;
+}
+
 .data-post {
     color: #888;
     font-size: 0.85rem;
 }
 
 .expansao-conteudo {
-
     margin-bottom: 30px;
     text-align: left;
 }
 
 .expansao-titulo {
-    font-size: 1.4rem;
-    color: #ffffff; /* Cor de destaque */
-    margin-bottom: 25px;
-    letter-spacing: 1px;
+    font-size: 1.6rem;
+    color: #ffffff;
+    margin-bottom: 16px;
+    letter-spacing: 0.5px;
 }
 
 .expansao-texto-corpo {
     font-size: 1.1rem;
     line-height: 1.6;
     color: #ccc;
-    white-space: pre-wrap; /* Mantém as quebras de linha do usuário */
-    
+    white-space: pre-wrap;
 }
 
-
-
-.divisor {
-    border: 0;
-    height: 1px;
-    background: linear-gradient(to right, transparent, #333, transparent);
-    margin: 20px 0;
-}
-
-/* Container de Comentários */
+/* ==========================================================================
+   SEÇÃO DE COMENTÁRIOS E ÁRBORE DE RESPOSTAS
+   ========================================================================== */
 .expansao-comentarios {
     margin-top: 40px;
     padding-top: 20px;
-    border-top: 1px solid #333;
+    border-top: 1px solid #222;
 }
 
 .expansao-comentarios h3 {
@@ -78,62 +92,158 @@
     color: #eee;
     margin-bottom: 25px;
     font-weight: 600;
+    text-align: left;
 }
 
-/* Lista de Comentários */
 .lista-comentarios {
     display: flex;
     flex-direction: column;
     gap: 12px;
     margin-bottom: 30px;
+    align-items: stretch;
 }
 
-/* Card sutil para cada comentário */
+/* Card base para comentários e respostas */
 .item-comentario {
     display: flex;
+    align-items: flex-start;
     gap: 15px;
-    background: rgba(255, 255, 255, 0.03); /* Fundo quase transparente */
-    padding: 15px;
+    background: rgba(255, 255, 255, 0.02);
+    padding: 16px;
     border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    transition: transform 0.2s ease;
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    transition: all 0.2s ease;
+    text-align: left;
+    position: relative;
 }
 
 .item-comentario:hover {
-    background: rgba(255, 255, 255, 0.05);
-    border-color: rgba(255, 77, 0, 0.3); /* Brilho laranja sutil no contorno */
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 77, 0, 0.2);
 }
 
 .item-comentario img {
     width: 36px;
     height: 36px;
-    border-radius: 8px; /* Foto levemente quadrada fica bem moderno */
+    border-radius: 8px;
     object-fit: cover;
+}
+
+.texto-comentario {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding-right: 10px; /* Margem de segurança para os botões */
 }
 
 .texto-comentario strong {
     color: #fff;
-    font-size: 0.85rem;
+    font-size: 0.88rem;
     margin-bottom: 4px;
-    display: block;
+}
+
+.texto-comentario strong span {
+    color: #ff4d00;
+    font-size: 0.75rem;
+    font-weight: 400;
+    margin-left: 6px;
 }
 
 .texto-comentario p {
     margin: 0;
     color: #aaa;
-    font-size: 0.92rem;
+    font-size: 0.95rem;
     line-height: 1.5;
+    word-break: break-word;
 }
 
-/* Área de input mais robusta */
+/* Estilo específico das sub-respostas */
+.item-comentario.item-resposta {
+    background: rgba(0, 0, 0, 0.15);
+    border-left: 3px solid #ff4d00; /* Linha laranja destacando a resposta */
+    border-radius: 0 10px 10px 0;
+}
+
+/* Alinhamento horizontal dos botões Curtir/Responder no canto direito */
+.comentario-actions {
+    display: flex;
+    flex-direction: row !important; /* Força ficar na horizontal */
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+    align-self: center; /* Centraliza verticalmente com o bloco */
+}
+
+/* ==========================================================================
+   BOTÕES DE INTERAÇÃO (LIKE E REPLY)
+   ========================================================================== */
+.btn_like_comentario, 
+.btn_reply_comentario {
+    background: #181818;
+    border: 1px solid #282828;
+    color: #888;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.btn_like_comentario:hover {
+    border-color: rgba(255, 77, 0, 0.4);
+    color: #ff4d00;
+    background-color: rgba(255, 77, 0, 0.02);
+}
+
+.btn_like_comentario .icon {
+    font-size: 0.8rem;
+    filter: grayscale(100%);
+    transition: filter 0.2s;
+}
+
+.btn_like_comentario:hover .icon {
+    filter: grayscale(0%);
+}
+
+.btn_reply_comentario {
+    background: transparent;
+    border: 1px solid transparent;
+    color: #666;
+    text-transform: uppercase;
+    font-size: 0.65rem;
+    letter-spacing: 0.5px;
+}
+
+.btn_reply_comentario:hover {
+    border-color: #333;
+    color: #fff;
+    background: #161616;
+}
+
+/* ==========================================================================
+   INPUTS DE COMENTÁRIO E CAIXA DE RESPOSTA
+   ========================================================================== */
 .novo-comentario {
     display: flex;
     gap: 12px;
     background: #111;
-    padding: 10px 15px;
-    border-radius: 50px; /* Estilo pílula */
-    border: 1px solid #333;
+    padding: 10px 16px;
+    border-radius: 50px;
+    border: 1px solid #262626;
     align-items: center;
+    transition: border-color 0.2s;
+    margin-top: 20px;
+}
+
+.novo-comentario:focus-within {
+    border-color: #ff4d00;
 }
 
 .novo-comentario img {
@@ -148,7 +258,6 @@
     border: none;
     color: #fff;
     font-size: 0.9rem;
-    padding: 5px;
 }
 
 .novo-comentario input:focus {
@@ -165,10 +274,88 @@
     font-size: 0.75rem;
     text-transform: uppercase;
     cursor: pointer;
-    transition: filter 0.3s;
+    transition: filter 0.2s;
 }
 
 .novo-comentario button:hover {
-    filter: brightness(1.2);
-    box-shadow: 0 0 10px rgba(255, 77, 0, 0.4);
+    filter: brightness(1.1);
+    box-shadow: 0 0 10px rgba(255, 77, 0, 0.3);
+}
+
+/* Caixa de Resposta Interna */
+.resposta-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #0d0d0d;
+    padding: 8px 14px;
+    border-radius: 30px;
+    border: 1px solid #222;
+    margin-top: 4px;
+    margin-bottom: 8px;
+    margin-left: 45px; 
+    animation: subiraula 0.2s ease-out;
+}
+
+.resposta-container:focus-within {
+    border-color: #ff4d00;
+}
+
+.resposta-container img {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+}
+
+.resposta-container input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-size: 0.85rem;
+}
+
+.resposta-container input:focus {
+    outline: none;
+}
+
+.resposta-container button {
+    background: #ff4d00;
+    color: #fff;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-weight: bold;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
+.sem-comentarios {
+    color: #666;
+    font-size: 0.9rem;
+    margin: 20px 0;
+    text-align: center;
+}
+
+@keyframes subiraula {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ==========================================================================
+   RESPONSIVIDADE MÓVEL
+   ========================================================================== */
+@media (max-width: 600px) {
+    .item-comentario.item-resposta,
+    .resposta-container {
+        margin-left: 20px !important;
+    }
+    .expansao-container {
+        padding: 16px;
+    }
+    .comentario-actions {
+        flex-direction: column !important;
+        gap: 4px;
+    }
 }
