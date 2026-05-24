@@ -3,7 +3,7 @@ import CardSquad from "../componentes/CardSquad";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Link } from "react-router-dom";
 import { Navigation, Pagination, Autoplay } from 'swiper/modules';
-import { collection, query, orderBy, onSnapshot, doc, updateDoc, arrayRemove, increment, arrayUnion } from "firebase/firestore";
+import { collection, query, orderBy, onSnapshot } from "firebase/firestore";
 import { db } from "../firebaseConfig";
 import "./Home.css";
 import PostSquad from "../componentes/PostSquad";
@@ -23,28 +23,6 @@ function Home({ squads, pesquisaQuery, usuario }) {
         "ofc2.png",
         "kll.png"
     ];
-    const gerenciarLike = async (postId, jaDeuLike) => {
-        if (!usuario) return alert("Logue para curtir!");    
-        const postRef = doc(db, "posts", postId);
-        
-
-        try {
-            if (jaDeuLike) {
-                await updateDoc(postRef, {
-                    quemDeuLike: arrayRemove(usuario?.uid),
-                    likes: increment(-1)
-                });
-            } else {
-    
-                await updateDoc(postRef, {
-                    quemDeuLike: arrayUnion(usuario?.uid),
-                    likes: increment(1)
-                });
-            }
-        } catch (error) {
-            console.error("Erro ao processar like:", error);
-        }
-    };
 
     useEffect(() => {
         const postsRef = collection(db, "posts");
@@ -126,10 +104,9 @@ function Home({ squads, pesquisaQuery, usuario }) {
                                             autor={post.nomeAutor}
                                             fotoAutor={post.fotoAutor}
                                             conquista={conq}
-                                            jaDeuLike={post.jaDeuLike}
-                                            aoDarLike={() => gerenciarLike(post.id, euCurti)}
                                             squadId={post.idSquad}
                                             usuarioId={usuario?.uid}
+                                            quemDeuLike={post.quemDeuLike || []}
                                         />
                                     );
                                 })

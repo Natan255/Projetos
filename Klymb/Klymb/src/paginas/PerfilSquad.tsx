@@ -37,29 +37,6 @@ function PerfilSquad({ squads, usuario }) {
         return querySnapshot.docs.map(doc => doc.data());
     };
     
-    
-    const gerenciarLike = async (postId, jaDeuLike) => {
-        if (!usuario) return alert("Logue para curtir!");
-
-        const postRef = doc(db, "posts", postId);
-
-        try {
-            if (jaDeuLike) {
-                await updateDoc(postRef, {
-                    quemDeuLike: arrayRemove(usuario.uid),
-                    likes: increment(-1)
-                });
-            } else {
-
-                await updateDoc(postRef, {
-                    quemDeuLike: arrayUnion(usuario.uid),
-                    likes: increment(1)
-                });
-            }
-        } catch (error) {
-            console.error("Erro ao processar like:", error);
-        }
-    };
 
     const solicitarPost = async (dadosDoPost) => {
         if (!usuario || !id) return;
@@ -438,6 +415,7 @@ function PerfilSquad({ squads, usuario }) {
                                                                     aoDarLike={() => gerenciarLike(post.id, euCurti)}
                                                                     squadId={post.idSquad}
                                                                     usuarioId={usuario?.uid}
+                                                                    quemDeuLike={post.quemDeuLike || []}
                                                                 />
                                                             )}
                                                         </div>

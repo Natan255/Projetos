@@ -1,6 +1,6 @@
 import "./ExpansaoPost.css";
 import React from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { collection, onSnapshot, addDoc, serverTimestamp, doc, updateDoc, increment } from "firebase/firestore";
 import { db } from "../firebaseConfig";
@@ -29,6 +29,8 @@ function ExpansaoPost({ usuario }) {
 
     const comentariosPrincipais = comentarios.filter(c => !c.respondendoA);
     const listaRespostas = comentarios.filter(c => c.respondendoA);
+    const navigate = useNavigate();
+    
 
     const like = async (idComentario, jaCurtiu) => {
         if (!usuario?.uid) return;
@@ -182,6 +184,8 @@ function ExpansaoPost({ usuario }) {
                     src={dadosPost.fotoAutor || "https://via.placeholder.com/40"} 
                     alt="foto perfil" 
                     className="avatar-membro"
+                    style={{ cursor: 'pointer' }}
+                    onClick={() => navigate(`/paginas/Perfil/${dadosPost.idAutor}`)}
                 />
                 <div className="meta-info-post">
                     <span className="nome-membro">{dadosPost.nomeAutor || "Membro"}</span>
@@ -235,7 +239,7 @@ function ExpansaoPost({ usuario }) {
                             <React.Fragment key={coment.id}>
                                 
                                 <div className="item-comentario">
-                                    <img src={coment.fotoAutor || "https://via.placeholder.com/40"} alt="autor" />
+                                    <img src={coment.fotoAutor || "https://via.placeholder.com/40"} alt="autor" style={{ cursor: 'pointer' }} onClick={() => navigate(`/paginas/Perfil/${coment.autorId}`)}/>
                                     <div className="texto-comentario">
                                         <strong>{coment.nomeAutor}</strong>
                                         <p>{coment.texto}</p>
@@ -265,7 +269,7 @@ function ExpansaoPost({ usuario }) {
                                     .filter(resp => resp.respondendoA === coment.id)
                                     .map(resp => (
                                         <div key={resp.id} className="item-comentario item-resposta" style={{ marginLeft: "45px" }}>
-                                            <img src={resp.fotoAutor || "https://via.placeholder.com/40"} alt="autor" />
+                                            <img src={resp.fotoAutor || "https://via.placeholder.com/40"} alt="autor" style={{ cursor: 'pointer' }} onClick={() => navigate(`/paginas/Perfil/${resp.autorId}`)} />
                                             <div className="texto-comentario">
                                                 <strong>{resp.nomeAutor} <span>↳ respondeu</span></strong>
                                                 <p>{resp.texto}</p>

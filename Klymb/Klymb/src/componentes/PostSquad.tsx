@@ -2,17 +2,46 @@ import { useState, useEffect } from "react";
 import "./Cardsquad.css";
 import "./PostSquad.css";
 import { useNavigate } from "react-router-dom";
-import { doc, collection, getDoc, getDocs, deleteDoc, updateDoc } from "firebase/firestore";
+import { doc, collection, getDoc, getDocs, deleteDoc, updateDoc, arrayRemove, arrayUnion, increment } from "firebase/firestore";
 import { db } from "../firebaseConfig";
 
+// Definindo uma interface simples para as Props (Boa prática em TypeScript)
+interface PostSquadProps {
+    id: string;
+    idAutor: string;
+    titulo: string;
+    texto: string;
+    likes: number;
+    comentarios?: number;
+    autor: string;
+    fotoAutor: string;
+    conquista: boolean;
+    squadId?: string | null;
+    usuarioId?: string | null;
+    quemDeuLike?: string[]; // Adicionado para rastrear quem curtiu
+}
 
-function PostSquad({id, idAutor, titulo, texto, likes, comentarios, autor, fotoAutor, conquista, jaDeuLike, aoDarLike, squadId = null, usuarioId = null}) {
+function PostSquad({
+    id, 
+    idAutor, 
+    titulo, 
+    texto, 
+    likes, 
+    comentarios, 
+    autor, 
+    fotoAutor, 
+    conquista, 
+    squadId = null, 
+    usuarioId = null,
+    quemDeuLike = [] // Valor padrão vazio caso não venha do banco
+}: PostSquadProps) {
+    
     const navigate = useNavigate();
     const [dadosSquad, setDadosSquad] = useState<any>(null);
     const [ranking, setRanking] = useState<any[]>([]);
     const [menuAberto, setMenuAberto] = useState(false);
+
     useEffect(() => {
-  
         if (!squadId) return;
 
         const buscarDadosDoSquad = async () => {
@@ -24,7 +53,7 @@ function PostSquad({id, idAutor, titulo, texto, likes, comentarios, autor, fotoA
                     setDadosSquad(squadSnap.data());
                 }
 
-                // 2. Pegando a subcoleção de Ranking desse Squad
+                // Pegando a subcoleção de Ranking desse Squad
                 const rankRef = collection(db, "squads", squadId, "ranking");
                 const querySnapshot = await getDocs(rankRef);
                 const listaRank = querySnapshot.docs.map(doc => ({
@@ -39,8 +68,7 @@ function PostSquad({id, idAutor, titulo, texto, likes, comentarios, autor, fotoA
         };
 
         buscarDadosDoSquad();
-    }, [squadId]); // Executa sempre que o squadId mudar
-
+    }, [squadId]);
 
     if (!titulo && !texto) return null;
 
@@ -49,19 +77,56 @@ function PostSquad({id, idAutor, titulo, texto, likes, comentarios, autor, fotoA
     };
 
     const deletarPost = async () => {
-        const postref = doc(db, "posts", id);
-        await deleteDoc(postref);
+        try {
+            const postref = doc(db, "posts", id);
+            await deleteDoc(postref);
+            alert("Post deletado com sucesso!");
+        } catch (error) {
+            console.error("Erro ao deletar post:", error);
+        }
     };
 
     const fixarPost = async () => {
-        const postref = doc(db, "posts", id);
-        const post = (await getDoc(postref)).data();
-        if (post?.fixado === true) {
-            await updateDoc(postref, { fixado: false });
-        } else{
-            await updateDoc(postref, { fixado: true });
+        try {
+            const postref = doc(db, "posts", id);
+            const postSnap = await getDoc(postref);
+            if (postSnap.exists()) {
+                const postData = postSnap.data();
+                await updateDoc(postref, { fixado: !postData?.fixado });
+            }
+        } catch (error) {
+            console.error("Erro ao fixar/desfixar post:", error);
         }
-    }
+    };
+
+    const gerenciarLike = async () => {
+        if (!usuarioId) return alert("Logue para curtir!");   
+        
+        // quemDeuLike vem direto das props que o Feed enviou
+        const jaDeuLike = quemDeuLike?.includes(usuarioId); 
+        const postRef = doc(db, "posts", id); // Aqui usamos o ID do post para saber ONDE atualizar
+        
+        try {
+            if (jaDeuLike) {
+                // Se já curtiu, remove o ID do usuário do array e tira 1 like
+                await updateDoc(postRef, {
+                    quemDeuLike: arrayRemove(usuarioId),
+                    likes: increment(-1)
+                });
+            } else {
+                // Se não curtiu, adiciona o ID do usuário no array e soma 1 like
+                await updateDoc(postRef, {
+                    quemDeuLike: arrayUnion(usuarioId),
+                    likes: increment(1)
+                });
+            }
+        } catch (error) {
+            console.error("Erro ao processar like:", error);
+        }
+    };
+
+    const usuarioJaCurtiu = usuarioId ? quemDeuLike.includes(usuarioId) : false;
+
     return (
         <div className={`Estrutura_post ${conquista ? 'post-conquista' : ''}`}>
 
@@ -73,10 +138,9 @@ function PostSquad({id, idAutor, titulo, texto, likes, comentarios, autor, fotoA
                     </div>
 
                     <div className="ranking-squad">
-                        {/* Exemplo simples de como renderizar o ranking que veio do banco */}
                         {ranking.slice(0, 3).map((membro, index) => (
                             <span key={membro.id} className="mini-badge-rank">
-                                #{index + 1} {membro.nome || membro.username}
+                                #{index + 1} {membro.nome || miembro.username}
                             </span>
                         ))}
                     </div>
@@ -94,8 +158,12 @@ function PostSquad({id, idAutor, titulo, texto, likes, comentarios, autor, fotoA
             </div>
 
             <div className="Botoes_interacoes">
-                <button className={`btn_interacao btn_like ${jaDeuLike ? 'ativo' : ''}`} onClick={aoDarLike}>
-                    <span className="icon">{jaDeuLike ? "❤️" : "🤍"}</span>
+                {/* Correção da classe dinâmica e do ícone de curtida */}
+                <button 
+                    className={`btn_interacao btn_like ${usuarioJaCurtiu ? 'ativo' : ''}`} 
+                    onClick={gerenciarLike}
+                >
+                    <span className="icon">{usuarioJaCurtiu ? "❤️" : "🤍"}</span>
                     <span className="count">{likes}</span>
                 </button>
 
@@ -115,10 +183,11 @@ function PostSquad({id, idAutor, titulo, texto, likes, comentarios, autor, fotoA
 
                     {menuAberto && (
                         <div className="menu-dropdown-opcoes">
+                            {/* Verifica se o usuário logado é o dono do squad */}
                             {dadosSquad?.idCriador === usuarioId && (
                                 <>
                                     <button onClick={() => { deletarPost(); setMenuAberto(false); }}>
-                                        Deletar Post
+                                        Deletar Post (Admin)
                                     </button>
 
                                     <button onClick={() => { fixarPost(); setMenuAberto(false); }}>
@@ -127,18 +196,14 @@ function PostSquad({id, idAutor, titulo, texto, likes, comentarios, autor, fotoA
                                 </>
                             )}
 
+                            {/* Verifica se o usuário logado é o autor do post */}
                             {idAutor === usuarioId && (
-                                <>  
-
-                                    <button onClick={() => { /* lógica */ setMenuAberto(false); }}>
-                                        Editar Post
-                                    </button>
-                                </>
+                                <button onClick={() => { /* sua lógica de edição */ setMenuAberto(false); }}>
+                                    Editar Post
+                                </button>
                             )}
-
                             
-                            
-                            <button onClick={() => { /* lógica */ setMenuAberto(false); }}>
+                            <button onClick={() => { setMenuAberto(false); }}>
                                 Reportar
                             </button>
                         </div>
@@ -148,4 +213,5 @@ function PostSquad({id, idAutor, titulo, texto, likes, comentarios, autor, fotoA
         </div>
     );
 }
+
 export default PostSquad;
