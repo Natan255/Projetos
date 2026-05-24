@@ -12,7 +12,6 @@ function ExpansaoPost({ usuario }) {
     const [carregando, setCarregando] = useState(true);
     const [comentarios, setComentarios] = useState([]); 
     const [dadosSquad, setDadosSquad] = useState(null);
-    
 
     const [texto, setTexto] = useState("");
     const [textoResposta, setTextoResposta] = useState("");
@@ -20,20 +19,25 @@ function ExpansaoPost({ usuario }) {
     const [respondendoId, setRespondendoId] = useState(null);
     const [placeholderNome, setPlaceholderNome] = useState("");
 
+    // Puxa as labels customizadas da squad se existirem
+    const txtBotaoP = dadosSquad?.configVotacao?.botaoVotacaoP || "Aprovar";
+    const txtBotaoN = dadosSquad?.configVotacao?.botaoVotacaoN || "Recusar";
+
+    // CORREÇÃO: Mapeia para as chaves corretas salvos no banco (votosPositivos / votosNegativos)
+    const jaVotouPos = usuario && dadosPost?.votosPositivos?.includes(usuario.uid);
+    const jaVotouNeg = usuario && dadosPost?.votosNegativos?.includes(usuario.uid);
+
+    const comentariosPrincipais = comentarios.filter(c => !c.respondendoA);
+    const listaRespostas = comentarios.filter(c => c.respondendoA);
+
     const like = async (idComentario, jaCurtiu) => {
-        if (!usuario?.uid) return; // Segurança caso o usuário não esteja logado
+        if (!usuario?.uid) return;
 
         try {
             const comentarioRef = doc(db, "posts", idPost, "comentarios", idComentario);
-            
             await updateDoc(comentarioRef, {
-                // Se já curtiu, decrementa 1. Se não, incrementa 1.
                 likes: increment(jaCurtiu ? -1 : 1),
-                
-                // Registra ou remove o ID do usuário na lista de curtidas daquele comentário
-                usuariosQueCurtiram: jaCurtiu 
-                    ? arrayRemove(usuario.uid) 
-                    : arrayUnion(usuario.uid)
+                usuariosQueCurtiram: jaCurtiu ? arrayRemove(usuario.uid) : arrayUnion(usuario.uid)
             });
         } catch (error) {
             console.error("Erro ao atualizar like no comentário/resposta:", error);
@@ -42,7 +46,6 @@ function ExpansaoPost({ usuario }) {
 
     const adicionarComentario = async (idDoPai = null) => {
         const textoFinal = idDoPai ? textoResposta : texto;
-
         if (!textoFinal.trim()) return;
 
         try {
@@ -69,12 +72,49 @@ function ExpansaoPost({ usuario }) {
             await updateDoc(postRef, {
                 comentarios: increment(1) 
             });
-
         } catch (error) {
             console.error("Erro ao adicionar comentário:", error);
         }
     };
 
+    // CORREÇÃO DA FUNÇÃO: Atualizada para rodar baseada no Snapshot em tempo real
+    const handleVotar = async (tipoVoto) => {
+        if (!usuario) return alert("Você precisa estar logado para votar.");
+        if (dadosPost.statusVotacao === "encerrada") return alert("Esta votação já acabou.");
+
+        const uid = usuario.uid;
+        const postRef = doc(db, "posts", idPost); // Corrigido de 'id' para 'idPost'
+
+        try {
+            if (tipoVoto === "positivo") {
+                if (dadosPost?.votosPositivos?.includes(uid)) {
+                    // Retira o voto positivo
+                    await updateDoc(postRef, { votosPositivos: arrayRemove(uid) });
+                } else {
+                    // Adiciona no positivo e remove do negativo se ele estiver lá
+                    await updateDoc(postRef, {
+                        votosPositivos: arrayUnion(uid),
+                        votosNegativos: arrayRemove(uid)
+                    });
+                }
+            } else {
+                if (dadosPost?.votosNegativos?.includes(uid)) {
+                    // Retira o voto negativo
+                    await updateDoc(postRef, { votosNegativos: arrayRemove(uid) });
+                } else {
+                    // Adiciona no negativo e remove do positivo se ele estiver lá
+                    await updateDoc(postRef, {
+                        votosNegativos: arrayUnion(uid),
+                        votosPositivos: arrayRemove(uid)
+                    });
+                }
+            }
+        } catch (error) {
+            console.error("Erro ao computar voto:", error);
+        }
+    };
+
+    // 1. Escuta os dados do Post em tempo real
     useEffect(() => {
         if (!idPost) return;
         const unsubscribe = onSnapshot(doc(db, "posts", idPost), (docSnap) => {
@@ -82,7 +122,6 @@ function ExpansaoPost({ usuario }) {
                 const dados = docSnap.data();
                 setDadosPost({ id: docSnap.id, ...dados });
                 
-                // Se o post NÃO tiver uma squad atrelada, encerra o loading por aqui mesmo
                 if (!dados.idSquad) {
                     setCarregando(false);
                 }
@@ -93,17 +132,13 @@ function ExpansaoPost({ usuario }) {
         return () => unsubscribe();
     }, [idPost]);
     
-
+    // 2. Escuta os dados da Squad
     useEffect(() => {
         const squadIdAtual = dadosPost?.idSquad;
-
-        if (!squadIdAtual || typeof squadIdAtual !== "string") {
-            return;
-        }
+        if (!squadIdAtual || typeof squadIdAtual !== "string") return;
 
         try {
             const squadRef = doc(db, "squads", squadIdAtual);
-            
             const unsubscribe = onSnapshot(squadRef, (docSnap) => {
                 if (docSnap.exists()) {
                     setDadosSquad({ id: docSnap.id, ...docSnap.data() });
@@ -140,9 +175,6 @@ function ExpansaoPost({ usuario }) {
     if (carregando) return <div className="loading">Carregando post...</div>;
     if (!dadosPost) return <div className="error">Post não encontrado ou removido.</div>;
 
-    const comentariosPrincipais = comentarios.filter(c => !c.respondendoA);
-    const listaRespostas = comentarios.filter(c => c.respondendoA);
-
     return (
         <div className="expansao-container">
             <div className="expansao-squadmembro">
@@ -153,9 +185,7 @@ function ExpansaoPost({ usuario }) {
                 />
                 <div className="meta-info-post">
                     <span className="nome-membro">{dadosPost.nomeAutor || "Membro"}</span>
-
                     {dadosSquad?.nome && <span className="tag-squad">{dadosSquad.nome}</span>}
-                    
                     <span className="data-post">
                         • {dadosPost.criadoEm?.seconds 
                             ? new Date(dadosPost.criadoEm.seconds * 1000).toLocaleDateString() 
@@ -165,8 +195,35 @@ function ExpansaoPost({ usuario }) {
             </div>
 
             <div className="expansao-conteudo">
-                <h1 className="expansao-titulo">{dadosPost.titulo}</h1>
-                <p className="expansao-texto-corpo">{dadosPost.texto}</p>
+                <h1 className="expansao-titulo">📊 {dadosPost.titulo}</h1>
+                
+                {/* Renderização condicional dos botões baseada na estrutura do banco */}
+                {dadosPost?.tipo === "conquistaVoto" && (
+                    <div className="container-enquete-post">
+                        <div className="botoes-enquete">
+                            <button 
+                                className={`btn-enquete btn-enquete-sim ${jaVotouPos ? "votado-sim" : ""}`}
+                                onClick={() => handleVotar("positivo")}
+                                disabled={dadosPost.statusVotacao === "encerrada"}
+                            >
+                                {txtBotaoP} <span className="badge-votos">{dadosPost?.votosPositivos?.length || 0}</span>
+                            </button>
+
+                            <button 
+                                className={`btn-enquete btn-enquete-nao ${jaVotouNeg ? "votado-nao" : ""}`}
+                                onClick={() => handleVotar("negative")} 
+                                disabled={dadosPost.statusVotacao === "encerrada"}
+                            >
+                                {txtBotaoN} <span className="badge-votos">{dadosPost?.votosNegativos?.length || 0}</span>
+                            </button>
+                        </div>
+                        {dadosPost.statusVotacao === "encerrada" && (
+                            <span className="aviso-encerrado">Votação Encerrada</span>
+                        )}
+                    </div>
+                )}
+                
+                <p className="expansao-texto-corpo" style={{ whiteSpace: "pre-line" }}>{dadosPost.texto}</p>
             </div>
 
             <div className="expansao-comentarios">
