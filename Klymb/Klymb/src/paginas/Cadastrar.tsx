@@ -37,7 +37,10 @@ function Cadastrar() {
                 squads_mode:[],
                 squads_seguindo: [],
                 fotoUrl: `https://ui-avatars.com/api/?name=${nome}&background=ff4d00&color=fff`,
-                criadoEm: new Date()
+                criadoEm: new Date(),
+                seguidores: [],
+                usuario_seguindo: []
+
             }, { merge: true });
             await updateProfile(user, {
                 displayName: nome,
@@ -73,7 +76,10 @@ function Cadastrar() {
                 squads_mode: [],
                 squads_seguindo: [], 
                 fotoUrl: user.photoURL,
-                criadoEm: new Date()
+                criadoEm: new Date(),
+                seguidores: [],
+                usuario_seguindo: []
+                
             }, { merge: true });
 
             navigate("/");

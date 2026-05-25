@@ -1,4 +1,7 @@
-/* Container que ocupa a tela toda */
+/* ==========================================================================
+   ESTILOS GERAIS DO PERFIL
+   ========================================================================== */
+
 .perfil-container-user {
     background-color: #050505;
     min-height: 100vh;
@@ -7,27 +10,28 @@
     font-family: 'Inter', sans-serif;
 }
 
-/* O header agora é uma faixa que cruza a tela */
 .perfil-header-user {
     display: grid;
-    /* Grid: Foto | Bio (espaço flexível) | Stats | Ações */
-    grid-template-columns: auto 1fr auto auto;
+    /* Grid de 3 colunas agora: Foto | Bio | Grupos de Stats/Ações */
+    grid-template-columns: auto 1fr auto;
     align-items: center;
-    gap: 30px;
+    gap: 40px;
     padding: 40px 6%;
     background: linear-gradient(180deg, #111 0%, #050505 100%);
     border-bottom: 1px solid #222;
 }
 
+/* --- FOTO DO USUÁRIO --- */
 .perfil-foto img {
     width: 120px;
     height: 120px;
-    border-radius: 12px; /* Estilo Gamer: levemente quadrado */
+    border-radius: 12px;
     border: 2px solid #ff4d00;
     object-fit: cover;
     box-shadow: 0 0 20px rgba(255, 77, 0, 0.2);
 }
 
+/* --- BIO / APRESENTAÇÃO --- */
 .perfil-bio {
     display: flex;
     flex-direction: column;
@@ -47,48 +51,153 @@
     letter-spacing: 1px;
 }
 
-/* Quadrado de estatísticas */
+/* ==========================================================================
+   GRUPOS ALINHADOS LADO A LADO (Novos Containers)
+   ========================================================================== */
+
+/* Mantém os blocos de estatísticas lado a lado */
+.perfil-stats-group {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+/* Mantém a engrenagem e o botão Sair lado a lado */
+.perfil-acoes-group {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+/* ==========================================================================
+   ESTATÍSTICAS (Squads e Seguidores)
+   ========================================================================== */
 .perfil-squad-quant {
-    background: #111;
-    padding: 15px 25px;
-    border: 1px solid #333;
+    background: #0d0d0d;
+    padding: 12px 22px;
+    border: 1px solid #1f1f1f;
     border-radius: 8px;
     text-align: center;
+    min-width: 100px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2px;
+    transition: border-color 0.25s ease;
+}
+
+.perfil-squad-quant:hover {
+    border-color: #333;
 }
 
 .perfil-squad-quant p {
     margin: 0;
-    font-size: 1.5rem;
-    font-weight: bold;
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: #ffffff;
+    line-height: 1.2;
+    letter-spacing: -0.5px;
 }
 
-.perfil-squad-quant::after {
-    font-size: 0.7rem;
-    color: #777;
-    display: block;
+.perfil-squad-quant span {
+    font-size: 0.72rem;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
 }
 
-/* Botões de ação */
-.perfil-header-user button {
-    background: #1a1a1a;
-    border: 1px solid #333;
-    color: white;
-    padding: 12px;
+/* ==========================================================================
+   BOTÕES E AÇÕES DO HEADER
+   ========================================================================== */
+
+/* Botão de Engrenagem (Configuração) */
+.perfil-btn-config {
+    background: #1a1a1a !important;
+    border: 1px solid #333 !important;
+    color: #ff4444 !important; /* Vermelho padrão de logout */
+    padding: 10px 20px !important;
+    border-radius: 8px;
+    font-size: 1rem !important;
+
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+/* Botão Sair (Compacto e limpo) */
+.perfil-sair {
+    background: #1a1a1a !important;
+    border: 1px solid #333 !important;
+    color: #ff4444 !important; /* Vermelho padrão de logout */
+    padding: 10px 20px !important;
     border-radius: 8px;
     cursor: pointer;
-    transition: 0.3s;
+    font-size: 0.9rem !important;
+    font-weight: 600 !important;
+    transition: 0.2s;
 }
 
-.perfil-header-user button:hover {
-    background: #222;
-    border-color: #ff4d00;
+.perfil-sair:hover {
+    background: #222 !important;
+    border-color: #ff4444 !important;
 }
 
-.perfil-sair {
-    color: #ff4444 !important;
+/* Botão Seguir */
+.perfil-seguir {
+    background: #ff4d00 !important;
+    border: 1px solid transparent !important;
+    color: #ffffff !important;
+    font-weight: 600;
+    font-size: 0.9rem;
+    letter-spacing: 0.5px;
+    padding: 12px 28px !important;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.25, 1, 0.5, 1) !important;
+    box-shadow: 0 4px 15px rgba(255, 77, 0, 0.15);
 }
 
-/* Área de conteúdo abaixo do header */
+.perfil-seguir:hover {
+    background: #ff6a26 !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 77, 0, 0.25);
+}
+
+/* ==========================================================================
+   CONTEÚDO INFERIOR DO PERFIL
+   ========================================================================== */
 .perfil-posts {
     padding: 40px 6%;
+}
+
+/* ==========================================================================
+   RESPONSIVIDADE DO HEADER (Mobile)
+   ========================================================================== */
+@media (max-width: 950px) {
+    .perfil-header-user {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 25px;
+        padding: 30px 6%;
+    }
+
+    /* Faz os grupos ocuparem a largura da tela no mobile */
+    .perfil-stats-group,
+    .perfil-acoes-group {
+        width: 100%;
+        justify-content: center; /* Centraliza os pares no mobile */
+    }
+
+    /* As duas caixas de stats dividem o espaço igualmente lado a lado */
+    .perfil-stats-group .perfil-squad-quant {
+        flex: 1; 
+        max-width: 200px;
+    }
+
+    /* Botão seguir ocupa a linha toda se estiver sozinho */
+    .perfil-seguir {
+        width: 100% !important;
+    }
 }

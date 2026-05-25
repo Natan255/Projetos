@@ -172,6 +172,7 @@ function PostSquad({
                     <span className="count">{comentarios || 0}</span>
                 </button>
 
+
                 <div className="container-opcoes-wrapper">
                     <button className="btn_interacao btn_opcoes" onClick={() => setMenuAberto(!menuAberto)}>
                         <div className="tres-pontos-container">

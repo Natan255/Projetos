@@ -4,7 +4,7 @@ import type { User } from "firebase/auth";
 import { useNavigate, useParams} from "react-router-dom";
 import { auth, db } from "../firebaseConfig";
 import { useEffect, useState } from "react";
-import { doc, onSnapshot, collection, query, where, orderBy } from "firebase/firestore";
+import { doc, onSnapshot, collection, query, where, orderBy, arrayUnion, arrayRemove, updateDoc } from "firebase/firestore";
 import PostVotacaoSquad from "../componentes/VotoSquad";
 
 interface PerfilProps {
@@ -15,6 +15,7 @@ interface PerfilProps {
 function Perfil({ usuario, squads }: PerfilProps) {
     const navigate = useNavigate();
     const { idUsuario } = useParams();
+
     const [dadosExtras, setDadosExtras] = useState<any>(null);
     const [meusPosts, setMeusPosts] = useState<any[]>([]);
     
@@ -68,6 +69,38 @@ function Perfil({ usuario, squads }: PerfilProps) {
         }
     };
 
+    const seguirUser = async() =>{
+            try{
+                const pessoaASerSeguida = doc(db, "usuarios", idParaBuscar);
+                const pessoaSeguindo = doc(db, "usuarios", usuario?.uid);
+                await updateDoc(pessoaASerSeguida, {
+                    seguidores: arrayUnion(usuario?.uid)
+                })
+                await updateDoc(pessoaSeguindo, {
+                    usuario_seguindo: arrayUnion(idParaBuscar)
+                })
+
+            }catch(error){
+                console.error("Erro ao seguir usuário:", error);
+            }
+    } 
+    const desSeguirUser = async() =>{
+        try{
+                const pessoaASerDesSeguida = doc(db, "usuarios", idParaBuscar);
+                const pessoaSeguindo = doc(db, "usuarios", usuario?.uid);
+                await updateDoc(pessoaASerDesSeguida, {
+                    seguidores: arrayRemove(usuario?.uid)
+                })
+                await updateDoc(pessoaSeguindo, {
+                    usuario_seguindo: arrayRemove(idParaBuscar)
+                })
+
+            }catch(error){
+                console.error("Erro ao seguir usuário:", error);
+            }
+    } 
+
+
     if (!usuario) return <h2 style={{color: 'white', padding: '100px'}}>Carregando perfil...</h2>;
 
     return (
@@ -87,18 +120,49 @@ function Perfil({ usuario, squads }: PerfilProps) {
                         <h3 className="perfil-bio-text">{dadosExtras?.bio || "Recruta do Rank Over"}</h3>
                     </div>
                     
+                    {/* CONTAINER DAS ESTATÍSTICAS (SQUAD + SEGUIDORES) */}
+                    <div className="perfil-stats-group">
+                        <div className="perfil-squad-quant">
+                            <p>{dadosExtras?.squads_seguindo?.length || 0}</p>
+                            <span>Squads</span>
+                        </div>
 
-                    <div className="perfil-squad-quant">
-                        <p>{dadosExtras?.squads_seguindo?.length || 0}</p>
-                        <span>Squads</span>
+                       
+                        <div className="perfil-squad-quant">
+                            <p>{dadosExtras?.usuario_seguindo?.length || 0}</p>
+                            <span>Seguindo</span>
+                        </div>
+
+                        <div className="perfil-squad-quant">
+                            <p>{dadosExtras?.seguidores?.length || 0}</p>
+                            <span>Seguidores</span>
+                        </div>
+
                     </div>
-                    
-                    {eMeuPerfil && (
-                        <>
-                            <button onClick={() => navigate("/paginas/PerfilConfig")} style={{fontSize: '2.3rem', background: 'none', border: 'none', cursor: 'pointer'}}>⚙️</button>
-                            <button className="perfil-sair" onClick={handleSair}>Sair</button>
-                        </>
-                    )}
+
+                    {/* CONTAINER DE AÇÕES (BOTÕES OU CONFIG+SAIR) */}
+                    <div className="perfil-acoes-group">
+                        {!eMeuPerfil && (
+                            <>
+                                {dadosExtras?.seguidores?.includes(usuario.uid) ? (
+                                    <button className="perfil-seguir" onClick={() => desSeguirUser()}>
+                                        Deixar de Seguir
+                                    </button>
+                                ) : (
+                                    <button className="perfil-seguir" onClick={() => seguirUser()}>
+                                        Seguir
+                                    </button>
+                                )}
+                            </>
+                        )}
+                        
+                        {eMeuPerfil && (
+                            <>
+                                <button className="perfil-btn-config" onClick={() => navigate("/paginas/PerfilConfig")}>⚙️</button>
+                                <button className="perfil-sair" onClick={handleSair}>Sair</button>
+                            </>
+                        )}
+                    </div>
                 </div>
 
                 <div className="Topicos">
