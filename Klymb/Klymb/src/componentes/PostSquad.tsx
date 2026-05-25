@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import "./Cardsquad.css";
+import "./CardItem.css";
 import "./PostSquad.css";
 import { useNavigate } from "react-router-dom";
 import { doc, collection, getDoc, getDocs, deleteDoc, updateDoc, arrayRemove, arrayUnion, increment } from "firebase/firestore";

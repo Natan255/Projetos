@@ -1,0 +1,115 @@
+/* Container Principal da Tela */
+.add-item-container {
+    padding: 40px;
+    background-color: #0f0f0f;
+    color: white;
+    min-height: 100vh;
+    box-sizing: border-box;
+    
+    /* Centraliza todo o conteúdo na tela */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Título Laranja Padrão */
+.add-item-titulo {
+    color: #ff6d00;
+    margin-bottom: 40px;
+    font-size: 2rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-align: center;
+}
+
+/* Área de trabalho centralizada */
+.add-item-workspace {
+    display: flex;
+    gap: 60px;
+    align-items: center;      /* Alinha formulário e card pelo meio (vertical) */
+    justify-content: center;  /* Centraliza horizontalmente */
+    flex-wrap: wrap;
+    width: 100%;
+    max-width: 1000px;        /* Limita a largura máxima do conjunto */
+}
+
+/* Bloco do Formulário */
+.add-item-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+    max-width: 450px;
+}
+
+/* Inputs de Texto */
+.add-item-input, 
+.add-item-textarea {
+    padding: 14px;
+    border-radius: 8px;
+    border: 1px solid #2a2a2a;
+    background-color: #161616;
+    color: white;
+    font-size: 0.95rem;
+    outline: none;
+    transition: all 0.3s ease;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.add-item-textarea {
+    resize: none;
+    font-family: inherit;
+}
+
+/* Efeito de foco nos inputs */
+.add-item-input:focus, 
+.add-item-textarea:focus {
+    border-color: #ff6d00;
+    box-shadow: 0 0 8px rgba(255, 109, 0, 0.3);
+    background-color: #1a1a1a;
+}
+
+/* Botão de Enviar */
+.add-item-btn {
+    padding: 14px;
+    background: #ff6d00;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(255, 109, 0, 0.2);
+}
+
+.add-item-btn:hover {
+    background: #ff8f00;
+    box-shadow: 0 0 20px rgba(255, 109, 0, 0.5);
+    transform: translateY(-2px);
+}
+
+/* Bloco de Pré-visualização */
+.add-item-preview {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #141414;
+    padding: 25px;
+    border-radius: 12px;
+    border: 1px solid #222;
+}
+
+.preview-label {
+    margin-bottom: 20px;
+    color: #888;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}

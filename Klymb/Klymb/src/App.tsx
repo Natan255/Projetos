@@ -1,7 +1,6 @@
 import './App.css'
 import Home from './paginas/Home'
 import Navbar from './paginas/Navbar'
-import Squads from './paginas/Squads'
 import Cadastrar from './paginas/Cadastrar'
 import PerfilSquad from './paginas/PerfilSquad'
 import Entrar from './paginas/Entrar'
@@ -24,7 +23,8 @@ import { onAuthStateChanged, type User } from "firebase/auth";
 import AlertaProvider from "./componentes/AlertaProvider";
 import GerenciaPostSquadConfig from './paginas/GerenciaPostSquadConfig'
 import AlterarPerfilSquad from './paginas/AlterarPerfilSquad'
-
+import AdicionarItem from './paginas/AdicionarItem'
+import ItemExpansao from './paginas/ItemExpansao'
 
 
 function App() {
@@ -67,8 +67,6 @@ useEffect(() => {
         <Routes>
           <Route path="/" element={<Home squads={squads} pesquisaQuery={pesquisaQuery} usuario={usuario} />} />
 
-          <Route path="/paginas/Squads" element={<Squads squads={squads} />} />
-
           <Route path='/paginas/Cadastrar' element={<Cadastrar />} />
 
           <Route path="/paginas/CadastrarSquad" element={<CadastrarSquad/>} />
@@ -79,6 +77,8 @@ useEffect(() => {
 
           <Route path="/post/:idPost" element={<ExpansaoPost usuario={usuario} />} />
 
+
+          <Route path="/paginas/adicionarItem" element={<AdicionarItem usuario={usuario} />} />
 
           <Route path="/paginas/PerfilSquad/:id" element={<PerfilSquad squads={squads} usuario={usuario} />} />
 
@@ -92,7 +92,7 @@ useEffect(() => {
 
           <Route path='/squadconfig/solicitacao/:id/entrada' element={<GerenciarEntradaSquadConfig/>}/>
 
-
+          <Route path="/paginas/ItemExpansao/:id" element={<ItemExpansao />} />
 
           <Route path="/paginas/Prova/:id" element={<Prova usuario={usuario} squads={squads} />} />
 

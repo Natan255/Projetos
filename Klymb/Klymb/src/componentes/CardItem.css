@@ -1,0 +1,220 @@
+/* Container do Grid (Coloque isso no arquivo do componente pai que lista os cards, ex: AdicionarItem.css) */
+.squad_grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 30px;
+    padding: 40px;
+
+}
+
+/* O Card Principal */
+.card_squad {
+    position: relative;
+    width: 220px;
+    height: 330px; /* Proporção clássica de poster */
+    border-radius: 12px;
+    overflow: hidden;
+    background-color: #1a1a1a;
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+    cursor: pointer;
+}
+
+/* Efeito de Zoom e Borda Neon no Hover */
+.card_squad:hover {
+    transform: scale(1.05);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.8), 0 0 15px rgba(255, 109, 0, 0.2);
+}
+
+/* O Nome do Squad (no topo) */
+.card_squad > p {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    z-index: 3;
+    color: white;
+    font-weight: bold;
+    font-size: 1rem;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.9);
+    margin: 0;
+}
+
+/* A Imagem de Fundo (Banner) */
+.card_bg {
+    width: 100%;
+    height: 100%;
+}
+
+.card_bg img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: filter 0.3s ease;
+}
+
+.card_squad:hover .card_bg img {
+    filter: brightness(0.3) blur(1px); /* Escurece e foca no texto do hover */
+}
+
+/* Informações do Squad (Aparecem subindo no Hover) */
+.card_info {
+    position: absolute;
+    bottom: 90px;
+    left: 0;
+    width: 100%;
+    padding: 0 15px;
+    color: #ccc;
+    font-size: 0.85rem;
+    text-align: center;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.3s ease;
+    z-index: 2;
+    box-sizing: border-box;
+    
+    /* Garante que o container não cresça além do espaço seguro */
+    max-height: 80px; 
+    overflow: hidden;
+}
+
+.card_squad:hover .card_info {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* LIMITADOR DA DESCRIÇÃO (Mágica do CSS para truncar texto em múltiplas linhas) */
+.card_info > p {
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 9; /* Número máximo de linhas que você quer exibir antes do ... */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.3; /* Altura da linha para o cálculo do box */
+}
+
+/* Botão de Entrar */
+.card_enter {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(50px);
+    transition: all 0.4s ease;
+    z-index: 4;
+}
+
+.card_squad:hover .card_enter {
+    transform: translateX(-50%) translateY(0);
+}
+
+.card_enter button {
+    background: #ff6d00; /* Laranja Rank Over */
+    color: white;
+    border: none;
+    padding: 10px 25px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 10px rgba(255, 109, 0, 0.3);
+}
+
+.card_enter button:hover {
+    background: #ff8f00; /* Tom de laranja ligeiramente mais claro no foco */
+    box-shadow: 0 0 15px rgba(255, 109, 0, 0.6);
+}
+
+/* Overlay Escuro para garantir leitura */
+.card_squad::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.95) 10%, rgba(0,0,0,0.4) 50%, transparent 100%);
+    z-index: 1;
+    pointer-events: none;
+}
+
+/* Container posicionado absolutamente no topo do card */
+.card_squad {
+    position: relative; /* Garante que o menu se posicione em relação ao card */
+}
+
+.card-menu-container {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 10; /* Fica por cima da imagem e do texto */
+}
+
+/* Botão invisível/estilizado dos três pontos */
+.card-btn-tres-pontos {
+    background: rgba(0, 0, 0, 0.6);
+    border: 1px solid #222;
+    color: white;
+    font-size: 1.4rem;
+    cursor: pointer;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+.card-btn-tres-pontos:hover {
+    background: #ff4d00;
+    border-color: #ff4d00;
+}
+
+/* Caixa suspensa das opções (Dropdown) */
+.card-dropdown-menu {
+    position: absolute;
+    right: 0;
+    top: 38px;
+    background: #111;
+    border: 1px solid #222;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    min-width: 130px;
+    overflow: hidden;
+}
+
+/* Botões de ação dentro do Dropdown */
+.card-dropdown-menu button {
+    background: transparent;
+    border: none;
+    color: #eee;
+    padding: 10px 15px;
+    text-align: left;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    width: 100%;
+}
+
+.card-dropdown-menu button:hover {
+    background: #1a1a1a;
+    color: #fff;
+}
+
+/* Destaque para o botão de apagar */
+.card-dropdown-menu button.btn-deletar {
+    color: #ff4444;
+    border-top: 1px solid #222;
+}
+
+.card-dropdown-menu button.btn-deletar:hover {
+    background: rgba(255, 68, 68, 0.1);
+}
+
+/* Efeito opcional caso o item esteja marcado como fixado */
+.card_squad.item-fixado {
+    border: 1px solid #ff4d00;
+    box-shadow: 0 0 10px rgba(255, 77, 0, 0.15);
+}

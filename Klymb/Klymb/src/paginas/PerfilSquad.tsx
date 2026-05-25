@@ -345,7 +345,9 @@ function PerfilSquad({ squads, usuario }) {
                 
 
                 <div className="Topicos_header_acoes">
-                    <button className="prova" onClick={() => navigate(`/paginas/Prova/${id}`)}>Prova</button>
+                    {squadSelecionado?.disputarRanking !== false && (
+                        <button className="prova" onClick={() => navigate(`/paginas/Prova/${id}`)}>Prova</button>
+                    )}
                     <button className="Postar" onClick={() => setModalAberto(true)}>Postar</button>
                     <Modal 
                         isOpen={modalAberto} 

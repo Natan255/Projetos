@@ -3,10 +3,9 @@ import { db, auth } from "../firebaseConfig";
 import { collection, addDoc, serverTimestamp, doc, updateDoc, arrayUnion, setDoc} from "firebase/firestore"; //pra poder editar sem apagar
 import { useNavigate } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
-
-
+import { useAlerta } from "../componentes/AlertaProvider";
 import "./CadastrarSquad.css";
-import Squads from "./Squads";
+
 
 function CadastrarSquad() {
     const [nome, setNome] = useState("");
@@ -16,8 +15,8 @@ function CadastrarSquad() {
     const [outraMetrica, setOutraMetrica] = useState("");
     const [fotoPerfil, setFotoPerfil] = useState("");
     const [fotoBanner, setFotoBanner] = useState("");
+    const { exibirAlerta } = useAlerta();
     const [fotoCapa, setFotoCapa] = useState("");
-    const [mostrarAlerta, setMostrarAlerta] = useState(false);
     const [subCategoria, setSubCategoria] = useState("")
     const [conteudoVotacao, setConteudoVotacao] = useState("")
     const [botaoVotacaoP, setbotaoVotacaoP] = useState("")
@@ -36,6 +35,7 @@ function CadastrarSquad() {
     const [exigirContajg, setExigirContajg] = useState("")
     const [restritoAoSquad, setRestritoAoSquad] = useState(true)
     const [dataEncerramento, setDataEncerramento] = useState("")
+    const [disputarRanking, setDisputarRanking] = useState("sim")
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -55,23 +55,23 @@ function CadastrarSquad() {
         setEnviando(true);
 
         const metricaFinal = metrica === "Outros" ? outraMetrica : metrica;
-        
-        // Geradores de avatares padrão caso o usuário não envie foto
         const avatarPadrao = `https://ui-avatars.com/api/?name=${encodeURIComponent(nome)}&background=ff4d00&color=fff&size=512`;
-        const bannerPadrao = `https://picsum.photos/id/15/1200/400`; // Um banner neutro padrão
+        const bannerPadrao = `https://picsum.photos/id/15/1200/400`;
 
         const fotoPerfilFinal = fotoPerfil.trim() === "" ? avatarPadrao : fotoPerfil;
         const fotoBannerFinal = fotoBanner.trim() === "" ? bannerPadrao : fotoBanner;
         const fotoCapaFinal = fotoCapa.trim() === "" ? avatarPadrao : fotoCapa;
 
+        const exigeConfigVotacao = estilo === "Votacao" || (estilo === "Colecao" && disputarRanking);
+
         try {
-            // 1. Cria o Squad na coleção principal incluindo as novas configurações
             const docRef = await addDoc(collection(db, "squads"), {
                 nome,
                 descricao,
                 categoria,
                 subCategoria, 
                 estilo,
+                disputarRanking: estilo === "Colecao" ? disputarRanking : true, 
                 regras: {
                     exigirFoto,
                     exigirResumo,
@@ -79,7 +79,7 @@ function CadastrarSquad() {
                     exigirForest,
                     exigirContajg
                 },
-                ...(estilo === "Votacao" && {
+                ...(exigeConfigVotacao && {
                     configVotacao: {
                         conteudoVotacao,
                         dataEncerramento,
@@ -88,7 +88,11 @@ function CadastrarSquad() {
                         botaoVotacaoP: botaoVotacaoP || "Aprovar"
                     }
                 }),
-                metrica: estilo === "Votacao" ? "Votação" : metricaFinal, // Ajusta a métrica se for votação
+                metrica: estilo === "Votacao" 
+                    ? "Votação" 
+                    : (estilo === "Colecao" && !disputarRanking) 
+                        ? "Exibição" 
+                        : metricaFinal,
                 fotoPerfil: fotoPerfilFinal,
                 fotoBanner: fotoBannerFinal,
                 fotoCapa: fotoCapaFinal,
@@ -103,17 +107,19 @@ function CadastrarSquad() {
             });
             
             const novoSquadId = docRef.id;
+            const deveCriarRanking = estilo !== "Colecao" || (estilo === "Colecao" && disputarRanking);
 
-            // 2. Cria o primeiro membro no ranking usando o UID dele como ID do documento
-            const rankingMembroRef = doc(db, "squads", novoSquadId, "ranking", auth.currentUser.uid);
-            await setDoc(rankingMembroRef, {
-                uid: auth.currentUser.uid,
-                nome: auth.currentUser.displayName || "Membro",
-                fotoUrl: auth.currentUser.photoURL || "",
-                pontos: 0,
-                cargo: "adm", 
-                ultimaAtividade: serverTimestamp()
-            });
+            if (deveCriarRanking) {
+                const rankingMembroRef = doc(db, "squads", novoSquadId, "ranking", auth.currentUser.uid);
+                await setDoc(rankingMembroRef, {
+                    uid: auth.currentUser.uid,
+                    nome: auth.currentUser.displayName || "Membro",
+                    fotoUrl: auth.currentUser.photoURL || "",
+                    pontos: 0,
+                    cargo: "adm", 
+                    ultimaAtividade: serverTimestamp()
+                });
+            }
             
             // 3. Atualiza o perfil do usuário criador vinculando o novo Squad
             const userRef = doc(db, "usuarios", auth.currentUser.uid);
@@ -123,7 +129,7 @@ function CadastrarSquad() {
             });
 
             // Abre o modal/notificação de sucesso
-            setMostrarAlerta(true);
+            exibirAlerta("Successo", "Squad criado com sucesso!");
             
         } catch (error: any) {
             console.error("Erro ao criar squad:", error);
@@ -132,13 +138,10 @@ function CadastrarSquad() {
             setEnviando(false);
         }
     };
-
     return (
         
         <div className="criars-container">
-            {mostrarAlerta && (
-                <p>a</p>
-            )}
+
             <div className="criars">
                 <h1 className="titulo-sessao">Fundar Novo Squad</h1>
                 <form className="criar-form" onSubmit={handleSubmit}>
@@ -164,17 +167,6 @@ function CadastrarSquad() {
                     </div>
 
                     <div className="input-group">
-                        <p>Selecione o estilo do squad</p>
-                        <select value={estilo} onChange={(e) => setEstilo(e.target.value)}>
-
-                            <option value="Pontos">Pontos</option>
-                            <option value="Votacao">Votacao</option>
-                            <option value="Constancia">Constancia</option>
-                        </select>
-
-                    </div>
-
-                    <div className="input-group">
                         <p>Categoria</p>
                         <select value={categoria} onChange={(e) => setCategoria(e.target.value)}>
                             <option value="Estudos">📚 Estudos</option>
@@ -184,9 +176,73 @@ function CadastrarSquad() {
                             <option value="Outros">Outros</option>
                         </select>
                     </div>
+
+                    <div className="input-group">
+                        <p>Selecione o estilo do squad</p>
+                        <select value={estilo} onChange={(e) => setEstilo(e.target.value)}>
+
+                            <option value="Pontos">Pontos</option>
+                            <option value="Votacao">Votacao</option>
+                            <option value="Colecao">Colecao/Intusiasta</option>
+                        </select>
+
+                    </div>
+
+                    {(estilo === "Colecao") && (
+                        <>  
+                            <div className="estilo-descricao-card">
+                                <h4>🏆 Estilo Coleção / Vitrine</h4>
+                                <p>Ideal para os membros exibirem seu acervo. Os itens postados podem ir direto para o feed e para a vitrine do perfil do usuário.</p>
+                            </div>
+
+                            {/* NOVA OPÇÃO: PERMITIR UM GRUPO SÓ DE EXIBIÇÃO */}
+                            <div className="input-group">
+                                <p>Esse grupo terá Ranking competitivo?</p>
+                                <select onChange={(e) => setDisputarRanking(e.target.value === "sim")}>
+                                    <option value="sim">Sim, queremos competir para ver quem tem os melhores itens</option>
+                                    <option value="nao">Não, apenas um espaço para compartilhar e mostrar as coleções</option>
+                                </select>
+                            </div>
+
+                            {/* SÓ MOSTRA AS CONFIGURAÇÕES DE VOTO SE O RANKING ESTIVER ATIVADO */}
+                            {disputarRanking && (
+                                <>
+                                    <div className="input-group">
+                                        <p>O que tem que ser votado/Regras para pontuar no Rank</p>
+                                        <input 
+                                            type="text" 
+                                            placeholder="Ex: Votar se o item é original e brabo..."
+                                            onChange={(e) => setConteudoVotacao(e.target.value)} 
+                                        />
+                                    </div>
+
+                                    <div className="input-group">
+                                        <p>Quando a votação de um item deve encerrar?</p>
+                                        <input 
+                                            type="number" 
+                                            placeholder="Ex: 5 (dias)"
+                                            onChange={(e) => setDataEncerramento(e.target.value)} 
+                                        />
+                                    </div>
+
+                                    <div className="input-group">
+                                        <p>Personalizar botões de voto</p>
+                                        <div className="votos-custom-inputs" style={{ display: 'flex', gap: '10px' }}>
+                                            <input type="text" placeholder="Padrão: Recusar" onChange={(e) => setbotaoVotacaoN(e.target.value || "Recusar")} />
+                                            <input type="text" placeholder="Padrão: Aprovar" onChange={(e) => setbotaoVotacaoP(e.target.value || "Aprovar")} />
+                                        </div>
+                                    </div>
+                                </>
+                            )}
+                        </>
+                    )}
     
-                    {estilo === "Votacao" && (
-                        <>
+                    {(estilo === "Votacao" ) && (
+                        <>  
+                        <div className="estilo-descricao-card">
+                            <h4>🗳️ Estilo Votação Tradicional</h4>
+                            <p>Focado em tomada de decisões com votações gerais do grupo. Qualquer membro pode abrir uma votação baseada nas regras que você definir aqui, e o resultado final soma os pontos para o ranking geral do Squad.</p>
+                        </div>
                             <div className="input-group">
                                 <p>O que tem que ser votado/Regras (aparecerá isso para o membro)</p>
                                 <input 
@@ -232,8 +288,12 @@ function CadastrarSquad() {
                         </>
                     )}
 
-                    {(estilo === "Pontos" || estilo === "Constancia") &&(
+                    {(estilo === "Pontos") &&(
                         <>
+                            <div className="estilo-descricao-card">
+                                <h4>📈 Estilo Pontos</h4>
+                                <p>O modelo competitivo puro do Rank Over. Escolha uma métrica específica (como Horas, Kills ou Páginas lidas) e defina as regras de validação. Os membros sobem no ranking provando suas atividades através de fotos, commits do GitHub ou integrações.</p>
+                            </div>
                             <div className="input-group">
                                 <p>Métrica de Rank (O que define quem está no topo?)</p>
                                 <div className="metrica-options">

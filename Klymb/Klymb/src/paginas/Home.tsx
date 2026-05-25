@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import CardSquad from "../componentes/CardSquad";
+import CardItem from "../componentes/CardItem";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Link } from "react-router-dom";
 import { Navigation, Pagination, Autoplay } from 'swiper/modules';

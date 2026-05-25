@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { doc, getDoc, updateDoc, collection, setDoc, increment, arrayUnion, arrayRemove } from "firebase/firestore";
 import { db } from "../firebaseConfig";
-import "./Cardsquad.css";
+import "./CardItem.css";
 import "./VotoSquad.css"; 
 
 function PostVotacaoSquad({
