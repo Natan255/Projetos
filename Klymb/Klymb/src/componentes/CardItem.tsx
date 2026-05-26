@@ -7,7 +7,7 @@ interface CardItemProps {
     fotoBanner: string;
     info: string;
     id: string;
-    eMeuPerfil: boolean;               // Nova prop para checar se é o dono
+    eMeuPerfil: boolean; 
     onDeletar?: (id: string) => void; 
     onFixar?: (id: string) => void;   
     fixado?: boolean;                  
@@ -19,16 +19,15 @@ function CardItem({ nome, fotoBanner, info, id, eMeuPerfil, onDeletar, onFixar, 
     const menuRef = useRef<HTMLDivElement>(null);
 
     function entrar() {
-        console.log("Usuário solicitou entrada no squad:", nome);
         navigate(`../paginas/ItemExpansao/${id}`);
     }
 
-    // Fecha o menu se clicar fora dele
     useEffect(() => {
         function cliqueFora(event: MouseEvent) {
             if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
                 setMenuAberto(false);
             }
+
         }
         document.addEventListener("mousedown", cliqueFora);
         return () => document.removeEventListener("mousedown", cliqueFora);
@@ -36,13 +35,13 @@ function CardItem({ nome, fotoBanner, info, id, eMeuPerfil, onDeletar, onFixar, 
 
     return (
         <div className={`card_squad ${fixado ? "item-fixado" : ""}`} onClick={entrar}>
-            
+
             {eMeuPerfil && (
                 <div className="card-menu-container" ref={menuRef}>
                     <button 
                         className="card-btn-tres-pontos" 
                         onClick={(e) => {
-                            e.stopPropagation(); // Impede que o clique afete outras coisas no card
+                            e.stopPropagation();
                             setMenuAberto(!menuAberto);
                         }}
                     >

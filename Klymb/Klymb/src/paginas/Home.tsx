@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import CardItem from "../componentes/CardItem";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Link } from "react-router-dom";
 import { Navigation, Pagination, Autoplay } from 'swiper/modules';
@@ -71,7 +70,7 @@ function Home({ squads, pesquisaQuery, usuario }) {
                                         <PostVotacaoSquad 
                                             key={post.id}
                                             id={post.id}
-                                            idAutor={post.idAutor}
+                                            idAutor={post.idAutor || post.idUsuario}
                                             titulo={post.titulo}
                                             texto={post.texto}
                                             autor={post.nomeAutor}

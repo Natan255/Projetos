@@ -4,9 +4,10 @@ import type { User } from "firebase/auth";
 import { useNavigate, useParams } from "react-router-dom";
 import { auth, db } from "../firebaseConfig";
 import { useEffect, useState } from "react";
-import { doc, onSnapshot, collection, query, where, orderBy, documentId, updateDoc, arrayRemove, deleteDoc } from "firebase/firestore";
+import { doc, onSnapshot, collection, query, where, orderBy, documentId, updateDoc, arrayRemove, arrayUnion, deleteDoc } from "firebase/firestore";
 import PostVotacaoSquad from "../componentes/VotoSquad";
 import CardItem from "../componentes/CardItem";
+import { array } from "firebase/firestore/pipelines";
 
 interface PerfilProps {
     usuario: User | null;
@@ -23,16 +24,12 @@ function Perfil({ usuario, squads }: PerfilProps) {
     const [meusPosts, setMeusPosts] = useState<any[]>([]);
     const [itensDaColecao, setItensDaColecao] = useState<any[]>([]); 
     const [abaAtiva, setAbaAtiva] = useState<AbaPerfil>("postagens");
-    
-    // Define o ID correto para busca, priorizando o parâmetro da URL
     const idParaBuscar = idUsuario || usuario?.uid;
-    
-    // Blindagem 1: Validação de dono que funciona tanto na URL limpa quanto na URL com o próprio UID
     const eMeuPerfil = idParaBuscar === usuario?.uid;
 
-    // 1. Escuta os posts normais e votações do usuário em tempo real
+
     useEffect(() => {
-        // Blindagem 2: Não tenta rodar query se o Auth ainda não respondeu (previne query para 'undefined')
+
         if (!idParaBuscar) return;
 
         const postsRef = collection(db, "posts");
@@ -55,7 +52,7 @@ function Perfil({ usuario, squads }: PerfilProps) {
         return () => unsubscribePosts();
     }, [idParaBuscar]);
 
-    // 2. Escuta os dados do perfil do usuário no Firestore em tempo real
+
     useEffect(() => {
         if (!idParaBuscar) return;
 
@@ -71,17 +68,15 @@ function Perfil({ usuario, squads }: PerfilProps) {
         return () => unsubscribeUser();
     }, [idParaBuscar]);
 
-    // 3. BUSCA OS CARDS DA VITRINE REAIS BASEADO NOS IDs DO ARRAY DO USUÁRIO
+
     useEffect(() => {
-        // Blindagem 3: SÓ roda a query se o array 'colecao' existir no dadosExtras e não estiver vazio.
-        // O Firebase gera erro se tentar buscar com 'in' usando array vazio.
+
         if (!dadosExtras?.colecao || dadosExtras.colecao.length === 0) {
             setItensDaColecao([]);
             return;
         }
 
         const itensRef = collection(db, "colecaoItens");
-        // Firebase limita queries com operador "in" a no máximo 30 itens de uma vez.
         const q = query(itensRef, where(documentId(), "in", dadosExtras.colecao));
 
         const unsubscribeItens = onSnapshot(q, (querySnapshot) => {
@@ -96,7 +91,6 @@ function Perfil({ usuario, squads }: PerfilProps) {
 
         return () => unsubscribeItens();
         
-    // Monitoramos idParaBuscar e o tamanho do array da coleção para rodar a query apenas quando necessário.
     }, [idParaBuscar, dadosExtras?.colecao?.length]);
 
     // Exibe tela de carregamento se o Auth ou o Firestore ainda não responderam
@@ -120,15 +114,20 @@ function Perfil({ usuario, squads }: PerfilProps) {
 
         try {
             const userRef = doc(db, "usuarios", usuario.uid);
+            const coleRef = doc(db, "colecaoItens", idItem);            
+            await updateDoc(coleRef, {
+                colecao: arrayRemove(idItem)
+            });
             await updateDoc(userRef, {
                 colecao: arrayRemove(idItem)
             });
 
             if (dadosExtras?.itemFixadoId === idItem) {
-                await updateDoc(userRef, { itemFixadoId: "" });
+                await updateDoc(coleRef, { itemFixados: arrayRemove(idItem) });
             }
 
             await deleteDoc(doc(db, "colecaoItens", idItem));
+
         } catch (error) {
             console.error("Erro ao deletar item:", error);
         }
@@ -138,59 +137,60 @@ function Perfil({ usuario, squads }: PerfilProps) {
         if (!usuario) return;
 
         try {
-            const userRef = doc(db, "usuarios", usuario.uid);
-            if (dadosExtras?.itemFixadoId === idItem) {
-                await updateDoc(userRef, { itemFixadoId: "" });
-            } else {
-                await updateDoc(userRef, { itemFixadoId: idItem });
-            }
+            const itemAtual = itensDaColecao.find(item => item.id === idItem);
+            if (!itemAtual) return;
+            const novoStatusFixado = !itemAtual.fixado;
+            const coleRef = doc(db, "colecaoItens", idItem);
+
+            await updateDoc(coleRef, { 
+                fixado: novoStatusFixado
+            });
+
         } catch (error) {
             console.error("Erro ao atualizar item fixado:", error);
         }
     };
 
-    // Filtros de posts baseados na aba selecionada (travados para só rodar quando meusPosts existir)
     const postsNormaisEConquistas = meusPosts ? meusPosts.filter(p => p.tipo !== "conquistaVoto") : [];
     const postsDeVotacao = meusPosts ? meusPosts.filter(p => p.tipo === "conquistaVoto") : [];
-
-    // Fallback de imagem de perfil: varre todas as propriedades possíveis do Firestore e do Auth
     const imagemPerfil = dadosExtras?.fotoUrl || dadosExtras?.fotoURL || dadosExtras?.photoURL || usuario?.photoURL || "https://via.placeholder.com/150";
 
     return (
         <div className="perfil-container-user">
             <div className="perfil">
-                {/* CABEÇALHO DO PERFIL */}
                 <div className="perfil-header-user">
-                    <div className="perfil-foto">
-                        <img
-                            src={imagemPerfil}
-                            alt="foto-user"
-                            referrerPolicy="no-referrer"
-                        />
+                    <div className="perfil-coluna-esquerda">
+                        <div className="perfil-foto">
+                            <img
+                                src={imagemPerfil}
+                                alt="foto-user"
+                                referrerPolicy="no-referrer"
+                            />
+                        </div>
+
+                        <div className="perfil-stats-group">
+                            <div className="perfil-squad-quant">
+                                <p>{dadosExtras?.squads_seguindo?.length || 0}</p>
+                                <span>Squads</span>
+                            </div>
+                            <div className="perfil-squad-quant">
+                                <p>{dadosExtras?.usuario_seguindo?.length || 0}</p>
+                                <span>Seguindo</span>
+                            </div>
+                            <div className="perfil-squad-quant">
+                                <p>{dadosExtras?.seguidores?.length || 0}</p>
+                                <span>Seguidores</span>
+                            </div>
+                        </div>
                     </div>
 
                     <div className="perfil-bio">
                         <h1 className="perfil-nome-user">{dadosExtras?.nome || usuario.displayName || "Usuário"}</h1>
                         <h3 className="perfil-bio-text">{dadosExtras?.bio || "Recruta do Rank Over"}</h3>
                     </div>
-                    
-                    <div className="perfil-stats-group">
-                        <div className="perfil-squad-quant">
-                            <p>{dadosExtras?.squads_seguindo?.length || 0}</p>
-                            <span>Squads</span>
-                        </div>
-                        <div className="perfil-squad-quant">
-                            <p>{dadosExtras?.usuario_seguindo?.length || 0}</p>
-                            <span>Seguindo</span>
-                        </div>
-                        <div className="perfil-squad-quant">
-                            <p>{dadosExtras?.seguidores?.length || 0}</p>
-                            <span>Seguidores</span>
-                        </div>
-                    </div>
 
                     <div className="perfil-acoes-group">
-                        {/* Garante que o botão de seguir SÓ aparece se REALMENTE não for o meu perfil, comparando IDs logados */}
+
                         {!eMeuPerfil ? (
                             <>
                                 {dadosExtras?.seguidores?.includes(usuario.uid) ? (
@@ -212,7 +212,6 @@ function Perfil({ usuario, squads }: PerfilProps) {
                     </div>
                 </div>
 
-                {/* --- MENU DE NAVEGAÇÃO DE ABAS --- */}
                 <div className="perfil-abas-menu">
                     <button 
                         className={`perfil-aba-item ${abaAtiva === "postagens" ? "ativa" : ""}`}
@@ -234,11 +233,8 @@ function Perfil({ usuario, squads }: PerfilProps) {
                     </button>
                 </div>
 
-                {/* --- CONTEÚDO DINÂMICO DAS ABAS --- */}
                 <div className="Topicos">
                     <div className="mural-posts">
-                        
-                        {/* 1. ABA POSTAGENS */}
                         {abaAtiva === "postagens" && (
                             postsNormaisEConquistas.length > 0 ? (
                                 postsNormaisEConquistas.map((post) => (
@@ -263,7 +259,7 @@ function Perfil({ usuario, squads }: PerfilProps) {
                             )
                         )}
 
-                        {/* 2. ABA VOTAÇÕES */}
+
                         {abaAtiva === "votacoes" && (
                             postsDeVotacao.length > 0 ? (
                                 postsDeVotacao.map((post) => (
@@ -291,10 +287,8 @@ function Perfil({ usuario, squads }: PerfilProps) {
                             )
                         )}
 
-                        {/* 3. ABA COLEÇÃO (VITRINE DE ITENS) */}
                         {abaAtiva === "colecao" && (
                             <div className="colecao-wrapper">
-                                {/* O botão "Adicionar" agora só aparece se 'dadosExtras' existirem no Firestore */}
                                 {eMeuPerfil && dadosExtras && (
                                     <button 
                                         className="add-item-trigger-btn"
@@ -314,9 +308,9 @@ function Perfil({ usuario, squads }: PerfilProps) {
                                                 fotoBanner={item.fotoBanner}
                                                 info={item.info}
                                                 eMeuPerfil={eMeuPerfil}
-                                                fixado={dadosExtras?.itemFixadoId === item.id} // Envia se o item está fixado ou não
-                                                onDeletar={handleDeletarItem} // Executa a remoção real
-                                                onFixar={handleFixarItem}     // Executa a fixação real
+                                                fixado={item.fixado ? true : false}
+                                                onDeletar={handleDeletarItem}
+                                                onFixar={handleFixarItem}
                                             />
                                         ))}
                                     </div>

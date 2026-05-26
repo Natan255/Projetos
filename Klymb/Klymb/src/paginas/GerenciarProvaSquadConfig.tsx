@@ -57,7 +57,7 @@ function GerenciarProvaSquadConfig() {
                         ? `📦 Item: ${solicitacao.provas?.resumo || "Sem descrição."}`
                         : `💬 Comentário: ${solicitacao.comentario || "Sem descrição."}`,
                     idSquad: id,
-                    idAutor: solicitacao.id,
+                    idAutor: solicitacao.uid,
                     nomeAutor: solicitacao.nome,
                     fotoAutor: solicitacao.fotoPerfil || "",
                     tipo: "conquistaVoto",

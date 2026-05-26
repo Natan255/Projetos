@@ -1,3 +1,6 @@
+/* ==========================================================================
+   CONTAINER PRINCIPAL (OCUPA A TELA TODA E CENTRALIZA O CARD)
+   ========================================================================== */
 .item-expansao-container {
     background-color: #050505;
     min-height: 100vh;
@@ -7,32 +10,37 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 40px 20px;
+    padding: 60px 4%; /* Margem fluida nas laterais */
     box-sizing: border-box;
 }
 
+/* --- CARD PRINCIPAL CENTRALIZADO --- */
 .item-expansao-card {
     background: #0d0d0d;
     border: 1px solid #1f1f1f;
     border-radius: 12px;
     width: 100%;
-    max-width: 1000px;
+    max-width: 1100px; /* Um pouco mais amplo para valorizar a vitrine */
     padding: 40px;
     position: relative;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    box-sizing: border-box;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
 }
 
-/* Botão voltar superior */
+/* ==========================================================================
+   BOTÃO VOLTAR (CLEAN E DISCRETO)
+   ========================================================================== */
 .btn-voltar-topo {
     background: transparent;
     border: none;
     color: #888;
-    font-size: 1rem;
+    font-size: 0.9rem;
     font-weight: 600;
     cursor: pointer;
-    margin-bottom: 25px;
+    margin-bottom: 30px;
     display: inline-flex;
     align-items: center;
+    gap: 6px;
     transition: color 0.2s ease;
 }
 
@@ -40,29 +48,38 @@
     color: #ff4d00;
 }
 
-/* Layout em Grid (2 colunas) */
+/* ==========================================================================
+   LAYOUT EM GRID (EQUILIBRADO NO CENTRO)
+   ========================================================================== */
 .item-expansao-grid {
     display: grid;
-    grid-template-columns: 1fr 1.2fr;
-    gap: 40px;
+    grid-template-columns: 1fr 1fr; /* Dividido igualmente para melhor simetria */
+    gap: 50px; /* Mais espaço entre a imagem e as informações */
     align-items: start;
 }
 
-/* Container da Imagem */
+/* --- CONTAINER DA IMAGEM (VITRINE) --- */
+.item-expansao-media {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
 .item-expansao-media img {
     width: 100%;
     height: auto;
-    max-height: 450px;
+    max-height: 480px;
     object-fit: cover;
-    border-radius: 8px;
+    border-radius: 10px;
     border: 2px solid #ff4d00;
-    box-shadow: 0 0 20px rgba(255, 77, 0, 0.15);
+    box-shadow: 0 0 25px rgba(255, 77, 0, 0.15);
 }
 
-/* Bloco de textos */
+/* --- BLOCO DE TEXTOS E INFORMAÇÕES --- */
 .item-expansao-info {
     display: flex;
     flex-direction: column;
+    justify-content: center;
 }
 
 .item-tag-categoria {
@@ -71,70 +88,101 @@
     text-transform: uppercase;
     font-weight: 700;
     letter-spacing: 1.5px;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
 }
 
 .item-titulo-detalhe {
-    font-size: 2.8rem;
+    font-size: 2.5rem; /* Ajustado para conversar melhor com o perfil */
     font-weight: 800;
     margin: 0 0 20px 0;
     text-transform: uppercase;
     line-height: 1.1;
+    letter-spacing: -0.5px;
+}
+
+/* Bloco da Descrição */
+.item-descricao-bloco {
+    background: #111; /* Fundo ligeiramente destacado para a info */
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #1f1f1f;
 }
 
 .item-descricao-bloco h3 {
-    font-size: 1.1rem;
-    color: #aaa;
-    margin-bottom: 10px;
-    font-weight: 600;
+    font-size: 1rem;
+    color: #888;
+    margin: 0 0 12px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 700;
 }
 
 .item-descricao-bloco p {
     color: #eee;
-    font-size: 1.05rem;
+    font-size: 1rem;
     line-height: 1.6;
     margin: 0;
-    white-space: pre-wrap; /* Preserva quebras de linha se houver */
+    white-space: pre-wrap;
 }
 
-/* Avisos de erro ou carregamento */
-.item-aviso {
-    color: white;
-    text-align: center;
-    padding-top: 100px;
-    font-family: 'Inter', sans-serif;
-}
-
+/* ==========================================================================
+   AVISOS DE ERRO OU CARREGAMENTO
+   ========================================================================== */
 .item-aviso-container {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     width: 100%;
+    min-height: 50vh;
+    text-align: center;
+}
+
+.item-aviso {
+    color: #888;
+    font-size: 1.1rem;
+    font-family: 'Inter', sans-serif;
+    font-style: italic;
 }
 
 .btn-voltar {
-    margin-top: 20px;
-    padding: 10px 20px;
+    margin-top: 25px;
+    padding: 12px 28px;
     background: #ff4d00;
     color: white;
     border: none;
     border-radius: 6px;
-    font-weight: bold;
+    font-weight: 700;
+    font-size: 0.9rem;
     cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease;
+    box-shadow: 0 4px 12px rgba(255, 77, 0, 0.2);
 }
 
-/* Responsividade para telas menores (Mobile) */
-@media (max-width: 768px) {
+.btn-voltar:hover {
+    background: #e65c00;
+    transform: translateY(-2px);
+}
+
+/* ==========================================================================
+   RESPONSIVIDADE (MOBILE & TABLET)
+   ========================================================================== */
+@media (max-width: 850px) {
     .item-expansao-grid {
-        grid-template-columns: 1fr;
-        gap: 25px;
+        grid-template-columns: 1fr; /* Quebra para uma única coluna */
+        gap: 30px;
     }
     
     .item-expansao-card {
-        padding: 20px;
+        padding: 24px;
+        margin: 20px 0;
     }
 
     .item-titulo-detalhe {
         font-size: 2rem;
+    }
+
+    .item-expansao-media img {
+        max-height: 350px;
     }
 }

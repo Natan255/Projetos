@@ -1,24 +1,49 @@
 /* ==========================================================================
-   ESTILOS GERAIS DO PERFIL
+   CONFIGURAÇÕES GERAIS E VARIÁVEIS
    ========================================================================== */
-
-.perfil-container-user {
-    background-color: #050505;
-    min-height: 100vh;
-    width: 100%;
-    color: white;
-    font-family: 'Inter', sans-serif;
+:root {
+    --bg-main: #050505;
+    --bg-card: #0d0d0d;
+    --bg-hover: #1a1a1a;
+    --brand-color: #ff4d00;
+    --brand-hover: #e65c00;
+    --text-main: #ffffff;
+    --text-muted: #888888;
+    --text-dark: #666666;
+    --border-color: #222222;
+    --border-light: #1f1f1f;
+    --danger-color: #ff4444;
 }
 
+.perfil-container-user {
+    background-color: var(--bg-main);
+    min-height: 100vh;
+    width: 100%;
+    color: var(--text-main);
+    font-family: 'Inter', sans-serif;
+}
+/* ==========================================================================
+   CABEÇALHO DO PERFIL (HEADER) - ESTICADO E FLUIDO
+   ========================================================================== */
 .perfil-header-user {
-    display: grid;
-    /* Grid de 3 colunas agora: Foto | Bio | Grupos de Stats/Ações */
-    grid-template-columns: auto 1fr auto;
-    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start; /* Alinha o topo dos blocos */
+    width: 100%;
+    box-sizing: border-box;
     gap: 40px;
-    padding: 40px 6%;
+    padding: 40px 4%;
     background: linear-gradient(180deg, #111 0%, #050505 100%);
-    border-bottom: 1px solid #222;
+
+}
+
+/* --- COLUNA ESQUERDA: FOTO + STATS EMBAIXO --- */
+.perfil-coluna-esquerda {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px; /* Espaço entre a foto e os stats */
+    min-width: 260px; /* Garante que os números não quebrem linha */
 }
 
 /* --- FOTO DO USUÁRIO --- */
@@ -28,62 +53,29 @@
     border-radius: 12px;
     border: 2px solid #ff4d00;
     object-fit: cover;
-    box-shadow: 0 0 20px rgba(255, 77, 0, 0.2);
+    box-shadow: 0 0 20px rgba(255, 77, 0, 0.15);
 }
 
-/* --- BIO / APRESENTAÇÃO --- */
-.perfil-bio {
-    display: flex;
-    flex-direction: column;
-}
-
-.perfil-nome-user {
-    font-size: 2.5rem;
-    margin: 0;
-    font-weight: 800;
-    text-transform: uppercase;
-}
-
-.perfil-bio-text {
-    color: #ff4d00;
-    font-size: 1rem;
-    margin: 5px 0 0 0;
-    letter-spacing: 1px;
-}
-
-/* ==========================================================================
-   GRUPOS ALINHADOS LADO A LADO (Novos Containers)
-   ========================================================================== */
-
-/* Mantém os blocos de estatísticas lado a lado */
+/* --- GRUPO DE ESTATÍSTICAS (ABAIXO DA FOTO) --- */
 .perfil-stats-group {
     display: flex;
     align-items: center;
-    gap: 15px;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
 }
 
-/* Mantém a engrenagem e o botão Sair lado a lado */
-.perfil-acoes-group {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-
-/* ==========================================================================
-   ESTATÍSTICAS (Squads e Seguidores)
-   ========================================================================== */
 .perfil-squad-quant {
     background: #0d0d0d;
-    padding: 12px 6px;
+    padding: 6px 10px;
     border: 1px solid #1f1f1f;
-    border-radius: 8px;
+    border-radius: 6px;
     text-align: center;
-    min-width: 100px;
+    flex: 1; /* Faz os 3 quadradinhos dividirem o tamanho da foto igualmente */
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    gap: 2px;
-    transition: border-color 0.25s ease;
+    gap: 1px;
+    transition: border-color 0.2s ease;
 }
 
 .perfil-squad-quant:hover {
@@ -92,218 +84,323 @@
 
 .perfil-squad-quant p {
     margin: 0;
-    font-size: 1.2rem;
+    font-size: 1rem;
+    font-weight: 700;
     color: #ffffff;
-    line-height: 1.2;
 }
 
 .perfil-squad-quant span {
-    font-size: 0.72rem;
+    font-size: 0.6rem;
     color: #666;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 0.5px;
     font-weight: 600;
+}
+
+/* --- BIO / APRESENTAÇÃO EXPANSIVA --- */
+.perfil-bio {
+    flex: 1; /* Ocupa TODO o espaço restante do centro da tela */
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    text-align: left;
+}
+
+.perfil-nome-user {
+    font-size: 2.5rem; /* Aumentado levemente já que agora tem espaço de sobra */
+    margin: 0;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    line-height: 1.1;
+    word-break: break-word; /* Se o nome for gigante, ele quebra certinho */
+}
+
+.perfil-bio-text {
+    color: #ff4d00;
+    font-size: 1rem;
+    margin: 0;
+    letter-spacing: 0.5px;
+    font-weight: 500;
+    line-height: 1.4;
+}
+
+/* --- BOTÕES DE AÇÕES (DIREITA) --- */
+.perfil-acoes-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: max-content; /* Impede que os botões espremam */
 }
 
 /* ==========================================================================
-   BOTÕES E AÇÕES DO HEADER
+   GRUPOS DE ESTATÍSTICA E AÇÕES
+   ========================================================================== */
+.perfil-stats-group,
+.perfil-acoes-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* --- MÓDULOS DE STATS --- */
+/* --- ESTATÍSTICAS (Mais compacto e discreto) --- */
+.perfil-squad-quant {
+    background: #0d0d0d;
+    padding: 6px 12px;        /* Reduzido o espaçamento interno */
+    border: 1px solid #1f1f1f;
+    border-radius: 6px;
+    text-align: center;
+    min-width: 75px;          /* Reduzido para não ocupar espaço demais */
+    display: flex;
+    flex-direction: column;
+    gap: 1px;                 /* Colou mais o número no texto */
+    transition: border-color 0.2s ease;
+}
+
+.perfil-squad-quant:hover {
+    border-color: #333;
+}
+
+.perfil-squad-quant p {
+    margin: 0;
+    font-size: 1rem;          /* Diminuído o número (era 1.2rem) */
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.perfil-squad-quant span {
+    font-size: 0.62rem;       /* Diminuída a legenda (era 0.7rem) */
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+}
+/* ==========================================================================
+   BOTÕES E INTERAÇÕES
    ========================================================================== */
 
-/* Botão de Engrenagem (Configuração) */
-.perfil-btn-config {
-    background: #1a1a1a !important;
-    border: 1px solid #333 !important;
-    color: #ff4444 !important;
-    padding: 10px 20px !important;
-    border-radius: 8px;
-    font-size: 1rem !important;
-    cursor: pointer;
-    transition: 0.2s;
-}
-
-/* Botão Sair (Compacto e limpo) */
+/* Botões Padrão Dark (Configuração e Sair) */
+.perfil-btn-config,
 .perfil-sair {
-    background: #1a1a1a !important;
-    border: 1px solid #333 !important;
-    color: #ff4444 !important;
-    padding: 10px 20px !important;
+    background: var(--bg-hover);
+    border: 1px solid #333;
+    color: var(--text-main);
+    padding: 10px 18px;
     border-radius: 8px;
-    cursor: pointer;
-    font-size: 0.9rem !important;
-    font-weight: 600 !important;
-    transition: 0.2s;
-}
-
-.perfil-sair:hover {
-    background: #222 !important;
-    border-color: #ff4444 !important;
-}
-
-/* Botão Seguir */
-.perfil-seguir {
-    background: #ff4d00 !important;
-    border: 1px solid transparent !important;
-    color: #ffffff !important;
+    font-size: 0.9rem;
     font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.perfil-btn-config {
+    font-size: 1.1rem;
+    padding: 9px 14px;
+}
+
+.perfil-sair {
+    color: var(--danger-color);
+}
+
+.perfil-btn-config:hover,
+.perfil-sair:hover {
+    background: #222;
+    border-color: var(--danger-color);
+}
+
+/* Botão Seguir / Deixar de Seguir */
+.perfil-seguir {
+    background: var(--brand-color);
+    border: none;
+    color: var(--text-main);
+    font-weight: 700;
     font-size: 0.9rem;
     letter-spacing: 0.5px;
-    padding: 12px 28px !important;
+    padding: 12px 24px;
     border-radius: 8px;
     cursor: pointer;
-    transition: all 0.25s cubic-bezier(0.25, 1, 0.5, 1) !important;
-    box-shadow: 0 4px 15px rgba(255, 77, 0, 0.15);
+    transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1);
+    box-shadow: 0 4px 12px rgba(255, 77, 0, 0.15);
 }
 
 .perfil-seguir:hover {
-    background: #ff4d00 !important;
+    background: var(--brand-hover);
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(255, 77, 0, 0.25);
+    box-shadow: 0 6px 18px rgba(255, 77, 0, 0.25);
 }
 
 /* ==========================================================================
-   CONTEÚDO INFERIOR DO PERFIL
+   MENU DE ABAS (NAVEGAÇÃO INFERIOR)
    ========================================================================== */
-.perfil-posts {
-    padding: 40px 6%;
+.perfil-abas-menu {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin: 30px 0;
+    border-bottom: 1px solid var(--border-light);
+    padding: 0 6% 10px 6%;
+}
+
+.perfil-aba-item {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    font-weight: 600;
+    padding: 10px 24px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-radius: 6px;
+}
+
+.perfil-aba-item:hover {
+    color: var(--text-main);
+    background-color: var(--bg-hover);
+}
+
+.perfil-aba-item.ativa {
+    color: var(--brand-color);
+    background-color: #111;
+    position: relative;
+}
+
+/* Linha customizada abaixo da aba ativa de forma elegante */
+.perfil-aba-item.ativa::after {
+    content: '';
+    position: absolute;
+    bottom: -11px;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background-color: var(--brand-color);
+    border-radius: 3px 3px 0 0;
 }
 
 /* ==========================================================================
-   RESPONSIVIDADE DO HEADER (Mobile)
+   MURAL DE CONTEÚDO E ABAS DINÂMICAS
+   ========================================================================== */
+.Topicos {
+    padding: 0 6% 50px 20%;
+    display: flex;
+    justify-content: center;
+}
+
+.mural-posts {
+    width: 100%;
+    max-width: 1200px; /* Mantém um limite clean e legível para a tela centralizada */
+}
+
+/* --- ABA COLEÇÃO --- */
+.colecao-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+    gap: 20px;
+}
+
+.add-item-trigger-btn {
+    padding: 10px 20px;
+    background: var(--brand-color);
+    color: var(--text-main);
+    border: none;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.add-item-trigger-btn:hover {
+    background: var(--brand-hover);
+}
+
+/* Grid perfeitamente alinhado e responsivo para os cards */
+.perfil-grid-colecao {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    width: 100%;
+}
+
+/* --- ESTADOS VAZIOS --- */
+.sem-posts {
+    color: var(--text-muted);
+    text-align: center;
+    padding: 60px 0;
+    font-style: italic;
+    font-size: 0.95rem;
+    width: 100%;
+}
+
+/* Botão Flutuante Circular de Adicionar (Se aplicável) */
+.adicionar-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 64px;
+    height: 64px;
+    margin: 30px auto 0 auto;
+    background: #111;
+    border: 2px dashed var(--brand-color);
+    color: var(--brand-color);
+    font-size: 2rem;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.adicionar-item:hover {
+    color: var(--text-main);
+    background: var(--brand-color);
+    border-style: solid;
+    transform: translateY(-4px) rotate(90deg);
+    box-shadow: 0 0 20px rgba(255, 77, 0, 0.4);
+}
+
+/* ==========================================================================
+   RESPONSIVIDADE (MOBILE & TABLET)
    ========================================================================== */
 @media (max-width: 950px) {
     .perfil-header-user {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
+        grid-template-columns: 1fr;
         text-align: center;
-        gap: 25px;
+        justify-content: center;
+        justify-items: center;
+        gap: 20px;
         padding: 30px 6%;
+    }
+
+    .perfil-bio {
+        align-items: center;
     }
 
     .perfil-stats-group,
     .perfil-acoes-group {
         width: 100%;
         justify-content: center;
+        flex-wrap: wrap;
     }
 
     .perfil-stats-group .perfil-squad-quant {
         flex: 1;
-        max-width: 200px;
+        min-width: 80px;
+        max-width: 120px;
     }
 
     .perfil-seguir {
-        width: 100% !important;
+        width: 100%;
     }
-}
 
-/* Container do Menu de Abas */
-.perfil-abas-menu {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-    margin: 25px 0;
-    padding-bottom: 10px;
-}
+    .perfil-abas-menu {
+        gap: 2px;
+    }
 
-/* Botão de cada Aba */
-.perfil-aba-item {
-    background: transparent;
-    border: none;
-    color: #888;
-    font-size: 1rem;
-    font-weight: 600;
-    padding: 10px 20px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    border-radius: 6px;
-}
-
-.perfil-aba-item:hover {
-    color: #fff;
-    background-color: #1a1a1a;
-}
-
-/* Estado da Aba Selecionada */
-.perfil-aba-item.ativa {
-    color: #ff4d00;
-    background-color: #111;
-    border-bottom: 3px solid #ff4d00;
-    border-radius: 6px 6px 0 0;
-}
-
-/* ==========================================================================
-   ABA COLEÇÃO (Estilos novos limpos de inline)
-   ========================================================================== */
-
-.colecao-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start; /* Alinha o botão e o grid à esquerda */
-    width: 100%;
-}
-
-.add-item-trigger-btn {
-    margin-bottom: 30px;
-    padding: 10px 20px;
-    background: #ff6d00;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background 0.2s ease;
-}
-
-.add-item-trigger-btn:hover {
-    background: #e65c00;
-}
-
-/* Grid para exibir a Vitrine de Itens da Coleção */
-.perfil-grid-colecao {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 20px;
-    width: 100%;
-    justify-content: start; /* Força início na esquerda */
-    justify-items: start;   /* Alinha cada card à esquerda em sua célula */
-}
-
-.sem-posts {
-    color: #aaa;
-    text-align: center;
-    padding: 40px 0;
-    font-style: italic;
-}
-
-/* Container do botão de adicionar quando a coleção está vazia */
-.adicionar-item {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 80px;
-    height: 80px;
-    margin: 20px auto 0 auto;
-    background: #111;
-    border: 2px dashed #ff4d00;
-    color: #ff4d00;
-    font-size: 2.5rem;
-    font-weight: bold;
-    border-radius: 50%;
-    cursor: pointer;
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-}
-
-.adicionar-item:hover {
-    color: #fff;
-    background: #ff4d00;
-    border-style: solid;
-    transform: translateY(-5px) rotate(90deg);
-    box-shadow: 0 0 20px rgba(255, 109, 0, 0.6), 
-                0 0 40px rgba(255, 109, 0, 0.4); 
-}
-
-.adicionar-item:active {
-    transform: translateY(-2px) scale(0.95);
-    box-shadow: 0 0 10px rgba(255, 109, 0, 0.8);
+    .perfil-aba-item {
+        padding: 10px 14px;
+        font-size: 0.85rem;
+    }
 }
