@@ -1,10 +1,11 @@
 import { Link } from "react-router-dom";
-import "./MeusSquadsSide.css"; // Estilize com border-radius 50% para ficar redondo
+import { useNavigate } from "react-router-dom";
+import "./MeusSquadsSide.css";
 
 function MeusSquadsSide({ squads, idsSeguidos }) {
-    // Filtramos apenas os squads que o usuário segue
+  
     const meusSquads = squads.filter(squad => idsSeguidos?.includes(squad.id));
-
+    const navigate = useNavigate();
     return (
         <div className="meus-squads-side">
             {meusSquads.map(squad => (
@@ -16,6 +17,12 @@ function MeusSquadsSide({ squads, idsSeguidos }) {
             ))}
             
             <Link to="/paginas/CadastrarSquad" className="btn-add-squad">+</Link>
+
+            <div>
+                <button className="btn-mensagens" onClick={() => navigate("../paginas/Mensagens")}>
+                    💬
+                </button>
+            </div>
         </div>
     );
 }

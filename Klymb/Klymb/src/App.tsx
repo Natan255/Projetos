@@ -25,6 +25,7 @@ import GerenciaPostSquadConfig from './paginas/GerenciaPostSquadConfig'
 import AlterarPerfilSquad from './paginas/AlterarPerfilSquad'
 import AdicionarItem from './paginas/AdicionarItem'
 import ItemExpansao from './paginas/ItemExpansao'
+import Mensagens from './paginas/Mensagens'
 
 
 function App() {
@@ -69,13 +70,15 @@ useEffect(() => {
 
           <Route path='/paginas/Cadastrar' element={<Cadastrar />} />
 
-          <Route path="/paginas/CadastrarSquad" element={<CadastrarSquad/>} />
+          <Route path="/paginas/CadastrarSquad" element={<CadastrarSquad usuario={usuario}/>} />
 
           <Route path='/paginas/Entrar' element={<Entrar />} />
 
           <Route path="/config/alterar/:campo" element={<AlterarPerfil />} />
 
           <Route path="/post/:idPost" element={<ExpansaoPost usuario={usuario} />} />
+
+          <Route path="/paginas/Mensagens" element={<Mensagens usuario={usuario} />} />
 
 
           <Route path="/paginas/adicionarItem" element={<AdicionarItem usuario={usuario} />} />

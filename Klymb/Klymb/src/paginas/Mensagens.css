@@ -1,0 +1,164 @@
+/* ==========================================================================
+   ESTRUTURA DA TELA DE CHAT GLOBAL
+   ========================================================================== */
+.mensagens-container {
+    display: flex;
+    width: 100%;
+    height: calc(100vh - 80px); /* Ocupa a tela toda descontando sua navbar superior se houver */
+    background-color: #080808;
+    border: 1px solid #141414;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+/* Barra Lateral de Amigos */
+.lateral-amigos {
+    width: 260px;
+    background-color: #0b0b0b;
+    border-right: 1px solid #141414;
+    padding: 15px 0;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+/* Área da Direita (Onde a conversa acontece) */
+.conteudo-mensagens {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: #080808;
+    position: relative;
+}
+
+/* ==========================================================================
+   TOPO DO CHAT ATIVO
+   ========================================================================== */
+.topo-conversa {
+    height: 60px;
+    padding: 0 20px;
+    background-color: #0b0b0b;
+    border-bottom: 1px solid #141414;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.foto-amigo {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 1px solid #222;
+}
+
+.foto-amigo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.nome-amigo-topo {
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* ==========================================================================
+   CORPO DO CHAT (HISTÓRICO)
+   ========================================================================== */
+.corpo-conversa {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Texto de sistema (ex: "Início da conversa com...") */
+.sistema-aviso {
+    align-self: center;
+    color: #444;
+    font-size: 0.8rem;
+    background: #0d0d0d;
+    padding: 6px 16px;
+    border-radius: 20px;
+    border: 1px solid #141414;
+}
+
+/* Estado vazio (Quando nenhuma conversa está selecionada) */
+.sem-conversa-selecionada {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #555;
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+/* ==========================================================================
+   INPUT E BOTÃO DE ENVIAR (RODAPÉ)
+   ========================================================================== */
+.input-mensagem {
+    padding: 20px;
+    display: flex;
+    gap: 12px;
+    background-color: #080808;
+    border-top: 1px solid #141414;
+}
+
+.input-mensagem input {
+    flex: 1;
+    background-color: #0f0f0f;
+    border: 1px solid #222;
+    border-radius: 8px;
+    padding: 14px 18px;
+    color: #ffffff;
+    font-size: 0.95rem;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+/* Foco no input puxa o brilho da marca */
+.input-mensagem input:focus {
+    border-color: #ff4d00;
+    box-shadow: 0 0 10px rgba(255, 77, 0, 0.1);
+}
+
+.input-mensagem button {
+    background-color: #ff4d00;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    padding: 0 24px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.input-mensagem button:hover {
+    background-color: #ff6622;
+    box-shadow: 0 0 15px rgba(255, 77, 0, 0.3);
+}
+
+.input-mensagem button:active {
+    transform: scale(0.96);
+}
+
+/* Customização básica de Scrollbar para ficar dark */
+.lateral-amigos::-webkit-scrollbar,
+.corpo-conversa::-webkit-scrollbar {
+    width: 6px;
+}
+.lateral-amigos::-webkit-scrollbar-thumb,
+.corpo-conversa::-webkit-scrollbar-thumb {
+    background: #1f1f1f;
+    border-radius: 10px;
+}

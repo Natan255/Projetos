@@ -1,13 +1,13 @@
 import { useState, useEffect, use } from "react";
 import { db, auth } from "../firebaseConfig";
-import { collection, addDoc, serverTimestamp, doc, updateDoc, arrayUnion, setDoc} from "firebase/firestore"; //pra poder editar sem apagar
+import { collection, addDoc, serverTimestamp, doc, updateDoc, arrayUnion, setDoc} from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 import { useAlerta } from "../componentes/AlertaProvider";
 import "./CadastrarSquad.css";
 
 
-function CadastrarSquad() {
+function CadastrarSquad(usuario) {
     const [nome, setNome] = useState("");
     const [descricao, setDescricao] = useState("");
     const [categoria, setCategoria] = useState("Estudos");
@@ -123,6 +123,7 @@ function CadastrarSquad() {
             
             // 3. Atualiza o perfil do usuário criador vinculando o novo Squad
             const userRef = doc(db, "usuarios", auth.currentUser.uid);
+            console.log("Atualizando usuário com ID:", auth.currentUser.uid, "para incluir o novo Squad:", novoSquadId);
             await updateDoc(userRef, {
                 squads_admin: arrayUnion(novoSquadId),
                 squads_seguindo: arrayUnion(novoSquadId)

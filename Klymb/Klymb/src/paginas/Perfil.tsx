@@ -151,6 +151,38 @@ function Perfil({ usuario, squads }: PerfilProps) {
         }
     };
 
+    const deixarSeguir = async () => {
+        if (!usuario) return;
+        try{
+            const userRef = doc(db, "usuarios", usuario.uid);
+            const perfilRef = doc(db, "usuarios", idParaBuscar);
+            await updateDoc(userRef, {
+                usuario_seguindo: arrayRemove(idParaBuscar)
+            });
+            await updateDoc(perfilRef, {
+                seguidores: arrayRemove(usuario.uid)
+            });
+        }catch(error){
+            console.error("Erro ao seguir usuário:", error);
+        }
+    }
+
+    const seguir = async () => {
+        if (!usuario) return;
+        try{
+            const userRef = doc(db, "usuarios", usuario.uid);
+            const perfilRef = doc(db, "usuarios", idParaBuscar);
+            await updateDoc(userRef, {
+                usuario_seguindo: arrayUnion(idParaBuscar)
+            });
+            await updateDoc(perfilRef, {
+                seguidores: arrayUnion(usuario.uid)
+            });
+        }catch(error){
+            console.error("Erro ao seguir usuário:", error);
+        }
+    }
+
     const postsNormaisEConquistas = meusPosts ? meusPosts.filter(p => p.tipo !== "conquistaVoto") : [];
     const postsDeVotacao = meusPosts ? meusPosts.filter(p => p.tipo === "conquistaVoto") : [];
     const imagemPerfil = dadosExtras?.fotoUrl || dadosExtras?.fotoURL || dadosExtras?.photoURL || usuario?.photoURL || "https://via.placeholder.com/150";
@@ -194,11 +226,11 @@ function Perfil({ usuario, squads }: PerfilProps) {
                         {!eMeuPerfil ? (
                             <>
                                 {dadosExtras?.seguidores?.includes(usuario.uid) ? (
-                                    <button className="perfil-seguir" onClick={() => {}}>
+                                    <button className="perfil-seguir" onClick={() => {deixarSeguir()}}>
                                         Deixar de Seguir
                                     </button>
                                 ) : (
-                                    <button className="perfil-seguir" onClick={() => {}}>
+                                    <button className="perfil-seguir" onClick={() => {seguir()}}>
                                         Seguir
                                     </button>
                                 )}
@@ -300,19 +332,21 @@ function Perfil({ usuario, squads }: PerfilProps) {
 
                                 {itensDaColecao.length > 0 ? (
                                     <div className="perfil-grid-colecao">
-                                        {itensDaColecao.map((item) => (
-                                            <CardItem 
-                                                key={item.id}
-                                                id={item.id}
-                                                nome={item.nome}
-                                                fotoBanner={item.fotoBanner}
-                                                info={item.info}
-                                                eMeuPerfil={eMeuPerfil}
-                                                fixado={item.fixado ? true : false}
-                                                onDeletar={handleDeletarItem}
-                                                onFixar={handleFixarItem}
-                                            />
-                                        ))}
+                                        {[...itensDaColecao]
+                                            .sort((a, b) => (b.fixado ? 1 : 0) - (a.fixado ? 1 : 0))
+                                            .map((item) => (
+                                                <CardItem 
+                                                    key={item.id}
+                                                    id={item.id}
+                                                    nome={item.nome}
+                                                    fotoBanner={item.fotoBanner}
+                                                    info={item.info}
+                                                    eMeuPerfil={eMeuPerfil}
+                                                    fixado={!!item.fixado}
+                                                    onDeletar={handleDeletarItem}
+                                                    onFixar={handleFixarItem}
+                                                />
+                                            ))}
                                     </div>
                                 ) : (
                                     <p className="sem-posts">Nenhum item adicionado à coleção ainda.</p>

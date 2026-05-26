@@ -24,28 +24,23 @@ function Entrar() {
     };
 
     const handleGoogleLogin = async () => {
-    try {
-        const result = await signInWithPopup(auth, provider);
-        const user = result.user;
+        try {
+            const result = await signInWithPopup(auth, provider);
+            const user = result.user;
 
-        await setDoc(doc(db, "usuarios", user.uid), {
-            nome: user.displayName,
-            email: user.email,
-            bio: "Recruta do Rank Over",
-            squads_admin: [],
-            squads_mode: [],
-            squads_seguindo: [], 
-            fotoUrl: user.photoURL,
-            criadoEm: new Date()
-        }, { merge: true });
+            await setDoc(doc(db, "usuarios", user.uid), {
+                nome: user.displayName,
+                email: user.email,
+                fotoUrl: user.photoURL,
 
-        // 3. Só depois de salvar tudo, navega para a Home
-        navigate("/");
-        
-    } catch (error) {
-        console.error("Erro no login Google:", error);
-    }
-};
+            }, { merge: true });
+
+            navigate("/");
+            
+        } catch (error) {
+            console.error("Erro no login Google:", error);
+        }
+    };
     return (
         
         <div className="enter-container">
