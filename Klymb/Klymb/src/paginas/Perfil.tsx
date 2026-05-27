@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import { doc, onSnapshot, collection, query, where, orderBy, documentId, updateDoc, arrayRemove, arrayUnion, deleteDoc } from "firebase/firestore";
 import PostVotacaoSquad from "../componentes/VotoSquad";
 import CardItem from "../componentes/CardItem";
-import { array } from "firebase/firestore/pipelines";
+import ModalListagem from "../componentes/ModalListagem";
 
 interface PerfilProps {
     usuario: User | null;
@@ -24,6 +24,7 @@ function Perfil({ usuario, squads }: PerfilProps) {
     const [meusPosts, setMeusPosts] = useState<any[]>([]);
     const [itensDaColecao, setItensDaColecao] = useState<any[]>([]); 
     const [abaAtiva, setAbaAtiva] = useState<AbaPerfil>("postagens");
+    const [mostrarSeguidores, setMostrarSeguidores] = useState(false);
     const idParaBuscar = idUsuario || usuario?.uid;
     const eMeuPerfil = idParaBuscar === usuario?.uid;
 
@@ -93,7 +94,7 @@ function Perfil({ usuario, squads }: PerfilProps) {
         
     }, [idParaBuscar, dadosExtras?.colecao?.length]);
 
-    // Exibe tela de carregamento se o Auth ou o Firestore ainda não responderam
+
     if (!usuario || !idParaBuscar) {
         return <h2 style={{ color: "white", padding: "100px", textAlign: "center" }}>Conectando ao Rank Over...</h2>;
     }
@@ -132,6 +133,8 @@ function Perfil({ usuario, squads }: PerfilProps) {
             console.error("Erro ao deletar item:", error);
         }
     };
+
+    // ainda nao const handleCompartilharItem = async (idItem: string) => {
 
     const handleFixarItem = async (idItem: string) => {
         if (!usuario) return;
@@ -200,7 +203,7 @@ function Perfil({ usuario, squads }: PerfilProps) {
                             />
                         </div>
 
-                        <div className="perfil-stats-group">
+                        <div className="perfil-stats-group" >
                             <div className="perfil-squad-quant">
                                 <p>{dadosExtras?.squads_seguindo?.length || 0}</p>
                                 <span>Squads</span>
@@ -209,7 +212,16 @@ function Perfil({ usuario, squads }: PerfilProps) {
                                 <p>{dadosExtras?.usuario_seguindo?.length || 0}</p>
                                 <span>Seguindo</span>
                             </div>
-                            <div className="perfil-squad-quant">
+                            <div className="perfil-squad-quant" onClick={() => setMostrarSeguidores(true)}>
+                                {mostrarSeguidores && (
+                                    <ModalListagem 
+                                        isOpen={mostrarSeguidores}
+                                        onClose={() => setMostrarSeguidores(false)}
+                                        titulo="Seguidores"
+                                        itens={dadosExtras.seguidores.map(user => ({ id: user.id, nome: user.nome, foto: user.fotoPerfil }))}
+                                        onItemClick={(idUser) => navigate(`/perfil/${idUser}`)}
+                                    />
+                                )}
                                 <p>{dadosExtras?.seguidores?.length || 0}</p>
                                 <span>Seguidores</span>
                             </div>

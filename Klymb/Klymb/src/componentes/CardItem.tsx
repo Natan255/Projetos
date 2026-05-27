@@ -10,10 +10,11 @@ interface CardItemProps {
     eMeuPerfil: boolean; 
     onDeletar?: (id: string) => void; 
     onFixar?: (id: string) => void;   
+    onCompartilhar?: (id: string) => void; // 1. Nova prop adicionada aqui
     fixado?: boolean;                  
 }
 
-function CardItem({ nome, fotoBanner, info, id, eMeuPerfil, onDeletar, onFixar, fixado }: CardItemProps) {
+function CardItem({ nome, fotoBanner, info, id, eMeuPerfil, onDeletar, onFixar, onCompartilhar, fixado }: CardItemProps) {
     const navigate = useNavigate();
     const [menuAberto, setMenuAberto] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
@@ -27,7 +28,6 @@ function CardItem({ nome, fotoBanner, info, id, eMeuPerfil, onDeletar, onFixar, 
             if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
                 setMenuAberto(false);
             }
-
         }
         document.addEventListener("mousedown", cliqueFora);
         return () => document.removeEventListener("mousedown", cliqueFora);
@@ -41,7 +41,7 @@ function CardItem({ nome, fotoBanner, info, id, eMeuPerfil, onDeletar, onFixar, 
                     <button 
                         className="card-btn-tres-pontos" 
                         onClick={(e) => {
-                            e.stopPropagation();
+                            e.stopPropagation(); // Impede de abrir a página do item ao clicar nos três pontos
                             setMenuAberto(!menuAberto);
                         }}
                     >
@@ -55,6 +55,17 @@ function CardItem({ nome, fotoBanner, info, id, eMeuPerfil, onDeletar, onFixar, 
                                     {fixado ? "Desafixar" : "Fixar Item"}
                                 </button>
                             )}
+
+                            {/* 2. NOVO BOTÃO DE COMPARTILHAR NO DROPDOWN */}
+                            {onCompartilhar && (
+                                <button 
+                                    className="btn-compartilhar"
+                                    onClick={() => { onCompartilhar(id); setMenuAberto(false); }}
+                                >
+                                    Compartilhar no Squad
+                                </button>
+                            )}
+
                             {onDeletar && (
                                 <button 
                                     className="btn-deletar" 
