@@ -4,7 +4,7 @@ import type { User } from "firebase/auth";
 import { useNavigate, useParams } from "react-router-dom";
 import { auth, db } from "../firebaseConfig";
 import { useEffect, useState } from "react";
-import { doc, onSnapshot, collection, query, where, orderBy, documentId, updateDoc, arrayRemove, arrayUnion, deleteDoc } from "firebase/firestore";
+import { doc, onSnapshot, collection, query, where, orderBy, documentId, updateDoc, arrayRemove, arrayUnion, deleteDoc, getDocs } from "firebase/firestore";
 import PostVotacaoSquad from "../componentes/VotoSquad";
 import CardItem from "../componentes/CardItem";
 import ModalListagem from "../componentes/ModalListagem";
@@ -19,12 +19,13 @@ type AbaPerfil = "postagens" | "votacoes" | "colecao";
 function Perfil({ usuario, squads }: PerfilProps) {
     const navigate = useNavigate();
     const { idUsuario } = useParams();
-
+    const [seguidoresList, setInfo] = useState<any[]>([]);
     const [dadosExtras, setDadosExtras] = useState<any>(null);
     const [meusPosts, setMeusPosts] = useState<any[]>([]);
     const [itensDaColecao, setItensDaColecao] = useState<any[]>([]); 
     const [abaAtiva, setAbaAtiva] = useState<AbaPerfil>("postagens");
-    const [mostrarSeguidores, setMostrarSeguidores] = useState(false);
+    const [exibirMap, setExibirMap] = useState(false);
+    const [titulos, setTitulos] = useState("");
     const idParaBuscar = idUsuario || usuario?.uid;
     const eMeuPerfil = idParaBuscar === usuario?.uid;
 
@@ -97,6 +98,69 @@ function Perfil({ usuario, squads }: PerfilProps) {
 
     if (!usuario || !idParaBuscar) {
         return <h2 style={{ color: "white", padding: "100px", textAlign: "center" }}>Conectando ao Rank Over...</h2>;
+    }
+
+    const buscarSeguidores = async () => {
+        try{
+            const usuariosRef = collection(db, "usuarios");
+            const q = query(usuariosRef, where(documentId(), "in", dadosExtras.seguidores));
+            const querySnapshot = await getDocs(q);
+            const listaSegui = querySnapshot.docs.map(doc => {
+                const dados = doc.data();
+                return {
+                    id: doc.id,
+                    nome: dados.nome,
+                    foto: dados.foto
+
+                };
+            });
+            setTitulos("Seguidores");
+            setInfo(listaSegui);
+
+        }catch(error){
+            console.error("Erro ao buscar seguidores:", error);
+        }     
+    }
+
+    const buscaSquad = async () => {
+        try{
+            const squadsRef = collection(db, "squads");
+            const q = query(squadsRef, where(documentId(), "in", dadosExtras.squads_seguindo));
+            const querySnapshot = await getDocs(q);
+            const listaSegui = querySnapshot.docs.map(doc => {
+                const dados = doc.data();
+                return {
+                    id: doc.id,
+                    nome: dados.nome,
+                    foto: dados.foto
+                };
+            });
+            setTitulos("Squads");
+            setInfo(listaSegui);
+        }catch(error){
+            console.error("Erro ao buscar squads seguindo:", error);
+        }
+    }
+    const buscaUsuSeguindo = async () => {
+        try{
+            const usuariosRef = collection(db, "usuarios");
+            const q = query(usuariosRef, where(documentId(), "in", dadosExtras.usuario_seguindo));
+            const querySnapshot = await getDocs(q);
+            const listaSegui = querySnapshot.docs.map(doc => {
+                const dados = doc.data();
+                return {
+                    id: doc.id,
+                    nome: dados.nome,
+                    foto: dados.foto
+
+                };
+            });
+            setTitulos("Seguindo");
+            setInfo(listaSegui);
+
+        }catch(error){
+            console.error("Erro ao buscar usuários seguindo:", error);
+        }
     }
     
     const handleSair = async () => {
@@ -204,29 +268,30 @@ function Perfil({ usuario, squads }: PerfilProps) {
                         </div>
 
                         <div className="perfil-stats-group" >
-                            <div className="perfil-squad-quant">
+                            <div className="perfil-squad-quant" onClick={() => {setExibirMap(true); buscaSquad()}}>
                                 <p>{dadosExtras?.squads_seguindo?.length || 0}</p>
                                 <span>Squads</span>
                             </div>
-                            <div className="perfil-squad-quant">
+                            <div className="perfil-squad-quant" onClick={() => {setExibirMap(true); buscaUsuSeguindo()}}>
                                 <p>{dadosExtras?.usuario_seguindo?.length || 0}</p>
                                 <span>Seguindo</span>
                             </div>
-                            <div className="perfil-squad-quant" onClick={() => setMostrarSeguidores(true)}>
-                                {mostrarSeguidores && (
-                                    <ModalListagem 
-                                        isOpen={mostrarSeguidores}
-                                        onClose={() => setMostrarSeguidores(false)}
-                                        titulo="Seguidores"
-                                        itens={dadosExtras.seguidores.map(user => ({ id: user.id, nome: user.nome, foto: user.fotoPerfil }))}
-                                        onItemClick={(idUser) => navigate(`/perfil/${idUser}`)}
-                                    />
-                                )}
+                            <div className="perfil-squad-quant" onClick={() => {setExibirMap(true); buscarSeguidores()}}>
                                 <p>{dadosExtras?.seguidores?.length || 0}</p>
                                 <span>Seguidores</span>
                             </div>
                         </div>
                     </div>
+
+                    {exibirMap && (
+                        <ModalListagem 
+                            isOpen={exibirMap}
+                            onClose={() => setExibirMap(false)}
+                            titulo={titulos}
+                            itens={seguidoresList.map(user => ({ id: user.id, nome: user.nome, foto: user.fotoPerfil }))}
+                            onItemClick={(idUser) => navigate(`/paginas/Perfil/${idUser}`)}
+                        />
+                    )}
 
                     <div className="perfil-bio">
                         <h1 className="perfil-nome-user">{dadosExtras?.nome || usuario.displayName || "Usuário"}</h1>

@@ -1,4 +1,4 @@
-//import "./ModalListagem.css";
+import "./ModalListagem.css";
 
 interface ItemLista {
     id: string;
@@ -36,7 +36,8 @@ function ModalListagem({ isOpen, onClose, titulo, itens, onItemClick }: ModalLis
                                 className="modal-item-linha" 
                                 onClick={() => {
                                     onItemClick(item.id);
-                                    onClose(); // Fecha o modal após clicar
+                                    console.log("Clicou no item com ID:", item.id);
+                                    onClose();
                                 }}
                             >
                                 <img 

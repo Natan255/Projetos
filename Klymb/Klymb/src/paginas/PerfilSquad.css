@@ -115,7 +115,6 @@
 }
 
 .Membros_squad::after {
-    content: "Membros";
     font-size: 0.65rem;
     color: #777;
     display: block;
