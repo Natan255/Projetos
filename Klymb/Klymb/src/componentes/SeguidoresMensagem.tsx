@@ -8,7 +8,7 @@ function SeguidoresMensagem({ usuario, onSelect, ativo }) {
         >
             <div className="seguidor-foto">
                 <img 
-                    src={usuario?.fotoPerfil || "https://via.placeholder.com/150"} 
+                    src={usuario?.fotoUrl || "https://via.placeholder.com/150"} 
                     alt={usuario?.nome} 
                 />
             </div>

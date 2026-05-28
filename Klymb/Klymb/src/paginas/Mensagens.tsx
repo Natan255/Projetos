@@ -132,7 +132,7 @@ function Mensagens({ usuario }) {
                     <>
                         <div className="topo-conversa">
                             <div className="foto-amigo">
-                                <img src={amigoAtivo.fotoPerfil || "https://via.placeholder.com/150"} alt={amigoAtivo.nome} />
+                                <img src={amigoAtivo.foto || "https://via.placeholder.com/150"} alt={amigoAtivo.nome} />
                             </div>
                             <span className="nome-amigo-topo">{amigoAtivo.nome}</span>
                         </div>

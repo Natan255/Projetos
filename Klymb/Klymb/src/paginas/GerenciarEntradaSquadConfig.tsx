@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import UsuariosLista from "../componentes/UsuariosLista";
-import { collection, getDocs, doc, updateDoc, deleteDoc, arrayUnion, setDoc, serverTimestamp } from "firebase/firestore";
+import { collection, getDocs, doc, updateDoc, deleteDoc, arrayUnion, setDoc, serverTimestamp, writeBatch } from "firebase/firestore";
 import { useParams } from "react-router-dom";
 import { db } from "../firebaseConfig";
 import "./GerenciarEntradaSquadConfig.css";

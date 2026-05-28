@@ -1,10 +1,11 @@
+import { createPortal } from "react-dom"; // 1. Importe o createPortal
 import "./ModalListagem.css";
 
 interface ItemLista {
     id: string;
     nome: string;
-    foto?: string; // Pode ser foto de perfil ou escudo do Squad
-    subtitulo?: string; // Ex: "Relojoeiro Máster" ou "Criado em 2026"
+    foto?: string;
+    subtitulo?: string;
 }
 
 interface ModalListagemProps {
@@ -12,13 +13,14 @@ interface ModalListagemProps {
     onClose: () => void;
     titulo: string;
     itens: ItemLista[];
-    onItemClick: (id: string) => void; // A mágica está aqui: cada tela dita o que o clique faz
+    onItemClick: (id: string) => void;
 }
 
 function ModalListagem({ isOpen, onClose, titulo, itens, onItemClick }: ModalListagemProps) {
     if (!isOpen) return null;
 
-    return (
+    // 2. Envolva o retorno dentro do Portal mirando no document.body
+    return createPortal(
         <div className="modal-overlay" onClick={onClose}>
             <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                 <div className="modal-header">
@@ -54,7 +56,8 @@ function ModalListagem({ isOpen, onClose, titulo, itens, onItemClick }: ModalLis
                     )}
                 </div>
             </div>
-        </div>
+        </div>,
+        document.body // O modal agora será injetado no topo da aplicação, isolado do pódio!
     );
 }
 

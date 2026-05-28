@@ -1,0 +1,163 @@
+/* 1. O Fundo escurecido que cobre a tela toda */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.75);
+    /* Efeito blur de vidro fosco chiquérrimo no fundo */
+    backdrop-filter: blur(4px); 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 99999;
+    animation: fadeIn 0.2s ease-out;
+}
+
+/* 2. O Caixa do Modal em si */
+.modal-content {
+    background-color: #0d0d0d; /* Dark mode profundo do Klymb */
+    border: 1px solid #222; /* Borda sutil para dar profundidade */
+    width: 90%;
+    max-width: 440px; /* Largura ideal para celulares e PC */
+    max-height: 80vh; /* Não deixa o modal estourar a altura da tela */
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    animation: scaleUp 0.2s ease-out;
+}
+
+/* 3. Cabeçalho do Modal */
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid #1a1a1a;
+}
+
+.modal-header h3 {
+    margin: 0;
+    color: #fff;
+    font-size: 1.15rem;
+    font-weight: 600;
+}
+
+/* Botão de Fechar (&times;) */
+.btn-fechar {
+    background: none;
+    border: none;
+    color: #666;
+    font-size: 1.5rem;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0;
+    transition: color 0.15s ease;
+}
+
+.btn-fechar:hover {
+    color: #ff4d00; /* A cor laranja de destaque do Rank Over / Klymb */
+}
+
+/* 4. Corpo do Modal (A lista rolável) */
+.modal-body {
+    padding: 10px 0;
+    overflow-y: auto; /* Cria scroll interno se tiver muita gente/squad */
+    flex-1: 1;
+}
+
+/* Customização da barra de rolagem (Scrollbar) para ficar discreta */
+.modal-body::-webkit-scrollbar {
+    width: 6px;
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+    background-color: #222;
+    border-radius: 4px;
+}
+
+/* Estado Vazio */
+.modal-vazio {
+    color: #555;
+    text-align: center;
+    font-size: 0.9rem;
+    padding: 30px 20px;
+    margin: 0;
+}
+
+/* 5. A Linha de cada Item (Seguidor ou Squad) */
+.modal-item-linha {
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+/* Efeito de hover ao passar o mouse na linha */
+.modal-item-linha:hover {
+    background-color: #141414; 
+}
+
+/* Foto de Perfil ou Escudo do Squad */
+.modal-item-foto {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%; /* Deixa redondo igual ao Instagram/Discord */
+    object-fit: cover;
+    margin-right: 14px;
+    background-color: #1a1a1a;
+    border: 1px solid #222;
+}
+
+/* Bloco de textos (Nome + Subtítulo) */
+.modal-item-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex: 1; /* Ocupa o espaço restante e empurra o botão para a direita */
+    margin-right: 16px; /* Garante que o texto não cola no botão em ecrãs pequenos */
+}
+
+.modal-item-nome {
+    margin: 0;
+    color: #eee;
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+.modal-item-sub {
+    color: #777;
+    font-size: 0.8rem;
+    margin-top: 2px;
+}
+
+.modal-item-acao button {
+    background-color: #ff4d00; /* Laranja principal do Rank Over */
+    color: #ffffff;            /* Texto escuro para dar contraste perfeito no laranja */
+    border: none;
+    padding: 6px 14px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.modal-item-acao button:hover {
+    background-color: #ff4d009d; /* Um laranja ligeiramente mais claro ao passar o rato */
+}
+
+/* 6. Animações de entrada para ficar fluido */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes scaleUp {
+    from { transform: scale(0.95); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}

@@ -4,10 +4,12 @@ import type { User } from "firebase/auth";
 import { useNavigate, useParams } from "react-router-dom";
 import { auth, db } from "../firebaseConfig";
 import { useEffect, useState } from "react";
-import { doc, onSnapshot, collection, query, where, orderBy, documentId, updateDoc, arrayRemove, arrayUnion, deleteDoc, getDocs } from "firebase/firestore";
+import { doc, onSnapshot, serverTimestamp, collection, query, where, orderBy, setDoc, documentId, updateDoc, arrayRemove, arrayUnion, deleteDoc, getDocs } from "firebase/firestore";
 import PostVotacaoSquad from "../componentes/VotoSquad";
 import CardItem from "../componentes/CardItem";
 import ModalListagem from "../componentes/ModalListagem";
+import ModalListagemComp from "../componentes/ModalListagemComp";
+
 
 interface PerfilProps {
     usuario: User | null;
@@ -26,6 +28,7 @@ function Perfil({ usuario, squads }: PerfilProps) {
     const [itensDaColecao, setItensDaColecao] = useState<any[]>([]); 
     const [abaAtiva, setAbaAtiva] = useState<AbaPerfil>("postagens");
     const [exibirMap, setExibirMap] = useState(false);
+    const [exibirMapComp, setExibirMapComp] = useState(false);
     const [titulos, setTitulos] = useState("");
     const idParaBuscar = idUsuario || usuario?.uid;
     const eMeuPerfil = idParaBuscar === usuario?.uid;
@@ -100,6 +103,27 @@ function Perfil({ usuario, squads }: PerfilProps) {
     if (!usuario || !idParaBuscar) {
         return <h2 style={{ color: "white", padding: "100px", textAlign: "center" }}>Conectando ao Rank Over...</h2>;
     }
+    
+    //dps do jiu jitsu volto pra arrumar essa brincadeira aqui em baixo
+    
+    const postarNoSquad = async (idSquad: string) => {
+        try{
+            const postRef = collection(db, "squads", idSquad, "solicitacoes_posts");
+            await setDoc(doc(postRef), {
+                criadoEm: serverTimestamp(),
+                fotoAutor: dadosExtras?.fotoUrl || "https://via.placeholder.com/150",
+                idAutor: usuario.uid,
+                nomeAutor: dadosExtras?.nome,
+                status: "pendente",
+                texto: `Novo item da minha coleção: ${dadosExtras?.colecao || "Nenhum item listado"}. Seria incrível se pudessem avaliar`,
+                titulo: "Item de coleção"
+            });
+
+        }catch(error){
+            console.error("Erro ao compartilhar item no squad:", error);
+        }
+
+    };
 
     const buscarSeguidores = async () => {
         if (!dadosExtras?.seguidores || dadosExtras.seguidores.length === 0) return;
@@ -113,7 +137,7 @@ function Perfil({ usuario, squads }: PerfilProps) {
                     id: doc.id,
                     nome: dados.nome,
                     // Padronizando para usar o campo 'foto' que seu modal espera
-                    foto: dados.foto || dados.fotoUrl || dados.fotoURL || "https://via.placeholder.com/150"
+                    foto: dados.fotoUrl || "https://via.placeholder.com/150"
                 };
             });
             setTitulos("Seguidores");
@@ -135,8 +159,7 @@ function Perfil({ usuario, squads }: PerfilProps) {
                 return {
                     id: doc.id,
                     nome: dados.nome,
-                    // Puxa o escudo do squad ou uma imagem padrão
-                    foto: dados.fotoEscudo || dados.foto || "https://via.placeholder.com/150"
+                    foto: dados.fotoPerfil || "https://via.placeholder.com/150"
                 };
             });
             setTitulos("Squads");
@@ -158,7 +181,7 @@ function Perfil({ usuario, squads }: PerfilProps) {
                 return {
                     id: doc.id,
                     nome: dados.nome,
-                    foto: dados.foto || dados.fotoUrl || dados.fotoURL || "https://via.placeholder.com/150"
+                    foto: dados.foto || "https://via.placeholder.com/150"
                 };
             });
             setTitulos("Seguindo");
@@ -255,7 +278,7 @@ function Perfil({ usuario, squads }: PerfilProps) {
 
     const postsNormaisEConquistas = meusPosts ? meusPosts.filter(p => p.tipo !== "conquistaVoto") : [];
     const postsDeVotacao = meusPosts ? meusPosts.filter(p => p.tipo === "conquistaVoto") : [];
-    const imagemPerfil = dadosExtras?.fotoUrl || dadosExtras?.fotoURL || dadosExtras?.photoURL || usuario?.photoURL || "https://via.placeholder.com/150";
+    const imagemPerfil = dadosExtras?.fotoUrl || usuario?.photoURL || "https://via.placeholder.com/150";
 
     return (
         <div className="perfil-container-user">
@@ -299,6 +322,16 @@ function Perfil({ usuario, squads }: PerfilProps) {
                                     navigate(`/paginas/Perfil/${idClicado}`);
                                 }
                             }}
+                        />
+                    )}
+
+                    {exibirMapComp && (
+                        <ModalListagemComp 
+                            isOpen={exibirMapComp}
+                            onClose={() => setExibirMapComp(false)}
+                            titulo={titulos}
+                            itens={info}
+                            onItemClick={(idClicado) => { postarNoSquad(idClicado);}}
                         />
                     )}
 
@@ -432,7 +465,7 @@ function Perfil({ usuario, squads }: PerfilProps) {
                                                     onDeletar={handleDeletarItem}
                                                     onFixar={handleFixarItem}
                                                     onCompartilhar={buscaSquad}
-                                                    abrirMap={setExibirMap}
+                                                    abrirMap={setExibirMapComp}
                                                 />
                                             ))}
                                     </div>

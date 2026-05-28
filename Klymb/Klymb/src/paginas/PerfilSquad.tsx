@@ -1,48 +1,69 @@
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import "./PerfilSquad.css";
 import PostSquad from "../componentes/PostSquad";
 import Modal from "../componentes/Modal";
-import { getDoc, addDoc, doc, setDoc, updateDoc, arrayUnion, arrayRemove, collection, query, where, orderBy, getDocs, serverTimestamp, onSnapshot, deleteDoc, increment } from "firebase/firestore";
-import { useNavigate } from "react-router-dom";
+import { 
+    getDoc, doc, setDoc, updateDoc, deleteDoc,
+    addDoc, collection, query, where, orderBy, getDocs, 
+    documentId, arrayUnion, arrayRemove, serverTimestamp, onSnapshot, increment 
+} from "firebase/firestore";
 import { db } from "../firebaseConfig";
 import PostVotacaoSquad from "../componentes/VotoSquad";
-import { like } from "firebase/firestore/pipelines";
+import ModalListagem from "../componentes/ModalListagem";
 import { useAlerta } from "../componentes/AlertaProvider";
-
-
-
 
 function PerfilSquad({ squads, usuario }) {
     const { id } = useParams();
     const navigate = useNavigate();
     const { exibirAlerta } = useAlerta();
+    
+    const [tipoAtivo, setTipoAtivo] = useState<"usuario" | "squad">("usuario");
+    const [info, setInfo] = useState<any[]>([]);
+    const [exibirMap, setExibirMap] = useState(false);
+    const [titulos, setTitulos] = useState("");
     const [modalAberto, setModalAberto] = useState(false);
-    const [posts, setPosts] = useState([]);
-    const [ranking, setRanking] = useState([]);
+    const [posts, setPosts] = useState<any[]>([]);
+    const [ranking, setRanking] = useState<any[]>([]);
     const [solicitacaoPend, setSolicitacaoPend] = useState(false);
-    const [squadSelecionado, setSquadSelecionado] = useState(null);
+    const [squadSelecionado, setSquadSelecionado] = useState<any>(null);
+
     const isOwner = squadSelecionado?.idCriador === usuario?.uid;
     const isMod = squadSelecionado?.moderadores?.includes(usuario?.uid);
     const temPermissaoEspecial = isOwner || isMod;
     const jaSegue = squadSelecionado?.membros?.includes(usuario?.uid);  
 
-    const consultarRanking = async (squadId) => {
-       
-        const rankingRef = collection(db, "squads", squadId, "ranking");
-    
-        const q = query(rankingRef, orderBy("pontos", "desc"));
-
-        const querySnapshot = await getDocs(q);
-        return querySnapshot.docs.map(doc => doc.data());
+    // Busca os usuários membros para o ModalListagem
+    const buscaUsuSeguindo = async () => {
+        if (!squadSelecionado?.membros || squadSelecionado.membros.length === 0) return;
+        try {
+            const usuariosRef = collection(db, "usuarios");
+            // Nota: O limite do 'in' no Firestore é de 30 IDs.
+            const membrosLimitados = squadSelecionado.membros.slice(0, 30);
+            const q = query(usuariosRef, where(documentId(), "in", membrosLimitados));
+            const querySnapshot = await getDocs(q);
+            const listaSegui = querySnapshot.docs.map(doc => {
+                const dados = doc.data();
+                return {
+                    id: doc.id,
+                    nome: dados.nome,
+                    foto: dados.foto || "https://via.placeholder.com/150"
+                };
+            });
+            setTitulos("Membros do Squad");
+            setInfo(listaSegui);
+            setTipoAtivo("usuario");
+        } catch (error) {
+            console.error("Erro ao buscar membros:", error);
+        }
     };
-    
 
+    // Fluxo 1: Envia post para aprovação (Pendente)
     const solicitarPost = async (dadosDoPost) => {
         if (!usuario || !id) return;
 
         try {
-            const squadAtual = squads.find(s => s.id === id);
+            const squadAtual = squads.find(s => s.id === id) || squadSelecionado;
 
             if (!squadAtual) {
                 exibirAlerta("Erro", "Squad não encontrado.");
@@ -50,112 +71,80 @@ function PerfilSquad({ squads, usuario }) {
             }
             
             const membro = squadAtual.membros?.includes(usuario.uid);
-            
 
             if (!membro) {
                 exibirAlerta("Erro", "Você precisa ser membro do squad para enviar uma prova.");
                 return;
             }
+
             await addDoc(collection(db, "squads", id, "solicitacoes_posts"), {
                 titulo: dadosDoPost.titulo,
                 texto: dadosDoPost.texto,
                 idAutor: usuario.uid,
-                nomeAutor: usuario.displayName,
+                nomeAutor: usuario.displayName || "Membro",
                 fotoAutor: usuario.photoURL || "",
                 criadoEm: serverTimestamp(),
                 status: "pendente" 
             });
 
+            exibirAlerta("Sucesso", "Sua publicação foi enviada para análise dos moderadores!");
             setModalAberto(false);
-
         } catch (error) {
             console.error("Erro ao solicitar post:", error);
         }
     };
 
-    const solicitarEntrada = async () => {
 
-        try{
-            const docRef = doc(db, "squads", id, "solicitacao_entrada", usuario.uid);
+    const gerenciarLike = async (postId: string, euCurti: boolean) => {
+        if (!usuario) return exibirAlerta("Erro", "Você precisa estar logado para curtir.");
         
+        const postRef = doc(db, "posts", postId);
+        try {
+            if (euCurti) {
+                await updateDoc(postRef, {
+                    likes: increment(-1),
+                    quemDeuLike: arrayRemove(usuario.uid)
+                });
+            } else {
+                await updateDoc(postRef, {
+                    likes: increment(1),
+                    quemDeuLike: arrayUnion(usuario.uid)
+                });
+            }
+        } catch (error) {
+            console.error("Erro ao processar curtida:", error);
+        }
+    };
+
+    const solicitarEntrada = async () => {
+        if (!usuario || !id) return;
+        try {
+            const docRef = doc(db, "squads", id, "solicitacao_entrada", usuario.uid);
             await setDoc(docRef, {
                 uid: usuario.uid,
                 nome: usuario.displayName || "Membro",
                 foto: usuario.photoURL || "",
                 dataSolicitacao: serverTimestamp()
             });
-            
-            setSolicitacaoPend(true)
-
-        }catch (error) {
-            console.error("Erro ao solicitar:", error);
-        }
-
-
-
-    }
-
-    const salvarPost = async (dadosDoModal: { titulo: string, texto: string }) => {
-        try {
-            const postsRef = collection(db, "posts");
-            await addDoc(postsRef, {
-                titulo: dadosDoModal.titulo,
-                texto: dadosDoModal.texto,
-                idSquad: id,
-                idAutor: usuario.uid,
-                nomeAutor: usuario.displayName || "Membro",
-                fotoAutor: usuario.photoURL || "",
-                comentários: 0,
-                likes: 0,
-                compartilhamento: 0,
-                criadoEm: serverTimestamp(),
-            });
-
-            setModalAberto(false);
-            
-            const novosPosts = await buscarPostsDoSquad(id);
-            setPosts(novosPosts);
-
+            setSolicitacaoPend(true);
         } catch (error) {
-            console.error("Erro ao salvar post:", error);
+            console.error("Erro ao solicitar entrada:", error);
         }
     };
 
-    const buscarPostsDoSquad = async (squadId) => {
-        const postsRef = collection(db, "posts");
-        
-        const q = query(
-            postsRef, 
-            where("idSquad", "==", squadId),
-            orderBy("criadoEm", "desc") // Os mais novos primeiro
-        );
-
-        const querySnapshot = await getDocs(q);
-        const listaPosts = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        
-        return listaPosts;
-        };
-
     const gerenciarSeguir = async () => {
-        if (!usuario) return alert("Logue primeiro!");
-        if (!id) return;
-        if (!squadSelecionado) return;
+        if (!usuario || !id || !squadSelecionado) return;
 
         const userRef = doc(db, "usuarios", usuario.uid);
         const squadRef = doc(db, "squads", id);
         const rankingMemberRef = doc(db, "squads", id, "ranking", usuario.uid);
 
-
         try {
-            if (jaSegue === true) {
+            if (jaSegue) {
                 await updateDoc(userRef, { squads_seguindo: arrayRemove(String(id)) });
                 await updateDoc(squadRef, { membros: arrayRemove(usuario.uid) });
                 await deleteDoc(rankingMemberRef); 
-                
-                
-            } 
-            else {
-
+            } else {
                 await updateDoc(userRef, { squads_seguindo: arrayUnion(String(id)) });
                 await updateDoc(squadRef, { membros: arrayUnion(usuario.uid) });
                 await setDoc(rankingMemberRef, {
@@ -166,21 +155,17 @@ function PerfilSquad({ squads, usuario }) {
                     cargo: "Recruta",
                     ultimaAtividade: serverTimestamp()
                 });
-
             }
         } catch (error) {
-            console.error("Erro na operação:", error);
+            console.error("Erro na operação de seguir/sair:", error);
         }
     };
 
+    // Realtime Listeners
     useEffect(() => {
         if (!id) return;
         const postsRef = collection(db, "posts");
-        const q = query(
-            postsRef, 
-            where("idSquad", "==", id),
-            orderBy("criadoEm", "desc")
-        );
+        const q = query(postsRef, where("idSquad", "==", id), orderBy("criadoEm", "desc"));
 
         const unsubscribe = onSnapshot(q, (querySnapshot) => {
             const listaPosts = querySnapshot.docs.map(doc => ({ 
@@ -198,7 +183,6 @@ function PerfilSquad({ squads, usuario }) {
         const squadRef = doc(db, "squads", id);
         const unsubscribe = onSnapshot(squadRef, (docSnap) => {
             if (docSnap.exists()) {
-
                 setSquadSelecionado({ id: docSnap.id, ...docSnap.data() });
             }
         });
@@ -222,22 +206,16 @@ function PerfilSquad({ squads, usuario }) {
         return () => unsubscribeRanking();
     }, [id]);
 
-
     useEffect(() => {
         const verificarStatus = async () => {
-            // Corrigido: usamos 'usuario' que vem das props
-            if (!usuario || !id || jaSegue) return;
-
+            if (!usuario || !id || jaSegue) {
+                if (jaSegue) setSolicitacaoPend(false);
+                return;
+            }
             try {
-                // Referência para o documento do usuário na sub-coleção de solicitações
                 const docRef = doc(db, "squads", id, "solicitacao_entrada", usuario.uid);
                 const docSnap = await getDoc(docRef);
-
-                if (docSnap.exists()) {
-                    setSolicitacaoPend(true);
-                } else {
-                    setSolicitacaoPend(false);
-                }
+                setSolicitacaoPend(docSnap.exists());
             } catch (error) {
                 console.error("Erro ao verificar status de solicitação:", error);
             }
@@ -247,17 +225,17 @@ function PerfilSquad({ squads, usuario }) {
     }, [id, usuario, jaSegue]);
 
     if (!squadSelecionado) {
-        return
+        return <div className="carregando">Carregando dados do Squad...</div>;
     }
 
     return (
         <div className="perfil-container">
             {/* --- HEADER DO PERFIL --- */}
             <div className="Fundo_perfil_squad">
-                <img src={squadSelecionado.fotoCapa} className="capa-img" alt="Capa" />
+                <img src={squadSelecionado.fotoCapa || "https://via.placeholder.com/1200x400"} className="capa-img" alt="Capa" />
                 <div className="perfil-header">
                     <div className="Foto_perfil_squad">
-                        <img src={squadSelecionado.fotoPerfil} alt="Logo" />
+                        <img src={squadSelecionado.fotoPerfil || "https://via.placeholder.com/150"} alt="Logo" />
                     </div>
                     <div className="Bios_squad">
                         <h1>
@@ -267,10 +245,27 @@ function PerfilSquad({ squads, usuario }) {
                         </h1>
                         <p>{squadSelecionado.descricao}</p>
 
-                        <div className="Membros_squad">
+                        <div className="Membros_squad" onClick={() => { buscaUsuSeguindo(); setExibirMap(true); }}>
                             {squadSelecionado.membros?.length || 0} Membros
                         </div>
                     </div>
+                    
+                    {exibirMap && (
+                        <ModalListagem 
+                            isOpen={exibirMap}
+                            onClose={() => setExibirMap(false)}
+                            titulo={titulos}
+                            itens={info} 
+                            onItemClick={(idClicado) => {
+                                if (tipoAtivo === "squad") {
+                                    navigate(`/paginas/PerfilSquad/${idClicado}`);
+                                } else {
+                                    navigate(`/paginas/Perfil/${idClicado}`);
+                                }
+                            }}
+                        />
+                    )}
+
                     <div className="acoes">
                         {temPermissaoEspecial && (
                             <button className="btn-config" onClick={() => navigate(`/paginas/PerfilSquadconfig/${id}`)}>
@@ -312,11 +307,11 @@ function PerfilSquad({ squads, usuario }) {
                                 const ordemVisual = index === 0 ? 2 : index === 1 ? 1 : 3;
 
                                 return (
-                                    <div key={membro.uid} className={`card-podio ${classes[index]}`} style={{ order: ordemVisual }}>
+                                    <div key={membro.id || index} className={`card-podio ${classes[index]}`} style={{ order: ordemVisual }}>
                                         <div className="medalha">{medalhas[index]}</div>
                                         <span className="nome">{membro.nome}</span>
                                         <span className="producao">
-                                            {membro.pontos} {squadSelecionado.metrica}
+                                            {membro.pontos} {squadSelecionado.metrica || "Pts"}
                                         </span>
                                     </div>
                                 );
@@ -325,11 +320,11 @@ function PerfilSquad({ squads, usuario }) {
 
                         <div className="Rank_lista">
                             {ranking.slice(3).map((membro, index) => (
-                                <div key={membro.uid} className="membro-rank">
+                                <div key={membro.id || index} className="membro-rank">
                                     <span className="posicao">{index + 4}º</span>
                                     <span className="nome">{membro.nome}</span>
                                     <span className="producao">
-                                        {membro.pontos} {squadSelecionado.metrica}
+                                        {membro.pontos} {squadSelecionado.metrica || "Pts"}
                                     </span>
                                 </div>
                             ))}
@@ -339,11 +334,9 @@ function PerfilSquad({ squads, usuario }) {
                     <p>Nenhum dado de ranking disponível.</p>
                 )}
             </div>
-            
 
+            {/* --- FEED E MURAL --- */}
             <div className="Topicos_squad">
-                
-
                 <div className="Topicos_header_acoes">
                     {squadSelecionado?.disputarRanking !== false && (
                         <button className="prova" onClick={() => navigate(`/paginas/Prova/${id}`)}>Prova</button>
@@ -357,18 +350,9 @@ function PerfilSquad({ squads, usuario }) {
                 </div>
                 
                 <div className="squad-flex-container">
-    
                     {(() => {
-
                         const postsFixados = posts.filter(p => p?.fixado === true);
                         const postsNormais = posts.filter(p => p?.fixado !== true);
-
-                        const irParaPost = (idDoPost) => {
-                            const elemento = document.getElementById(`post-${idDoPost}`);
-                            if (elemento) {
-                                setTimeout(() => elemento.style.border = '', 2000);
-                            }
-                        };
 
                         return (
                             <>
@@ -379,7 +363,6 @@ function PerfilSquad({ squads, usuario }) {
                                                 postsNormais.map((post) => {
                                                     const euCurti = post.quemDeuLike?.includes(usuario?.uid);
                                                     
-                                                    // Adicionamos um ID na div/componente para a rolagem funcionar
                                                     return (
                                                         <div id={`post-${post.id}`} key={post.id}>
                                                             {post.tipo === "conquistaVoto" ? (
@@ -395,8 +378,8 @@ function PerfilSquad({ squads, usuario }) {
                                                                     votosNegativos={post.votosNegativos || []}
                                                                     statusVotacao={post.statusVotacao || "aberta"}
                                                                     usuario={usuario}
-                                                                    likes={post.likes}
-                                                                    comentarios={post.comentarios}
+                                                                    likes={post.likes || 0}
+                                                                    comentarios={post.comentarios || 0}
                                                                     jaDeuLike={euCurti}
                                                                     aoDarLike={() => gerenciarLike(post.id, euCurti)}
                                                                     encerraEm={post.encerraEm}
@@ -408,10 +391,10 @@ function PerfilSquad({ squads, usuario }) {
                                                                     idAutor={post.idAutor}
                                                                     titulo={post.titulo} 
                                                                     texto={post.texto} 
-                                                                    comentarios={post.comentarios} 
+                                                                    comentarios={post.comentarios || 0} 
                                                                     autor={post.nomeAutor} 
                                                                     fotoAutor={post.fotoAutor}
-                                                                    likes={post.likes}
+                                                                    likes={post.likes || 0}
                                                                     conquista={post.tipo?.includes("conquista")}
                                                                     jaDeuLike={euCurti}
                                                                     aoDarLike={() => gerenciarLike(post.id, euCurti)}
@@ -430,12 +413,10 @@ function PerfilSquad({ squads, usuario }) {
                                     </div>
                                 </div>
 
-                                {/* COLUNA DIREITA: MURAL + MINI FIXADOS CLICÁVEIS */}
                                 <div className="MuralLateral_Squad">
                                     <h3>Mural Squad</h3>
                                     <p>{squadSelecionado?.mural || "Nenhum aviso importante no mural por enquanto."}</p>
 
-                                    {/* --- VERSÃO MINI DOS FIXADOS --- */}
                                     {postsFixados.length > 0 && (
                                         <div className="secao-posts-fixados-lateral">
                                             <div className="titulo-secao-fixados">
@@ -460,10 +441,10 @@ function PerfilSquad({ squads, usuario }) {
                             </>
                         );
                     })()}
-
                 </div>
             </div>
         </div>
     );
 }
+
 export default PerfilSquad;

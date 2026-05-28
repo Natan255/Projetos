@@ -140,7 +140,7 @@ function PostSquad({
                     <div className="ranking-squad">
                         {ranking.slice(0, 3).map((membro, index) => (
                             <span key={membro.id} className="mini-badge-rank">
-                                #{index + 1} {membro.nome || miembro.username}
+                                #{index + 1} {membro.nome}
                             </span>
                         ))}
                     </div>
