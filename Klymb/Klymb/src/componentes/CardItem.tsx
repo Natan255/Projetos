@@ -10,11 +10,12 @@ interface CardItemProps {
     eMeuPerfil: boolean; 
     onDeletar?: (id: string) => void; 
     onFixar?: (id: string) => void;   
-    onCompartilhar?: (id: string) => void; // 1. Nova prop adicionada aqui
-    fixado?: boolean;                  
+    onCompartilhar?: () => void; // 1. Nova prop adicionada aqui
+    fixado?: boolean;      
+    abrirMap?: (abrir: boolean) => void;   // 👈 Ajustado: tipado como função corretamente
 }
 
-function CardItem({ nome, fotoBanner, info, id, eMeuPerfil, onDeletar, onFixar, onCompartilhar, fixado }: CardItemProps) {
+function CardItem({ nome, fotoBanner, info, id, eMeuPerfil, onDeletar, onFixar, onCompartilhar, fixado, abrirMap }: CardItemProps) {
     const navigate = useNavigate();
     const [menuAberto, setMenuAberto] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
@@ -56,13 +57,12 @@ function CardItem({ nome, fotoBanner, info, id, eMeuPerfil, onDeletar, onFixar, 
                                 </button>
                             )}
 
-                            {/* 2. NOVO BOTÃO DE COMPARTILHAR NO DROPDOWN */}
                             {onCompartilhar && (
                                 <button 
                                     className="btn-compartilhar"
-                                    onClick={() => { onCompartilhar(id); setMenuAberto(false); }}
+                                    onClick={() => { onCompartilhar(); setMenuAberto(false); ; abrirMap(true) }}
                                 >
-                                    Compartilhar no Squad
+                                    Compartilhar
                                 </button>
                             )}
 

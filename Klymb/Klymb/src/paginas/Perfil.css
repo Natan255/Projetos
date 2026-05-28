@@ -76,6 +76,7 @@
     flex-direction: column;
     gap: 1px;
     transition: border-color 0.2s ease;
+    cursor: pointer;
 }
 
 .perfil-squad-quant:hover {

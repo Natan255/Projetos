@@ -19,7 +19,8 @@ type AbaPerfil = "postagens" | "votacoes" | "colecao";
 function Perfil({ usuario, squads }: PerfilProps) {
     const navigate = useNavigate();
     const { idUsuario } = useParams();
-    const [seguidoresList, setInfo] = useState<any[]>([]);
+    const [tipoAtivo, setTipoAtivo] = useState<"usuario" | "squad">("usuario");
+    const [info, setInfo] = useState<any[]>([]);
     const [dadosExtras, setDadosExtras] = useState<any>(null);
     const [meusPosts, setMeusPosts] = useState<any[]>([]);
     const [itensDaColecao, setItensDaColecao] = useState<any[]>([]); 
@@ -101,7 +102,8 @@ function Perfil({ usuario, squads }: PerfilProps) {
     }
 
     const buscarSeguidores = async () => {
-        try{
+        if (!dadosExtras?.seguidores || dadosExtras.seguidores.length === 0) return;
+        try {
             const usuariosRef = collection(db, "usuarios");
             const q = query(usuariosRef, where(documentId(), "in", dadosExtras.seguidores));
             const querySnapshot = await getDocs(q);
@@ -110,20 +112,21 @@ function Perfil({ usuario, squads }: PerfilProps) {
                 return {
                     id: doc.id,
                     nome: dados.nome,
-                    foto: dados.foto
-
+                    // Padronizando para usar o campo 'foto' que seu modal espera
+                    foto: dados.foto || dados.fotoUrl || dados.fotoURL || "https://via.placeholder.com/150"
                 };
             });
             setTitulos("Seguidores");
             setInfo(listaSegui);
-
-        }catch(error){
+            setTipoAtivo("usuario"); // 👈 É usuário
+        } catch (error) {
             console.error("Erro ao buscar seguidores:", error);
         }     
     }
 
     const buscaSquad = async () => {
-        try{
+        if (!dadosExtras?.squads_seguindo || dadosExtras.squads_seguindo.length === 0) return;
+        try {
             const squadsRef = collection(db, "squads");
             const q = query(squadsRef, where(documentId(), "in", dadosExtras.squads_seguindo));
             const querySnapshot = await getDocs(q);
@@ -132,17 +135,21 @@ function Perfil({ usuario, squads }: PerfilProps) {
                 return {
                     id: doc.id,
                     nome: dados.nome,
-                    foto: dados.foto
+                    // Puxa o escudo do squad ou uma imagem padrão
+                    foto: dados.fotoEscudo || dados.foto || "https://via.placeholder.com/150"
                 };
             });
             setTitulos("Squads");
             setInfo(listaSegui);
-        }catch(error){
+            setTipoAtivo("squad"); // 👈 É squad
+        } catch (error) {
             console.error("Erro ao buscar squads seguindo:", error);
         }
     }
+
     const buscaUsuSeguindo = async () => {
-        try{
+        if (!dadosExtras?.usuario_seguindo || dadosExtras.usuario_seguindo.length === 0) return;
+        try {
             const usuariosRef = collection(db, "usuarios");
             const q = query(usuariosRef, where(documentId(), "in", dadosExtras.usuario_seguindo));
             const querySnapshot = await getDocs(q);
@@ -151,18 +158,16 @@ function Perfil({ usuario, squads }: PerfilProps) {
                 return {
                     id: doc.id,
                     nome: dados.nome,
-                    foto: dados.foto
-
+                    foto: dados.foto || dados.fotoUrl || dados.fotoURL || "https://via.placeholder.com/150"
                 };
             });
             setTitulos("Seguindo");
             setInfo(listaSegui);
-
-        }catch(error){
+            setTipoAtivo("usuario"); // 👈 É usuário
+        } catch (error) {
             console.error("Erro ao buscar usuários seguindo:", error);
         }
     }
-    
     const handleSair = async () => {
         try {
             await auth.signOut();
@@ -197,8 +202,6 @@ function Perfil({ usuario, squads }: PerfilProps) {
             console.error("Erro ao deletar item:", error);
         }
     };
-
-    // ainda nao const handleCompartilharItem = async (idItem: string) => {
 
     const handleFixarItem = async (idItem: string) => {
         if (!usuario) return;
@@ -288,8 +291,14 @@ function Perfil({ usuario, squads }: PerfilProps) {
                             isOpen={exibirMap}
                             onClose={() => setExibirMap(false)}
                             titulo={titulos}
-                            itens={seguidoresList.map(user => ({ id: user.id, nome: user.nome, foto: user.fotoPerfil }))}
-                            onItemClick={(idUser) => navigate(`/paginas/Perfil/${idUser}`)}
+                            itens={info} 
+                            onItemClick={(idClicado) => {
+                                if (tipoAtivo === "squad") {
+                                    navigate(`/paginas/PerfilSquad/${idClicado}`);
+                                } else {
+                                    navigate(`/paginas/Perfil/${idClicado}`);
+                                }
+                            }}
                         />
                     )}
 
@@ -422,6 +431,8 @@ function Perfil({ usuario, squads }: PerfilProps) {
                                                     fixado={!!item.fixado}
                                                     onDeletar={handleDeletarItem}
                                                     onFixar={handleFixarItem}
+                                                    onCompartilhar={buscaSquad}
+                                                    abrirMap={setExibirMap}
                                                 />
                                             ))}
                                     </div>
