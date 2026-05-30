@@ -83,7 +83,7 @@ function GerenciaEntradaSquadConfig() {
 
     return (
         <div className="gerenciar-container">
-            <h3>📩 Solicitações Pendentes ({solicitacoes.length})</h3>
+            <h3> Solicitações Pendentes ({solicitacoes.length})</h3>
             
             {solicitacoes.length > 0 ? (
                 solicitacoes.map((user) => (

@@ -139,7 +139,7 @@ function GerenciarProvaSquadConfig() {
 
     return (
         <div className="admin-provas-container">
-            <h1>Gerenciar Provas {squadAtual?.estilo ? `(${squadAtual.estilo})` : ""}</h1>
+            <h1>Gerenciar Provas</h1>
 
             {carregando ? (
                 <p>Carregando solicitações...</p>

@@ -11,7 +11,7 @@ function CadastrarSquad(usuario) {
     const [nome, setNome] = useState("");
     const [descricao, setDescricao] = useState("");
     const [categoria, setCategoria] = useState("Estudos");
-    const [metrica, setMetrica] = useState("Horas");
+    const [metrica, setMetrica] = useState("Pontos");
     const [outraMetrica, setOutraMetrica] = useState("");
     const [fotoPerfil, setFotoPerfil] = useState("");
     const [fotoBanner, setFotoBanner] = useState("");
@@ -196,16 +196,14 @@ function CadastrarSquad(usuario) {
                                 <p>Ideal para os membros exibirem seu acervo. Os itens postados podem ir direto para o feed e para a vitrine do perfil do usuário.</p>
                             </div>
 
-                            {/* NOVA OPÇÃO: PERMITIR UM GRUPO SÓ DE EXIBIÇÃO */}
                             <div className="input-group">
                                 <p>Esse grupo terá Ranking competitivo?</p>
                                 <select onChange={(e) => setDisputarRanking(e.target.value === "sim")}>
-                                    <option value="sim">Sim, queremos competir para ver quem tem os melhores itens</option>
+                                    <option value="sim">Sim, queremos um ranking pra vermos que é mais ativo e dedicado ao grupo </option>
                                     <option value="nao">Não, apenas um espaço para compartilhar e mostrar as coleções</option>
                                 </select>
                             </div>
 
-                            {/* SÓ MOSTRA AS CONFIGURAÇÕES DE VOTO SE O RANKING ESTIVER ATIVADO */}
                             {disputarRanking && (
                                 <>
                                     <div className="input-group">
@@ -298,7 +296,7 @@ function CadastrarSquad(usuario) {
                             <div className="input-group">
                                 <p>Métrica de Rank (O que define quem está no topo?)</p>
                                 <div className="metrica-options">
-                                    {["Kills", "Metros", "Segundos", "Horas", "Linhas", "Vitorias", "Repetição", "Outros"].map((m) => (
+                                    {["Kills", "Metros", "Segundos", "Horas", "Linhas", "Vitorias", "Repetição", "Pontos", "Outros"].map((m) => (
                                         <button 
                                             key={m} 
                                             type="button" 

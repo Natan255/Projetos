@@ -180,7 +180,7 @@ function Prova({ usuario, squads }) {
                 )}
                 
                 <button type="submit" className="btn-enviar-prova">
-                    {squadAtual.estilo === "Colecao" ? "Enviar para Vitrine" : "Enviar Prova"}
+                    {squadAtual.estilo === "Colecao" ? "Enviar para avaliacao" : "Enviar Prova"}
                 </button>
             </form>
         </div>

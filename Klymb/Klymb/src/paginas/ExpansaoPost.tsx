@@ -2,7 +2,7 @@ import "./ExpansaoPost.css";
 import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { collection, onSnapshot, addDoc, serverTimestamp, doc, updateDoc, increment } from "firebase/firestore";
+import { collection, onSnapshot, addDoc, serverTimestamp, doc, updateDoc, increment, setDoc } from "firebase/firestore"; // ADICIONADO setDoc AQUI
 import { db } from "../firebaseConfig";
 import { arrayUnion, arrayRemove } from "firebase/firestore";
 
@@ -12,6 +12,7 @@ function ExpansaoPost({ usuario }) {
     const [carregando, setCarregando] = useState(true);
     const [comentarios, setComentarios] = useState([]); 
     const [dadosSquad, setDadosSquad] = useState(null);
+    const [idSquad, setIdSquad] = useState("");
 
     const [texto, setTexto] = useState("");
     const [textoResposta, setTextoResposta] = useState("");
@@ -19,18 +20,15 @@ function ExpansaoPost({ usuario }) {
     const [respondendoId, setRespondendoId] = useState(null);
     const [placeholderNome, setPlaceholderNome] = useState("");
 
-    // Puxa as labels customizadas da squad se existirem
     const txtBotaoP = dadosSquad?.configVotacao?.botaoVotacaoP || "Aprovar";
     const txtBotaoN = dadosSquad?.configVotacao?.botaoVotacaoN || "Recusar";
 
-    // CORREÇÃO: Mapeia para as chaves corretas salvos no banco (votosPositivos / votosNegativos)
     const jaVotouPos = usuario && dadosPost?.votosPositivos?.includes(usuario.uid);
     const jaVotouNeg = usuario && dadosPost?.votosNegativos?.includes(usuario.uid);
 
     const comentariosPrincipais = comentarios.filter(c => !c.respondendoA);
     const listaRespostas = comentarios.filter(c => c.respondendoA);
     const navigate = useNavigate();
-    
 
     const like = async (idComentario, jaCurtiu) => {
         if (!usuario?.uid) return;
@@ -74,26 +72,41 @@ function ExpansaoPost({ usuario }) {
             await updateDoc(postRef, {
                 comentarios: increment(1) 
             });
+
+            if (!dadosSquad) return;
+
+            if (dadosSquad.estilo === "Colecao" && dadosSquad.disputarRanking === true) {
+
+                const squadIdReal = dadosSquad.id || idSquad; 
+
+                if (squadIdReal) {
+                    const rankingMembroRef = doc(db, "squads", squadIdReal, "ranking", usuario.uid);
+                    await setDoc(rankingMembroRef, {
+                        pontos: increment(5),
+                        ultimaAtividade: serverTimestamp()
+                    }, { merge: true });
+                    
+                    console.log("Pontuação atribuída com sucesso!");
+                }
+            }
+
         } catch (error) {
             console.error("Erro ao adicionar comentário:", error);
         }
     };
 
-    // CORREÇÃO DA FUNÇÃO: Atualizada para rodar baseada no Snapshot em tempo real
     const handleVotar = async (tipoVoto) => {
         if (!usuario) return alert("Você precisa estar logado para votar.");
         if (dadosPost.statusVotacao === "encerrada") return alert("Esta votação já acabou.");
 
         const uid = usuario.uid;
-        const postRef = doc(db, "posts", idPost); // Corrigido de 'id' para 'idPost'
+        const postRef = doc(db, "posts", idPost);
 
         try {
             if (tipoVoto === "positivo") {
                 if (dadosPost?.votosPositivos?.includes(uid)) {
-                    // Retira o voto positivo
                     await updateDoc(postRef, { votosPositivos: arrayRemove(uid) });
                 } else {
-                    // Adiciona no positivo e remove do negativo se ele estiver lá
                     await updateDoc(postRef, {
                         votosPositivos: arrayUnion(uid),
                         votosNegativos: arrayRemove(uid)
@@ -101,10 +114,8 @@ function ExpansaoPost({ usuario }) {
                 }
             } else {
                 if (dadosPost?.votosNegativos?.includes(uid)) {
-                    // Retira o voto negativo
                     await updateDoc(postRef, { votosNegativos: arrayRemove(uid) });
                 } else {
-                    // Adiciona no negativo e remove do positivo se ele estiver lá
                     await updateDoc(postRef, {
                         votosNegativos: arrayUnion(uid),
                         votosPositivos: arrayRemove(uid)
@@ -137,6 +148,7 @@ function ExpansaoPost({ usuario }) {
     // 2. Escuta os dados da Squad
     useEffect(() => {
         const squadIdAtual = dadosPost?.idSquad;
+        setIdSquad(squadIdAtual || "");
         if (!squadIdAtual || typeof squadIdAtual !== "string") return;
 
         try {
@@ -179,6 +191,7 @@ function ExpansaoPost({ usuario }) {
 
     return (
         <div className="expansao-container">
+            {/* O restante do seu JSX permanece exatamente igual */}
             <div className="expansao-squadmembro">
                 <img 
                     src={dadosPost.fotoAutor || "https://via.placeholder.com/40"} 
@@ -201,7 +214,6 @@ function ExpansaoPost({ usuario }) {
             <div className="expansao-conteudo">
                 <h1 className="expansao-titulo">📊 {dadosPost.titulo}</h1>
                 
-                {/* Renderização condicional dos botões baseada na estrutura do banco */}
                 {dadosPost?.tipo === "conquistaVoto" && (
                     <div className="container-enquete-post">
                         <div className="botoes-enquete">
@@ -237,7 +249,6 @@ function ExpansaoPost({ usuario }) {
                     {comentariosPrincipais.length > 0 ? (
                         comentariosPrincipais.map((coment) => (
                             <React.Fragment key={coment.id}>
-                                
                                 <div className="item-comentario">
                                     <img src={coment.fotoAutor || "https://via.placeholder.com/40"} alt="autor" style={{ cursor: 'pointer' }} onClick={() => navigate(`/paginas/Perfil/${coment.autorId}`)}/>
                                     <div className="texto-comentario">
@@ -309,7 +320,6 @@ function ExpansaoPost({ usuario }) {
                                         <button onClick={() => adicionarComentario(coment.id)}>Enviar</button>
                                     </div>
                                 )}
-
                             </React.Fragment>
                         ))
                     ) : (

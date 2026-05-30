@@ -4,11 +4,13 @@ import type { User } from "firebase/auth";
 import { useNavigate, useParams } from "react-router-dom";
 import { auth, db } from "../firebaseConfig";
 import { useEffect, useState } from "react";
-import { doc, onSnapshot, serverTimestamp, collection, query, where, orderBy, setDoc, documentId, updateDoc, arrayRemove, arrayUnion, deleteDoc, getDocs } from "firebase/firestore";
+import { doc, onSnapshot, serverTimestamp, collection, query, where, orderBy, addDoc, documentId, updateDoc, arrayRemove, arrayUnion, deleteDoc, getDocs } from "firebase/firestore";
 import PostVotacaoSquad from "../componentes/VotoSquad";
 import CardItem from "../componentes/CardItem";
 import ModalListagem from "../componentes/ModalListagem";
 import ModalListagemComp from "../componentes/ModalListagemComp";
+import Modal from "../componentes/Modal";
+import { useAlerta } from "../componentes/AlertaProvider";
 
 
 interface PerfilProps {
@@ -21,6 +23,7 @@ type AbaPerfil = "postagens" | "votacoes" | "colecao";
 function Perfil({ usuario, squads }: PerfilProps) {
     const navigate = useNavigate();
     const { idUsuario } = useParams();
+    const { exibirAlerta } = useAlerta();
     const [tipoAtivo, setTipoAtivo] = useState<"usuario" | "squad">("usuario");
     const [info, setInfo] = useState<any[]>([]);
     const [dadosExtras, setDadosExtras] = useState<any>(null);
@@ -30,6 +33,8 @@ function Perfil({ usuario, squads }: PerfilProps) {
     const [exibirMap, setExibirMap] = useState(false);
     const [exibirMapComp, setExibirMapComp] = useState(false);
     const [titulos, setTitulos] = useState("");
+    const [modalAberto, setModalAberto] = useState(false);
+    const [squadComp, setSquadComp] = useState<any>(null);
     const idParaBuscar = idUsuario || usuario?.uid;
     const eMeuPerfil = idParaBuscar === usuario?.uid;
 
@@ -104,26 +109,45 @@ function Perfil({ usuario, squads }: PerfilProps) {
         return <h2 style={{ color: "white", padding: "100px", textAlign: "center" }}>Conectando ao Rank Over...</h2>;
     }
     
-    //dps do jiu jitsu volto pra arrumar essa brincadeira aqui em baixo
+    const solicitarPost = async (dadosDoPost) => {
+            if (!usuario || !squadComp) return;
     
-    const postarNoSquad = async (idSquad: string) => {
-        try{
-            const postRef = collection(db, "squads", idSquad, "solicitacoes_posts");
-            await setDoc(doc(postRef), {
-                criadoEm: serverTimestamp(),
-                fotoAutor: dadosExtras?.fotoUrl || "https://via.placeholder.com/150",
-                idAutor: usuario.uid,
-                nomeAutor: dadosExtras?.nome,
-                status: "pendente",
-                texto: `Novo item da minha coleção: ${dadosExtras?.colecao || "Nenhum item listado"}. Seria incrível se pudessem avaliar`,
-                titulo: "Item de coleção"
-            });
+            try {
+                const squadAtual = squads.find(s => s.id === squadComp) || squadSelecionado;
+    
+                if (!squadAtual) {
+                    exibirAlerta("Erro", "Squad não encontrado.");
+                    return;
+                }
+                
+                const membro = squadAtual.membros?.includes(usuario.uid);
+    
+                if (!membro) {
+                    exibirAlerta("Erro", "Você precisa ser membro do squad para enviar uma prova.");
+                    return;
+                }
 
-        }catch(error){
-            console.error("Erro ao compartilhar item no squad:", error);
-        }
-
-    };
+                //Futuramente aqui vai ter que vir a foto do item da colecao junto com a descricao, so permitindo o cara escolher titulo e comentar mais um pouco
+                //  |
+                //  |
+                //  v
+    
+                await addDoc(collection(db, "squads", squadComp, "solicitacoes_posts"), {
+                    titulo: dadosDoPost.titulo,
+                    texto: dadosDoPost.texto,
+                    idAutor: usuario.uid,
+                    nomeAutor: usuario.displayName || "Membro",
+                    fotoAutor: usuario.photoURL || "",
+                    criadoEm: serverTimestamp(),
+                    status: "pendente" 
+                });
+    
+                exibirAlerta("Sucesso", "Sua publicação foi enviada para análise dos moderadores!");
+                setModalAberto(false);
+            } catch (error) {
+                console.error("Erro ao solicitar post:", error);
+            }
+        };
 
     const buscarSeguidores = async () => {
         if (!dadosExtras?.seguidores || dadosExtras.seguidores.length === 0) return;
@@ -331,9 +355,15 @@ function Perfil({ usuario, squads }: PerfilProps) {
                             onClose={() => setExibirMapComp(false)}
                             titulo={titulos}
                             itens={info}
-                            onItemClick={(idClicado) => { postarNoSquad(idClicado);}}
+                            onItemClick={(idClicado) => { setModalAberto(true); setSquadComp(idClicado);}}
                         />
                     )}
+
+                    <Modal 
+                        isOpen={modalAberto} 
+                        onClose={() => setModalAberto(false)} 
+                        aoPostar={solicitarPost} 
+                    />
 
                     <div className="perfil-bio">
                         <h1 className="perfil-nome-user">{dadosExtras?.nome || usuario.displayName || "Usuário"}</h1>

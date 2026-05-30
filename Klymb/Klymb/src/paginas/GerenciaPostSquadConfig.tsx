@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { auth, db } from "../firebaseConfig";
-import { collection, onSnapshot, doc, addDoc, deleteDoc, serverTimestamp } from "firebase/firestore";
+import { doc, getDoc, collection, addDoc, updateDoc, deleteDoc, increment, serverTimestamp, onSnapshot } from "firebase/firestore";
 import { useAlerta } from "../componentes/AlertaProvider";
 
 import PostSquad from "../componentes/PostSquad";
@@ -22,8 +22,50 @@ function GerenciaPostSquadConfig() {
         return () => unsubscribe();
     }, [id]);
 
+    
+
     const aprovarPost = async (post: any) => {
         if (!id) return;
+
+        try {
+            const squadRef = doc(db, "squads", id);
+            const squadSnap = await getDoc(squadRef);
+
+            if (!squadSnap.exists()) {
+                console.error("Squad não encontrado.");
+                return;
+            }
+
+            const squadDados = squadSnap.data();
+
+            if (squadDados.estilo === "Colecao" && squadDados.disputarRanking === true) {
+                const rankingRef = doc(db, "squads", id, "ranking", post.idAutor);
+                
+                if (post.texto.length > 300) {
+                    await updateDoc(rankingRef, {
+                        pontos: increment(30) 
+                    });
+                }
+                
+                //Futuramente tem que ajeitar aqui pq ainda nao da pra botar fotos no site
+                // |
+                // |
+                // v
+
+                if (post.foto && post.foto !== "") {
+                    await updateDoc(rankingRef, {
+                        pontos: increment(10) 
+                    });
+                }
+                await updateDoc(rankingRef, {
+                    pontos: increment(20),
+                    ultimaAtividade: serverTimestamp()
+                });
+                                      
+            }
+        } catch (error) {
+            console.error("Erro ao acessar ranking:", error);
+        }
 
         try {
             const postsRef = collection(db, "posts");
@@ -42,11 +84,7 @@ function GerenciaPostSquadConfig() {
             });
 
             await deleteDoc(doc(db, "squads", id, "solicitacoes_posts", post.id));
-            exibirAlerta(
-                "Post Aprovado!", 
-                "",
-
-            );
+            exibirAlerta("Post Aprovado!", "");
 
         } catch (error) {
             console.error("Erro ao aprovar post:", error);

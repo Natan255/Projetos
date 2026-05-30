@@ -335,10 +335,9 @@ function PerfilSquad({ squads, usuario }) {
                 )}
             </div>
 
-            {/* --- FEED E MURAL --- */}
             <div className="Topicos_squad">
                 <div className="Topicos_header_acoes">
-                    {squadSelecionado?.disputarRanking !== false && (
+                    {squadSelecionado.estilo !== "Colecao" && (
                         <button className="prova" onClick={() => navigate(`/paginas/Prova/${id}`)}>Prova</button>
                     )}
                     <button className="Postar" onClick={() => setModalAberto(true)}>Postar</button>
