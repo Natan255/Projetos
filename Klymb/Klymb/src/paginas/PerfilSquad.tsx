@@ -76,16 +76,34 @@ function PerfilSquad({ squads, usuario }) {
                 exibirAlerta("Erro", "Você precisa ser membro do squad para enviar uma prova.");
                 return;
             }
-
-            await addDoc(collection(db, "squads", id, "solicitacoes_posts"), {
-                titulo: dadosDoPost.titulo,
-                texto: dadosDoPost.texto,
-                idAutor: usuario.uid,
-                nomeAutor: usuario.displayName || "Membro",
-                fotoAutor: usuario.photoURL || "",
-                criadoEm: serverTimestamp(),
-                status: "pendente" 
-            });
+            const precisaDeAprovacao = squadAtual.solicitarPost !== "nao"; 
+            const usuarioRef = doc(db, "usuarios", usuario.uid);
+            const usuarioSnap = await getDoc(usuarioRef);
+            const usuarioDados = usuarioSnap.data();
+            if (precisaDeAprovacao) {
+                await addDoc(collection(db, "squads", id, "solicitacoes_posts"), {
+                    titulo: dadosDoPost.titulo,
+                    texto: dadosDoPost.texto,
+                    idAutor: usuario.uid,
+                    nomeAutor: usuario.displayName || "Membro",
+                    fotoAutor: usuario.photoURL || "",
+                    criadoEm: serverTimestamp(),
+                    status: "pendente" 
+                });
+            }else{
+                await addDoc(collection(db, "posts"), {
+                    titulo: dadosDoPost.titulo,
+                    texto: dadosDoPost.texto,
+                    idSquad: id,
+                    idAutor: usuario.uid,
+                    nomeAutor: usuarioDados.nome || "Membro", 
+                    fotoAutor: usuarioDados.fotoUrl || "",
+                    likes: [],
+                    comentarios: 0, 
+                    compartilhamento: 0,
+                    criadoEm: serverTimestamp(),
+                });
+            }
 
             exibirAlerta("Sucesso", "Sua publicação foi enviada para análise dos moderadores!");
             setModalAberto(false);

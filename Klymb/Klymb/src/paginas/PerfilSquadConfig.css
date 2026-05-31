@@ -1,4 +1,4 @@
-/* Container Principal */
+
 .config-container {
     background-color: #0a0a0a;
     min-height: 100vh;
@@ -6,10 +6,9 @@
     justify-content: center;
     align-items: center;
     padding: 20px;
-    font-family: sans-serif; /* Adicione uma fonte limpa */
+    font-family: sans-serif;
 }
 
-/* Card Central */
 .config {
     width: 100%;
     max-width: 450px;
@@ -26,6 +25,7 @@
 .config-titulo {
     color: #fff;
     font-size: 1.4rem;
+    margin-top: 15px;
     margin-bottom: 25px;
     text-align: center;
     text-transform: uppercase;
@@ -34,16 +34,20 @@
     padding-bottom: 15px;
 }
 
+/* Evita espaçamento excessivo no primeiro título */
+.config > .config-titulo:first-child {
+    margin-top: 0;
+}
+
 /* Reset de Link para não estragar o botão */
 .config a {
     text-decoration: none;
-    display: block; /* Faz o link ocupar a linha toda */
+    display: block; 
     width: 100%;
 }
 
-/* Estilização dos Botões de Opção */
 .config-opcao {
-    width: 100%; /* Garante que o botão preencha o Link */
+    width: 100%; 
     background: #222;
     border: 1px solid #444;
     color: #ccc;
@@ -60,7 +64,7 @@
     outline: none;
 }
 
-/* Efeito de Hover */
+/* Efeito de Hover nos Botões */
 .config-opcao:hover {
     background: #2a2a2a;
     border-color: #ff4d00;
@@ -71,7 +75,7 @@
 
 /* Seta discreta no canto */
 .config-opcao::after {
-    content: "→"; /* Seta mais moderna que o '>' */
+    content: "→"; 
     color: #ff4d00;
     font-size: 1.2rem;
     opacity: 0.5;
@@ -82,7 +86,63 @@
     opacity: 1;
 }
 
-/* Botão de Voltar */
+.config-privacidade-grupo {
+    display: flex;
+    flex-direction: column;
+    gap: 8px; /* Espaço entre a pergunta e o select */
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Estilização das Perguntas (Labels) */
+.config-privacidade-grupo label {
+    color: #ccc;
+    font-size: 0.95rem;
+    font-weight: 500;
+    padding-left: 2px;
+    margin-top: 4px;
+}
+
+/* Estilização das Caixas de Seleção (Select) */
+.config-privacidade-grupo select {
+    width: 100%;
+    background: #222;
+    border: 1px solid #444;
+    color: #fff;
+    padding: 16px 20px;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    outline: none;
+    box-sizing: border-box;
+    
+    /* Remove a seta padrão nativa do navegador */
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ff4d00' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 20px center;
+    background-size: 16px;
+}
+
+/* Efeito de Hover e Foco no Select */
+.config-privacidade-grupo select:hover,
+.config-privacidade-grupo select:focus {
+    background-color: #2a2a2a;
+    border-color: #ff4d00;
+    box-shadow: -5px 0px 0px #ff4d00; /* Mesma borda lateral laranja dos botões */
+}
+
+/* Garante o fundo escuro nas opções internas do dropdown */
+.config-privacidade-grupo select option {
+    background: #161616;
+    color: #fff;
+    padding: 12px;
+}
+
 .config-voltar {
     margin-top: 20px;
     background: transparent;
