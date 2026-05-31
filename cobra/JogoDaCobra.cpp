@@ -68,8 +68,6 @@ void moverCobra(Cobra &c, char tabuleiro[20][20], char direcao)
 
         for (int i = c.corpo.size() - 1; i > 0; i--)
         {
-            if (novaCabeca.i == c.corpo[i].i && novaCabeca.j == c.corpo[i].j)
-                ;
             c.corpo[i] = c.corpo[i - 1];
         }
         c.corpo[0] = novaCabeca;
@@ -87,10 +85,10 @@ int verificarColisao(Cobra &c)
 
     for (int i = c.corpo.size() - 1; i > 0; i--)
     {
-        if (c.corpo[0].i == c.corpo[i].i && c.corpo[0].j == c.corpo[i].j){
+        if (c.corpo[0].i == c.corpo[i].i && c.corpo[0].j == c.corpo[i].j)
+        {
             return 1;
         }
-            
     }
 
     return 0;
