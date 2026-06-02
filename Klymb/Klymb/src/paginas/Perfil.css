@@ -405,3 +405,79 @@
         font-size: 0.85rem;
     }
 }
+
+/* ==========================================
+   ESTILIZAÇÃO DO PERFIL PRIVADO
+   ========================================== */
+
+/* Container que envolve as informações do perfil quando privado */
+.perfil-privado-mensagem {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    gap: 20px;
+    margin-top: 10px;
+}
+
+/* Força o alinhamento centralizado da bio no modo privado */
+.perfil-privado-mensagem .perfil-bio {
+    text-align: center;
+}
+
+/* Box de aviso com o feedback visual de bloqueio */
+.aviso-privado-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 450px; /* Mesma largura máxima do seu config-container */
+    background: #161616; /* Fundo idêntico ao do card de configurações */
+    border: 1px dashed #333; /* Borda tracejada discreta */
+    border-radius: 12px;
+    padding: 40px 30px;
+    text-align: center;
+    box-sizing: border-box;
+    margin-top: 25px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Efeito sutil de linha laranja no topo do aviso privado, combinando com o tema */
+.aviso-privado-box::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: #ff4d00;
+}
+
+/* Título "Este perfil é privado" */
+.aviso-privado-box h3 {
+    color: #fff;
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0 0 10px 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Texto descritivo do aviso */
+.aviso-privado-box p {
+    color: #888;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin: 0;
+    max-width: 320px;
+}
+
+/* Ajuste fino para os botões de ações ficarem centralizados se necessário */
+.perfil-privado-mensagem .perfil-acoes-group {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}

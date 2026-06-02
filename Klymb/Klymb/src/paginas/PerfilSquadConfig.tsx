@@ -132,10 +132,7 @@ function PerfilSquadConfig() {
 
                 <section className="config-privacidade-grupo">
                     <label htmlFor="solicitarEntrada">Solicitar entrada ao administrador do squad?</label>
-                    <select 
-                        name="solicitarEntrada" 
-                        id="solicitarEntrada" 
-                        value={solicitarEntrada}
+                    <select name="solicitarEntrada" id="solicitarEntrada" value={solicitarEntrada}
                         onChange={(e) => {
                             const valor = e.target.value;
                             setSolicitarEntrada(valor);

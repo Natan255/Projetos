@@ -98,3 +98,60 @@
     color: #ff4d00;
     text-decoration: underline;
 }
+
+/* ==========================================
+   TRECHO DE PRIVACIDADE DO PERFIL (ATUALIZADO)
+   ========================================== */
+
+.config-privacidade-grupo {
+    display: flex;
+    flex-direction: column;
+    gap: 8px; /* Espaço entre a pergunta e o select */
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Estilização das Perguntas (Labels) */
+.config-privacidade-grupo label {
+    color: #ccc;
+    font-size: 0.95rem;
+    font-weight: 500;
+    padding-left: 2px;
+    margin-top: 4px;
+}
+
+/* Estilização das Caixas de Seleção (Select) */
+.config-privacidade-grupo select {
+    width: 100%; 
+    background: #222;
+    border: 1px solid #444;
+    color: #fff;
+    padding: 16px 20px;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    outline: none;
+    box-sizing: border-box;
+
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    
+}
+
+/* Efeito de Hover e Foco no Select (Igual aos botões opcionais) */
+.config-privacidade-grupo select:hover,
+.config-privacidade-grupo select:focus {
+    background-color: #2a2a2a;
+    border-color: #ff4d00;
+    transform: translateX(8px); /* Deslocamento idêntico ao botão */
+    box-shadow: -5px 0px 0px #ff4d00; /* Mesma borda lateral laranja dos botões */
+}
+
+/* Garante o fundo escuro nas opções internas do dropdown */
+.config-privacidade-grupo select option {
+    background: #161616;
+    color: #fff;
+    padding: 12px;
+}

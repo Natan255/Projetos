@@ -6,7 +6,7 @@ import Modal from "../componentes/Modal";
 import { 
     getDoc, doc, setDoc, updateDoc, deleteDoc,
     addDoc, collection, query, where, orderBy, getDocs, 
-    documentId, arrayUnion, arrayRemove, serverTimestamp, onSnapshot, increment 
+    documentId, arrayUnion, arrayRemove, serverTimestamp, onSnapshot, increment, writeBatch
 } from "firebase/firestore";
 import { db } from "../firebaseConfig";
 import PostVotacaoSquad from "../componentes/VotoSquad";
@@ -90,6 +90,7 @@ function PerfilSquad({ squads, usuario }) {
                     criadoEm: serverTimestamp(),
                     status: "pendente" 
                 });
+                exibirAlerta("Sucesso", "Sua publicação foi enviada para análise dos moderadores!");
             }else{
                 await addDoc(collection(db, "posts"), {
                     titulo: dadosDoPost.titulo,
@@ -103,9 +104,10 @@ function PerfilSquad({ squads, usuario }) {
                     compartilhamento: 0,
                     criadoEm: serverTimestamp(),
                 });
+                exibirAlerta("Sucesso", "Sua publicação foi postada!");
             }
 
-            exibirAlerta("Sucesso", "Sua publicação foi enviada para análise dos moderadores!");
+            
             setModalAberto(false);
         } catch (error) {
             console.error("Erro ao solicitar post:", error);
@@ -138,12 +140,46 @@ function PerfilSquad({ squads, usuario }) {
         if (!usuario || !id) return;
         try {
             const docRef = doc(db, "squads", id, "solicitacao_entrada", usuario.uid);
-            await setDoc(docRef, {
-                uid: usuario.uid,
-                nome: usuario.displayName || "Membro",
-                foto: usuario.photoURL || "",
-                dataSolicitacao: serverTimestamp()
-            });
+            if (squadSelecionado.solicitarEntrada == "sim"){
+                await setDoc(docRef, {
+                    uid: usuario.uid,
+                    nome: usuario.displayName || "Membro",
+                    foto: usuario.photoURL || "",
+                    dataSolicitacao: serverTimestamp()
+                });
+            }else{
+                const usuarioId = usuario.uid || usuario.id;
+                if (!usuarioId) {
+                    alert("Erro: ID do usuário não encontrado.");
+                    return;
+                }
+                
+                const usuarioRef = doc(db, "usuarios", usuario.uid);
+                const usuarioSnap = await getDoc(usuarioRef);
+                const usuarioDados = usuarioSnap.data();
+                const squadRef = doc(db, "squads", id);
+                const rankingMemberRef = doc(db, "squads", id, "ranking", usuarioId);
+                    
+                const batch = writeBatch(db);
+                batch.update(squadRef, {
+                    membros: arrayUnion(usuarioId)
+                });
+                    
+                batch.update(usuarioRef, {
+                    squads_seguindo: arrayUnion(id)
+                });
+                    
+                batch.set(rankingMemberRef, {
+                    uid: usuarioId,
+                    nome: usuarioDados?.nome || "Recruta Anônimo",
+                    fotoUrl: usuarioDados?.foto || usuarioDados?.fotoUrl || "",
+                    pontos: 0,
+                    cargo: "Recruta",
+                    ultimaAtividade: serverTimestamp()
+                });
+                await batch.commit();
+                            
+            }
             setSolicitacaoPend(true);
         } catch (error) {
             console.error("Erro ao solicitar entrada:", error);

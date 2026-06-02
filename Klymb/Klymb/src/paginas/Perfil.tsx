@@ -12,7 +12,6 @@ import ModalListagemComp from "../componentes/ModalListagemComp";
 import Modal from "../componentes/Modal";
 import { useAlerta } from "../componentes/AlertaProvider";
 
-
 interface PerfilProps {
     usuario: User | null;
     squads: any[];
@@ -38,9 +37,7 @@ function Perfil({ usuario, squads }: PerfilProps) {
     const idParaBuscar = idUsuario || usuario?.uid;
     const eMeuPerfil = idParaBuscar === usuario?.uid;
 
-
     useEffect(() => {
-
         if (!idParaBuscar) return;
 
         const postsRef = collection(db, "posts");
@@ -63,7 +60,6 @@ function Perfil({ usuario, squads }: PerfilProps) {
         return () => unsubscribePosts();
     }, [idParaBuscar]);
 
-
     useEffect(() => {
         if (!idParaBuscar) return;
 
@@ -79,9 +75,7 @@ function Perfil({ usuario, squads }: PerfilProps) {
         return () => unsubscribeUser();
     }, [idParaBuscar]);
 
-
     useEffect(() => {
-
         if (!dadosExtras?.colecao || dadosExtras.colecao.length === 0) {
             setItensDaColecao([]);
             return;
@@ -101,53 +95,46 @@ function Perfil({ usuario, squads }: PerfilProps) {
         });
 
         return () => unsubscribeItens();
-        
     }, [idParaBuscar, dadosExtras?.colecao?.length]);
 
-
     if (!usuario || !idParaBuscar) {
-        return <h2 style={{ color: "white", padding: "100px", textAlign: "center" }}>Conectando ao Rank Over...</h2>;
+        return <h2 style={{ color: "white", padding: "100px", textAlign: "center" }}>Conectando ao Klymb...</h2>;
     }
     
     const solicitarPost = async (dadosDoPost) => {
-            if (!usuario || !squadComp) return;
-    
-            try {
-                const squadAtual = squads.find(s => s.id === squadComp) || squadSelecionado;
-    
-                if (!squadAtual) {
-                    exibirAlerta("Erro", "Squad não encontrado.");
-                    return;
-                }
-                
-                const membro = squadAtual.membros?.includes(usuario.uid);
-    
-                if (!membro) {
-                    exibirAlerta("Erro", "Você precisa ser membro do squad para enviar uma prova.");
-                    return;
-                }
+        if (!usuario || !squadComp) return;
 
-                //Futuramente aqui vai ter que vir a foto do item da colecao junto com a descricao, so permitindo o cara escolher titulo e comentar mais um pouco
-                //  |
-                //  |
-                //  v
-    
-                await addDoc(collection(db, "squads", squadComp, "solicitacoes_posts"), {
-                    titulo: dadosDoPost.titulo,
-                    texto: dadosDoPost.texto,
-                    idAutor: usuario.uid,
-                    nomeAutor: usuario.displayName || "Membro",
-                    fotoAutor: usuario.photoURL || "",
-                    criadoEm: serverTimestamp(),
-                    status: "pendente" 
-                });
-    
-                exibirAlerta("Sucesso", "Sua publicação foi enviada para análise dos moderadores!");
-                setModalAberto(false);
-            } catch (error) {
-                console.error("Erro ao solicitar post:", error);
+        try {
+            const squadAtual = squads.find(s => s.id === squadComp);
+
+            if (!squadAtual) {
+                exibirAlerta("Erro", "Squad não encontrado.");
+                return;
             }
-        };
+            
+            const membro = squadAtual.membros?.includes(usuario.uid);
+
+            if (!membro) {
+                exibirAlerta("Erro", "Você precisa ser membro do squad para enviar uma prova.");
+                return;
+            }
+
+            await addDoc(collection(db, "squads", squadComp, "solicitacoes_posts"), {
+                titulo: dadosDoPost.titulo,
+                texto: dadosDoPost.texto,
+                idAutor: usuario.uid,
+                nomeAutor: usuario.displayName || "Membro",
+                fotoAutor: usuario.photoURL || "",
+                criadoEm: serverTimestamp(),
+                status: "pendente" 
+            });
+
+            exibirAlerta("Sucesso", "Sua publicação foi enviada para análise dos moderadores!");
+            setModalAberto(false);
+        } catch (error) {
+            console.error("Erro ao solicitar post:", error);
+        }
+    };
 
     const buscarSeguidores = async () => {
         if (!dadosExtras?.seguidores || dadosExtras.seguidores.length === 0) return;
@@ -160,13 +147,12 @@ function Perfil({ usuario, squads }: PerfilProps) {
                 return {
                     id: doc.id,
                     nome: dados.nome,
-                    // Padronizando para usar o campo 'foto' que seu modal espera
                     foto: dados.fotoUrl || "https://via.placeholder.com/150"
                 };
             });
             setTitulos("Seguidores");
             setInfo(listaSegui);
-            setTipoAtivo("usuario"); // 👈 É usuário
+            setTipoAtivo("usuario");
         } catch (error) {
             console.error("Erro ao buscar seguidores:", error);
         }     
@@ -188,7 +174,7 @@ function Perfil({ usuario, squads }: PerfilProps) {
             });
             setTitulos("Squads");
             setInfo(listaSegui);
-            setTipoAtivo("squad"); // 👈 É squad
+            setTipoAtivo("squad");
         } catch (error) {
             console.error("Erro ao buscar squads seguindo:", error);
         }
@@ -210,11 +196,12 @@ function Perfil({ usuario, squads }: PerfilProps) {
             });
             setTitulos("Seguindo");
             setInfo(listaSegui);
-            setTipoAtivo("usuario"); // 👈 É usuário
+            setTipoAtivo("usuario");
         } catch (error) {
             console.error("Erro ao buscar usuários seguindo:", error);
         }
     }
+
     const handleSair = async () => {
         try {
             await auth.signOut();
@@ -244,7 +231,6 @@ function Perfil({ usuario, squads }: PerfilProps) {
             }
 
             await deleteDoc(doc(db, "colecaoItens", idItem));
-
         } catch (error) {
             console.error("Erro ao deletar item:", error);
         }
@@ -262,7 +248,6 @@ function Perfil({ usuario, squads }: PerfilProps) {
             await updateDoc(coleRef, { 
                 fixado: novoStatusFixado
             });
-
         } catch (error) {
             console.error("Erro ao atualizar item fixado:", error);
         }
@@ -270,7 +255,7 @@ function Perfil({ usuario, squads }: PerfilProps) {
 
     const deixarSeguir = async () => {
         if (!usuario) return;
-        try{
+        try {
             const userRef = doc(db, "usuarios", usuario.uid);
             const perfilRef = doc(db, "usuarios", idParaBuscar);
             await updateDoc(userRef, {
@@ -279,14 +264,14 @@ function Perfil({ usuario, squads }: PerfilProps) {
             await updateDoc(perfilRef, {
                 seguidores: arrayRemove(usuario.uid)
             });
-        }catch(error){
+        } catch (error) {
             console.error("Erro ao seguir usuário:", error);
         }
     }
 
     const seguir = async () => {
         if (!usuario) return;
-        try{
+        try {
             const userRef = doc(db, "usuarios", usuario.uid);
             const perfilRef = doc(db, "usuarios", idParaBuscar);
             await updateDoc(userRef, {
@@ -295,7 +280,7 @@ function Perfil({ usuario, squads }: PerfilProps) {
             await updateDoc(perfilRef, {
                 seguidores: arrayUnion(usuario.uid)
             });
-        }catch(error){
+        } catch (error) {
             console.error("Erro ao seguir usuário:", error);
         }
     }
@@ -303,6 +288,12 @@ function Perfil({ usuario, squads }: PerfilProps) {
     const postsNormaisEConquistas = meusPosts ? meusPosts.filter(p => p.tipo !== "conquistaVoto") : [];
     const postsDeVotacao = meusPosts ? meusPosts.filter(p => p.tipo === "conquistaVoto") : [];
     const imagemPerfil = dadosExtras?.fotoUrl || usuario?.photoURL || "https://via.placeholder.com/150";
+
+
+    const euSigoEles = dadosExtras?.seguidores?.includes(usuario.uid);
+    const elesMeSeguem = dadosExtras?.usuario_seguindo?.includes(usuario.uid);
+    const seguimentoMutuo = euSigoEles && elesMeSeguem;
+    const perfilEstaPrivado = !eMeuPerfil && dadosExtras?.privado === "sim" && !seguimentoMutuo;
 
     return (
         <div className="perfil-container-user">
@@ -333,180 +324,207 @@ function Perfil({ usuario, squads }: PerfilProps) {
                         </div>
                     </div>
 
-                    {exibirMap && (
-                        <ModalListagem 
-                            isOpen={exibirMap}
-                            onClose={() => setExibirMap(false)}
-                            titulo={titulos}
-                            itens={info} 
-                            onItemClick={(idClicado) => {
-                                if (tipoAtivo === "squad") {
-                                    navigate(`/paginas/PerfilSquad/${idClicado}`);
-                                } else {
-                                    navigate(`/paginas/Perfil/${idClicado}`);
-                                }
-                            }}
-                        />
-                    )}
-
-                    {exibirMapComp && (
-                        <ModalListagemComp 
-                            isOpen={exibirMapComp}
-                            onClose={() => setExibirMapComp(false)}
-                            titulo={titulos}
-                            itens={info}
-                            onItemClick={(idClicado) => { setModalAberto(true); setSquadComp(idClicado);}}
-                        />
-                    )}
-
-                    <Modal 
-                        isOpen={modalAberto} 
-                        onClose={() => setModalAberto(false)} 
-                        aoPostar={solicitarPost} 
-                    />
-
-                    <div className="perfil-bio">
-                        <h1 className="perfil-nome-user">{dadosExtras?.nome || usuario.displayName || "Usuário"}</h1>
-                        <h3 className="perfil-bio-text">{dadosExtras?.bio || "Recruta do Rank Over"}</h3>
-                    </div>
-
-                    <div className="perfil-acoes-group">
-
-                        {!eMeuPerfil ? (
-                            <>
+                    {perfilEstaPrivado ? (
+                        <div className="perfil-privado-mensagem">
+                            <div className="perfil-bio">
+                                <h1 className="perfil-nome-user">{dadosExtras?.nome || "Usuário"}</h1>
+                            </div>
+                            <div className="perfil-acoes-group">
                                 {dadosExtras?.seguidores?.includes(usuario.uid) ? (
-                                    <button className="perfil-seguir" onClick={() => {deixarSeguir()}}>
+                                    <button className="perfil-seguir" onClick={deixarSeguir}>
                                         Deixar de Seguir
                                     </button>
                                 ) : (
-                                    <button className="perfil-seguir" onClick={() => {seguir()}}>
+                                    <button className="perfil-seguir" onClick={seguir}>
                                         Seguir
                                     </button>
                                 )}
-                            </>
-                        ) : (
-                            <>
-                                <button className="perfil-btn-config" onClick={() => navigate("/paginas/PerfilConfig")}>⚙️</button>
-                                <button className="perfil-sair" onClick={handleSair}>Sair</button>
-                            </>
-                        )}
-                    </div>
-                </div>
+                            </div>
+                            <div className="aviso-privado-box">
+                                <h3>Este perfil é privado</h3>
+                                <p>Siga este usuário para acompanhar as suas postagens, votações e coleções.</p>
+                            </div>
+                        </div>
+                    ) : (
+                        <>
+                            {exibirMap && (
+                                <ModalListagem 
+                                    isOpen={exibirMap}
+                                    onClose={() => setExibirMap(false)}
+                                    titulo={titulos}
+                                    itens={info} 
+                                    onItemClick={(idClicado) => {
+                                        if (tipoAtivo === "squad") {
+                                            navigate(`/paginas/PerfilSquad/${idClicado}`);
+                                        } else {
+                                            navigate(`/paginas/Perfil/${idClicado}`);
+                                        }
+                                    }}
+                                />
+                            )}
 
-                <div className="perfil-abas-menu">
-                    <button 
-                        className={`perfil-aba-item ${abaAtiva === "postagens" ? "ativa" : ""}`}
-                        onClick={() => setAbaAtiva("postagens")}
-                    >
-                        Postagens
-                    </button>
-                    <button 
-                        className={`perfil-aba-item ${abaAtiva === "votacoes" ? "ativa" : ""}`}
-                        onClick={() => setAbaAtiva("votacoes")}
-                    >
-                        Votações
-                    </button>
-                    <button 
-                        className={`perfil-aba-item ${abaAtiva === "colecao" ? "ativa" : ""}`}
-                        onClick={() => setAbaAtiva("colecao")}
-                    >
-                        Coleção
-                    </button>
-                </div>
+                            {exibirMapComp && (
+                                <ModalListagemComp 
+                                    isOpen={exibirMapComp}
+                                    onClose={() => setExibirMapComp(false)}
+                                    titulo={titulos}
+                                    itens={info}
+                                    onItemClick={(idClicado) => { setModalAberto(true); setSquadComp(idClicado);}}
+                                />
+                            )}
 
-                <div className="Topicos">
-                    <div className="mural-posts">
-                        {abaAtiva === "postagens" && (
-                            postsNormaisEConquistas.length > 0 ? (
-                                postsNormaisEConquistas.map((post) => (
-                                    <PostSquad
-                                        key={post.id}
-                                        id={post.id}
-                                        idAutor={post.idAutor || post.idUsuario}
-                                        titulo={post.titulo}
-                                        texto={post.texto}
-                                        likes={post.likes || 0}
-                                        comentarios={post.comentarios || 0}
-                                        autor={post.nomeAutor || "Membro"}
-                                        fotoAutor={post.fotoAutor}
-                                        conquista={post.tipo?.includes("conquista")}
-                                        squadId={post.idSquad}
-                                        usuarioId={usuario?.uid}
-                                        quemDeuLike={post.quemDeuLike || []}
-                                    />
-                                ))
-                            ) : (
-                                <p className="sem-posts">Nenhuma postagem publicada ainda.</p>
-                            )
-                        )}
+                            <Modal 
+                                isOpen={modalAberto} 
+                                onClose={() => setModalAberto(false)} 
+                                aoPostar={solicitarPost} 
+                            />
 
+                            <div className="perfil-bio">
+                                <h1 className="perfil-nome-user">{dadosExtras?.nome || usuario.displayName || "Usuário"}</h1>
+                                <h3 className="perfil-bio-text">{dadosExtras?.bio || "Recruta do Klymb"}</h3>
+                            </div>
 
-                        {abaAtiva === "votacoes" && (
-                            postsDeVotacao.length > 0 ? (
-                                postsDeVotacao.map((post) => (
-                                    <PostVotacaoSquad 
-                                        key={post.id}
-                                        id={post.id}
-                                        idAutor={post.idAutor}
-                                        titulo={post.titulo}
-                                        texto={post.texto}
-                                        autor={post.nomeAutor}
-                                        fotoAutor={post.fotoAutor}
-                                        squadId={post.idSquad}
-                                        votosPositivos={post.votosPositivos || []}
-                                        votosNegativos={post.votosNegativos || []}
-                                        statusVotacao={post.statusVotacao || "aberta"}
-                                        usuario={usuario}
-                                        likes={post.likes}
-                                        comentarios={post.comentarios}
-                                        encerraEm={post.encerraEm}
-                                        rankingComputado={post.rankingComputado || false}
-                                    />
-                                ))
-                            ) : (
-                                <p className="sem-posts">Nenhuma votação iniciada por este perfil.</p>
-                            )
-                        )}
-
-                        {abaAtiva === "colecao" && (
-                            <div className="colecao-wrapper">
-                                {eMeuPerfil && dadosExtras && (
-                                    <button 
-                                        className="add-item-trigger-btn"
-                                        onClick={() => navigate("/paginas/AdicionarItem")}
-                                    >
-                                        + Adicionar
-                                    </button>
-                                )}
-
-                                {itensDaColecao.length > 0 ? (
-                                    <div className="perfil-grid-colecao">
-                                        {[...itensDaColecao]
-                                            .sort((a, b) => (b.fixado ? 1 : 0) - (a.fixado ? 1 : 0))
-                                            .map((item) => (
-                                                <CardItem 
-                                                    key={item.id}
-                                                    id={item.id}
-                                                    nome={item.nome}
-                                                    fotoBanner={item.fotoBanner}
-                                                    info={item.info}
-                                                    eMeuPerfil={eMeuPerfil}
-                                                    fixado={!!item.fixado}
-                                                    onDeletar={handleDeletarItem}
-                                                    onFixar={handleFixarItem}
-                                                    onCompartilhar={buscaSquad}
-                                                    abrirMap={setExibirMapComp}
-                                                />
-                                            ))}
-                                    </div>
+                            <div className="perfil-acoes-group">
+                                {!eMeuPerfil ? (
+                                    <>
+                                        {dadosExtras?.seguidores?.includes(usuario.uid) ? (
+                                            <button className="perfil-seguir" onClick={deixarSeguir}>
+                                                Deixar de Seguir
+                                            </button>
+                                        ) : (
+                                            <button className="perfil-seguir" onClick={seguir}>
+                                                Seguir
+                                            </button>
+                                        )}
+                                    </>
                                 ) : (
-                                    <p className="sem-posts">Nenhum item adicionado à coleção ainda.</p>
+                                    <>
+                                        <button className="perfil-btn-config" onClick={() => navigate("/paginas/PerfilConfig")}>⚙️</button>
+                                        <button className="perfil-sair" onClick={handleSair}>Sair</button>
+                                    </>
                                 )}
                             </div>
-                        )}
-
-                    </div>
+                        </>
+                    )}
                 </div>
+
+                {/* SÓ MOSTRA AS ABAS SE O PERFIL NÃO ESTIVER PRIVADO */}
+                {!perfilEstaPrivado && (
+                    <>
+                        <div className="perfil-abas-menu">
+                            <button 
+                                className={`perfil-aba-item ${abaAtiva === "postagens" ? "ativa" : ""}`}
+                                onClick={() => setAbaAtiva("postagens")}
+                            >
+                                Postagens
+                            </button>
+                            <button 
+                                className={`perfil-aba-item ${abaAtiva === "votacoes" ? "ativa" : ""}`}
+                                onClick={() => setAbaAtiva("votacoes")}
+                            >
+                                Votações
+                            </button>
+                            <button 
+                                className={`perfil-aba-item ${abaAtiva === "colecao" ? "ativa" : ""}`}
+                                onClick={() => setAbaAtiva("colecao")}
+                            >
+                                Coleção
+                            </button>
+                        </div>
+
+                        <div className="Topicos">
+                            <div className="mural-posts">
+                                {abaAtiva === "postagens" && (
+                                    postsNormaisEConquistas.length > 0 ? (
+                                        postsNormaisEConquistas.map((post) => (
+                                            <PostSquad
+                                                key={post.id}
+                                                id={post.id}
+                                                idAutor={post.idAutor || post.idUsuario}
+                                                titulo={post.titulo}
+                                                texto={post.texto}
+                                                likes={post.likes || 0}
+                                                comentarios={post.comentarios || 0}
+                                                autor={post.nomeAutor || "Membro"}
+                                                fotoAutor={post.fotoAutor}
+                                                conquista={post.tipo?.includes("conquista")}
+                                                squadId={post.idSquad}
+                                                usuarioId={usuario?.uid}
+                                                quemDeuLike={post.quemDeuLike || []}
+                                            />
+                                        ))
+                                    ) : (
+                                        <p className="sem-posts">Nenhuma postagem publicada ainda.</p>
+                                    )
+                                )}
+
+                                {abaAtiva === "votacoes" && (
+                                    postsDeVotacao.length > 0 ? (
+                                        postsDeVotacao.map((post) => (
+                                            <PostVotacaoSquad 
+                                                key={post.id}
+                                                id={post.id}
+                                                idAutor={post.idAutor}
+                                                titulo={post.titulo}
+                                                texto={post.texto}
+                                                autor={post.nomeAutor}
+                                                fotoAutor={post.fotoAutor}
+                                                squadId={post.idSquad}
+                                                votosPositivos={post.votosPositivos || []}
+                                                votosNegativos={post.votosNegativos || []}
+                                                statusVotacao={post.statusVotacao || "aberta"}
+                                                usuario={usuario}
+                                                likes={post.likes}
+                                                comentarios={post.comentarios}
+                                                encerraEm={post.encerraEm}
+                                                rankingComputado={post.rankingComputado || false}
+                                            />
+                                        ))
+                                    ) : (
+                                        <p className="sem-posts">Nenhuma votação iniciada por este perfil.</p>
+                                    )
+                                )}
+
+                                {abaAtiva === "colecao" && (
+                                    <div className="colecao-wrapper">
+                                        {eMeuPerfil && dadosExtras && (
+                                            <button 
+                                                className="add-item-trigger-btn"
+                                                onClick={() => navigate("/paginas/AdicionarItem")}
+                                            >
+                                                + Adicionar
+                                            </button>
+                                        )}
+
+                                        {itensDaColecao.length > 0 ? (
+                                            <div className="perfil-grid-colecao">
+                                                {[...itensDaColecao]
+                                                    .sort((a, b) => (b.fixado ? 1 : 0) - (a.fixado ? 1 : 0))
+                                                    .map((item) => (
+                                                        <CardItem 
+                                                            key={item.id}
+                                                            id={item.id}
+                                                            nome={item.nome}
+                                                            fotoBanner={item.fotoBanner}
+                                                            info={item.info}
+                                                            eMeuPerfil={eMeuPerfil}
+                                                            fixado={!!item.fixado}
+                                                            onDeletar={handleDeletarItem}
+                                                            onFixar={handleFixarItem}
+                                                            onCompartilhar={buscaSquad}
+                                                            abrirMap={setExibirMapComp}
+                                                        />
+                                                    ))}
+                                            </div>
+                                        ) : (
+                                            <p className="sem-posts">Nenhum item adicionado à coleção ainda.</p>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </>
+                )}
             </div>
         </div>
     );
