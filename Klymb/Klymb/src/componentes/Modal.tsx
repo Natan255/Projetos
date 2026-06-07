@@ -39,6 +39,7 @@ function Modal({ isOpen, onClose, aoPostar }) {
                     />
                 </div>
 
+
                 <div className="modal-opcoes">
                     <button onClick={handleEnviar}> Enviar </button>
                     <button onClick={onClose}> Fechar </button>

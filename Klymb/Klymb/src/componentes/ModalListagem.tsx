@@ -33,17 +33,9 @@ function ModalListagem({ isOpen, onClose, titulo, itens, onItemClick }: ModalLis
                         <p className="modal-vazio">Nenhum item encontrado.</p>
                     ) : (
                         itens.map((item) => (
-                            <div 
-                                key={item.id} 
-                                className="modal-item-linha" 
-                                onClick={() => {
-                                    onItemClick(item.id);
-                                    console.log("Clicou no item com ID:", item.id);
-                                    onClose();
-                                }}
-                            >
+                            <div key={item.id} className="modal-item-linha" onClick={() => {onItemClick(item.id);onClose();}}>
                                 <img 
-                                    src={item.foto || "https://via.placeholder.com/150"} 
+                                    src={item.foto || "https://via.placeholder.com/150"}
                                     alt={item.nome} 
                                     className="modal-item-foto"
                                 />

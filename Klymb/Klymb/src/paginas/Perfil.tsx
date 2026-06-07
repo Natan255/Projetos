@@ -4,7 +4,7 @@ import type { User } from "firebase/auth";
 import { useNavigate, useParams } from "react-router-dom";
 import { auth, db } from "../firebaseConfig";
 import { useEffect, useState } from "react";
-import { doc, onSnapshot, serverTimestamp, collection, query, where, orderBy, addDoc, documentId, updateDoc, arrayRemove, arrayUnion, deleteDoc, getDocs } from "firebase/firestore";
+import { doc, onSnapshot, serverTimestamp, getDoc, collection, query, where, orderBy, addDoc, documentId, updateDoc, arrayRemove, arrayUnion, deleteDoc, getDocs } from "firebase/firestore";
 import PostVotacaoSquad from "../componentes/VotoSquad";
 import CardItem from "../componentes/CardItem";
 import ModalListagem from "../componentes/ModalListagem";
@@ -36,6 +36,12 @@ function Perfil({ usuario, squads }: PerfilProps) {
     const [squadComp, setSquadComp] = useState<any>(null);
     const idParaBuscar = idUsuario || usuario?.uid;
     const eMeuPerfil = idParaBuscar === usuario?.uid;
+
+    // Tem qeu depois fazer com que quando compartilhado o item da colecao seja levado os dados dele + oq o cara quis acrescentar de texto, ou fazer um
+    // novo componente pra essas situacoes
+
+
+
 
     useEffect(() => {
         if (!idParaBuscar) return;
@@ -119,17 +125,42 @@ function Perfil({ usuario, squads }: PerfilProps) {
                 return;
             }
 
-            await addDoc(collection(db, "squads", squadComp, "solicitacoes_posts"), {
-                titulo: dadosDoPost.titulo,
-                texto: dadosDoPost.texto,
-                idAutor: usuario.uid,
-                nomeAutor: usuario.displayName || "Membro",
-                fotoAutor: usuario.photoURL || "",
-                criadoEm: serverTimestamp(),
-                status: "pendente" 
-            });
+            const squadRef = doc(db, "squads", squadComp);
+            const squadSnap = await getDoc(squadRef);
 
-            exibirAlerta("Sucesso", "Sua publicação foi enviada para análise dos moderadores!");
+            const squadDados = squadSnap.data();
+            let precisaDeAprovacao = false;
+            if (squadDados?.solicitarPost === "sim") {
+                precisaDeAprovacao = true;
+            }
+
+            if (precisaDeAprovacao) {
+                await addDoc(collection(db, "squads", squadComp, "solicitacoes_posts"), {
+                    titulo: dadosDoPost.titulo,
+                    texto: dadosDoPost.texto,
+                    idAutor: usuario.uid,
+                    nomeAutor: dadosExtras.nome || "Membro",
+                    fotoAutor: dadosExtras.ftoURL || "",
+                    criadoEm: serverTimestamp(),
+                    status: "pendente" 
+                });
+                exibirAlerta("Sucesso", "Sua publicação foi enviada para análise dos moderadores!");
+            }else{
+                await addDoc(collection(db, "posts"), {
+                    titulo: dadosDoPost.titulo,
+                    texto: dadosDoPost.texto,
+                    idSquad: squadComp,
+                    idAutor: usuario.uid,
+                    nomeAutor: dadosExtras.nome || "Membro", 
+                    fotoAutor: dadosExtras.fotoUrl || "",
+                    likes: [],
+                    comentarios: 0, 
+                    compartilhamento: 0,
+                    criadoEm: serverTimestamp(),
+                });
+                exibirAlerta("Sucesso", "Sua publicação foi postada!");
+            }
+
             setModalAberto(false);
         } catch (error) {
             console.error("Erro ao solicitar post:", error);
