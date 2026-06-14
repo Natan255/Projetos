@@ -1,0 +1,132 @@
+/* ==========================================================================
+   TELA DE RESULTADOS DA PESQUISA
+   ========================================================================== */
+
+.secao_pesquisa {
+    position: fixed;
+    top: 70px;                  /* Ajuste para a altura da sua Navbar */
+    left: 0;
+    width: 100vw;
+    height: calc(100vh - 70px);
+    background-color: #030303; 
+    z-index: 999;
+    overflow-y: auto;
+    padding: 24px 20px;
+    box-sizing: border-box;
+}
+
+/* Título discreto e refinado */
+.titulo_secao {
+    color: #818384;
+    font-size: 0.9rem;          
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    max-width: 750px;           /* Mesma largura da lista para alinhar perfeitamente */
+    margin: 0 auto 16px auto;
+    font-weight: 700;
+}
+
+/* Container da lista - Estreitado para parecer o feed central do  */
+.squad_lista_busca {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;                   
+    width: 100%;
+    max-width: 750px;           /* Largura ideal focada no centro */
+    margin: 0 auto;
+    padding-bottom: 80px;
+}
+
+/* ==========================================================================
+   CARDS
+   ========================================================================== */
+
+.squad-busca-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #1a1a1b;  
+    border: 1px solid #343536;  /* Borda sutil */
+    border-radius: 4px;         /* Cantos menos arredondados, mais quadrado/clean */
+    padding: 12px 20px;         /* Mais compacto verticalmente, boa leitura horizontal */
+    width: 100%;
+    box-sizing: border-box;
+    cursor: pointer;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+/* Efeito de Hover clássico
+    background-color: #272729;  
+    border-color: #444548;
+}
+
+/* Container esquerdo (Avatar + Info) */
+.squad-busca-esquerda {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-grow: 1;
+}
+
+/* Avatar menor e direto */
+.squad-busca-avatar {
+    width: 40px;                /* Tamanho reduzido para o padrão de listagem */
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    background-color: #2d2d2d;
+    flex-shrink: 0;
+    border: none;               /* Remove a borda pesada antiga */
+}
+
+/* Alinhamento dos textos */
+.squad-busca-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.squad-busca-info h4 {
+    margin: 0;
+    font-size: 1rem;            /* Tamanho de fonte padrão para posts/comunidades */
+    color: #d7dadc;             /* Branco confortável para leitura */
+    font-weight: 500;           /* Peso médio */
+}
+
+/* Caso no futuro você queira voltar a exibir a descrição do Squad */
+.squad-busca-info p {
+    margin: 0;
+    font-size: 0.8rem;
+    color: #818384; 
+    line-height: 1.3;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+}
+
+/* Mensagem de erro sem resultados */
+.sem-resultados {
+    color: #818384;
+    font-size: 1rem;
+    text-align: center;
+    margin-top: 40px;
+}
+
+/* ==========================================================================
+   RESPONSIVIDADE (MOBILE)
+   ========================================================================== */
+
+@media (max-width: 768px) {
+    .secao_pesquisa {
+        top: 60px;              /* Ajuste se sua navbar mobile for menor */
+        height: calc(100vh - 60px);
+        padding: 16px 12px;
+    }
+
+    .squad-busca-card {
+        padding: 12px 16px;     /* Reduz levemente as laterais no celular */
+        border-radius: 0;       /* No mobile, cards colados na lateral ficam ótimos com radius 0 */
+    }
+}

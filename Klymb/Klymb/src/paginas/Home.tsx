@@ -12,7 +12,7 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 
-function Home({ squads, pesquisaQuery, usuario }) {
+function Home({ squads, usuario }) { // Removida a prop pesquisaQuery que não é mais usada aqui
     const [postsGlobais, setPostsGlobais] = useState([]);
     const [filtroAtivo, setFiltroAtivo] = useState("novos"); 
 
@@ -42,31 +42,30 @@ function Home({ squads, pesquisaQuery, usuario }) {
     
     return (
         <div className="home-container">
-            {pesquisaQuery === "" ? (
-                <div className="layout">
-                    <main className="feed">
-                        <div className="feed-filters">
-                            <button 
-                                className={filtroAtivo === "novos" ? "active" : ""} 
-                                onClick={() => setFiltroAtivo("novos")}
-                            >
-                                ✨ Novos
-                            </button>
-                            <button 
-                                className={filtroAtivo === "populares" ? "active" : ""} 
-                                onClick={() => setFiltroAtivo("populares")}
-                            >
-                                🔥 Populares
-                            </button>
-                        </div>
+            <div className="layout">
+                <main className="feed">
+                    <div className="feed-filters">
+                        <button 
+                            className={filtroAtivo === "novos" ? "active" : ""} 
+                            onClick={() => setFiltroAtivo("novos")}
+                        >
+                            ✨ Novos
+                        </button>
+                        <button 
+                            className={filtroAtivo === "populares" ? "active" : ""} 
+                            onClick={() => setFiltroAtivo("populares")}
+                        >
+                            🔥 Populares
+                        </button>
+                    </div>
 
-                        <div className="posts-lista">
-                            {postsGlobais.length > 0 ? (
-                                postsGlobais.map((post) => {
-
-                                    const euCurti = post.quemDeuLike?.includes(usuario?.uid);
-                                    if (post.tipo === "conquistaVoto") {
-                                     return (
+                    <div className="posts-lista">
+                        {postsGlobais.length > 0 ? (
+                            postsGlobais.map((post) => {
+                                const euCurti = post.quemDeuLike?.includes(usuario?.uid);
+                                
+                                if (post.tipo === "conquistaVoto") {
+                                    return (
                                         <PostVotacaoSquad 
                                             key={post.id}
                                             id={post.id}
@@ -80,7 +79,6 @@ function Home({ squads, pesquisaQuery, usuario }) {
                                             votosNegativos={post.votosNegativos || []}
                                             statusVotacao={post.statusVotacao || "aberta"}
                                             usuario={usuario == null ? null : usuario}
-                                            // Adicione estas três linhas abaixo para alimentar as interações sociais do novo componente:
                                             likes={post.likes}
                                             comentarios={post.comentarios}
                                             jaDeuLike={euCurti}
@@ -90,96 +88,75 @@ function Home({ squads, pesquisaQuery, usuario }) {
                                         />
                                     );
                                 }
-                                    const conq = post.tipo?.includes("conquista");
-                                    return (
-                                        <PostSquad
-                                            key={post.id}
-                                            id={post.id}
-                                            idAutor={post.idAutor || post.idUsuario}
-                                            titulo={post.titulo}
-                                            texto={post.texto}
-                                            likes={post.likes || 0}
-                                            comentarios={post.comentários || post.comentarios || 0}
-                                            autor={post.nomeAutor}
-                                            fotoAutor={post.fotoAutor}
-                                            conquista={conq}
-                                            squadId={post.idSquad}
-                                            usuarioId={usuario?.uid}
-                                            quemDeuLike={post.quemDeuLike || []}
-                                        />
-                                    );
-                                })
-                            ) : (
-                                <p className="feed-vazio">Nenhum post ativo na comunidade ainda.</p>
-                            )}
-                        </div>
-                    </main>
-
-                    <aside className="sidebar">
-                        <div className="sidebar-banner">
-                            <Swiper
-                                modules={[Navigation, Pagination, Autoplay]}
-                                pagination={{ clickable: true }}
-                                autoplay={{ delay: 4000 }}
-                                loop={true}
-                                style={{ width: '100%', height: '150px', borderRadius: '4px' }}
-                            >
-                                {banners.map((img, index) => (
-                                    <SwiperSlide key={index}>
-                                        <img src={img} alt={`Destaque ${index}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                                    </SwiperSlide>
-                                ))}
-                            </Swiper>
-                        </div>
-
-                        <div className="sidebar-widget create-squad-widget">
-                            <h3>Home do Rank Over</h3>
-                            <p>Sua comunidade ativa de foco e produtividade. Veja o progresso global.</p>
-                            <Link to="/paginas/CadastrarSquad">
-                                <button className="btn-sidebar-action">Criar Meu Squad</button>
-                            </Link>
-                        </div>
-
-                        <div className="sidebar-widget">
-                            <h3 className="widget-title">Squads Populares</h3>
-                            <div className="sidebar-squads-list">
-                                {squadsPopulares.map((squad, index) => (
-                                    <div key={squad.id} className="sidebar-squad-item">
-                                        <span className="squad-index">{index + 1}</span>
-                                        <Link to={`/paginas/PerfilSquad/${squad.id}`} className="squad-item-link">
-                                            {squad.nome}
-                                        </Link>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                        <footer className="sidebar-footer">
-                            <p>&copy; 2026 KLYMB Produtividade.</p>
-                        </footer>
-                    </aside>
-
-                </div>
-            ) : (
-
-                <div className="secao_pesquisa">
-                    <h3 className="titulo_secao">Resultados para: "{pesquisaQuery}"</h3>
-                    <div className="squad_grid">
-                        {squads
-                            .filter((squad) => {
-                                const nomeSquad = squad.nome ? squad.nome.toLowerCase() : "";
-                                const busca = pesquisaQuery.toLowerCase();
-                                return nomeSquad.includes(busca);
+                                
+                                const conq = post.tipo?.includes("conquista");
+                                return (
+                                    <PostSquad
+                                        key={post.id}
+                                        id={post.id}
+                                        idAutor={post.idAutor || post.idUsuario}
+                                        titulo={post.titulo}
+                                        texto={post.texto}
+                                        likes={post.likes || 0}
+                                        comentarios={post.comentários || post.comentarios || 0}
+                                        autor={post.nomeAutor}
+                                        fotoAutor={post.fotoAutor}
+                                        conquista={conq}
+                                        squadId={post.idSquad}
+                                        usuarioId={usuario?.uid}
+                                        quemDeuLike={post.quemDeuLike || []}
+                                    />
+                                );
                             })
-                            .map((squad) => (
-                                <CardSquad card={squad} key={squad.id} />
-                            ))
-                        }
-                        {squads.filter(s => s.nome?.toLowerCase().includes(pesquisaQuery.toLowerCase())).length === 0 && (
-                            <p className="sem-resultados">Nenhum squad encontrado com esse nome.</p>
+                        ) : (
+                            <p className="feed-vazio">Nenhum post ativo na comunidade ainda.</p>
                         )}
                     </div>
-                </div>
-            )}
+                </main>
+
+                <aside className="sidebar">
+                    <div className="sidebar-banner">
+                        <Swiper
+                            modules={[Navigation, Pagination, Autoplay]}
+                            pagination={{ clickable: true }}
+                            autoplay={{ delay: 4000 }}
+                            loop={true}
+                            style={{ width: '100%', height: '150px', borderRadius: '4px' }}
+                        >
+                            {banners.map((img, index) => (
+                                <SwiperSlide key={index}>
+                                    <img src={img} alt={`Destaque ${index}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                </SwiperSlide>
+                            ))}
+                        </Swiper>
+                    </div>
+
+                    <div className="sidebar-widget create-squad-widget">
+                        <h3>Home do Rank Over</h3>
+                        <p>Sua comunidade ativa de foco e produtividade. Veja o progresso global.</p>
+                        <Link to="/paginas/CadastrarSquad">
+                            <button className="btn-sidebar-action">Criar Meu Squad</button>
+                        </Link>
+                    </div>
+
+                    <div className="sidebar-widget">
+                        <h3 className="widget-title">Squads Populares</h3>
+                        <div className="sidebar-squads-list">
+                            {squadsPopulares.map((squad, index) => (
+                                <div key={squad.id} className="sidebar-squad-item">
+                                    <span className="squad-index">{index + 1}</span>
+                                    <Link to={`/paginas/PerfilSquad/${squad.id}`} className="squad-item-link">
+                                        {squad.nome}
+                                    </Link>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                    <footer className="sidebar-footer">
+                        <p>&copy; 2026 KLYMB Produtividade.</p>
+                    </footer>
+                </aside>
+            </div>
         </div>
     );
 }
