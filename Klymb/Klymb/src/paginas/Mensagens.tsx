@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { db } from "../firebaseConfig";
 import "./Mensagens.css";
+import { useNavigate } from "react-router-dom";
 import { 
     doc, 
     getDoc, 
@@ -21,12 +22,11 @@ function Mensagens({ usuario }) {
     const [amigosDados, setAmigosDados] = useState([]);
     const [amigoAtivo, setAmigoAtivo] = useState(null);
     const [historicoMensagens, setHistoricoMensagens] = useState([]);
-
+    const navigate = useNavigate();
 
     const obterIdChat = (idA, idB) => {
         return idA < idB ? `${idA}_${idB}` : `${idB}_${idA}`;
     };
-
 
     const handleEnviar = async () => {
         if (!mensagem.trim() || !amigoAtivo || !usuario?.uid) return;
@@ -45,6 +45,13 @@ function Mensagens({ usuario }) {
         } catch (error) {
             console.error("Erro ao enviar mensagem:", error);
         }
+    };
+
+    // Função que formata o Timestamp do Firebase para HH:MM
+    const formatarHorario = (criadoEm) => {
+        if (!criadoEm) return "..."; 
+        const data = criadoEm.toDate ? criadoEm.toDate() : new Date(criadoEm);
+        return data.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
     };
 
     useEffect(() => {
@@ -121,7 +128,7 @@ function Mensagens({ usuario }) {
                 ))}
 
                 {amigosDados.length === 0 && (
-                    <p style={{ color: "#444", fontSize: "0.85rem", textAlign: "center", marginTop: "20px" }}>
+                    <p className="sem-amigos-aviso">
                         Você não segue ninguém ainda.
                     </p>
                 )}
@@ -130,9 +137,9 @@ function Mensagens({ usuario }) {
             <div className="conteudo-mensagens">
                 {amigoAtivo ? (
                     <>
-                        <div className="topo-conversa">
+                        <div className="topo-conversa" onClick={() => navigate(`/paginas/Perfil/${amigoAtivo.id}`)}>
                             <div className="foto-amigo">
-                                <img src={amigoAtivo.foto || "https://via.placeholder.com/150"} alt={amigoAtivo.nome} />
+                                <img src={amigoAtivo.fotoUrl || "https://via.placeholder.com/150"} alt={amigoAtivo.nome} />
                             </div>
                             <span className="nome-amigo-topo">{amigoAtivo.nome}</span>
                         </div>
@@ -146,17 +153,11 @@ function Mensagens({ usuario }) {
                                     <div 
                                         key={msg.id} 
                                         className={`balao-mensagem ${souEu ? "enviada" : "recebida"}`}
-                                        style={{
-                                            alignSelf: souEu ? "flex-end" : "flex-start",
-                                            backgroundColor: souEu ? "#ff4d00" : "#141414",
-                                            color: "#fff",
-                                            padding: "10px 14px",
-                                            borderRadius: "8px",
-                                            maxWidth: "60%",
-                                            wordBreak: "break-word"
-                                        }}
                                     >
-                                        <p style={{ margin: 0, fontSize: "0.95rem" }}>{msg.texto}</p>
+                                        <p className="texto-mensagem">{msg.texto}</p>
+                                        <span className="horario-mensagem">
+                                            {formatarHorario(msg.criadoEm)}
+                                        </span>
                                     </div>
                                 );
                             })}

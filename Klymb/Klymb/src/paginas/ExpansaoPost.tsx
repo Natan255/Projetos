@@ -45,7 +45,17 @@ function ExpansaoPost({ usuario }) {
     };
 
     const adicionarComentario = async (idDoPai = null) => {
-        const textoFinal = idDoPai ? textoResposta : texto;
+        let textoFinal = "";
+        let nomeRespondendoA = "";
+        if (idDoPai) {
+            textoFinal = textoResposta
+            const nomeRef = comentarios.find(c => c.id === idDoPai)?.nomeAutor || placeholderNome || "Membro";
+            nomeRespondendoA = `@${nomeRef} `;
+        }else{
+            textoFinal = texto;
+        }
+        console.log("Texto do comentário:", nomeRespondendoA);
+            
         if (!textoFinal.trim()) return;
 
         try {
@@ -57,7 +67,8 @@ function ExpansaoPost({ usuario }) {
                 texto: textoFinal,
                 criadoEm: serverTimestamp(),
                 likes: 0,
-                respondendoA: idDoPai 
+                respondendoA: idDoPai,
+                nomeRespondendoA: nomeRespondendoA
             });
 
             if (idDoPai) {
@@ -282,7 +293,7 @@ function ExpansaoPost({ usuario }) {
                                         <div key={resp.id} className="item-comentario item-resposta" style={{ marginLeft: "45px" }}>
                                             <img src={resp.fotoAutor || "https://via.placeholder.com/40"} alt="autor" style={{ cursor: 'pointer' }} onClick={() => navigate(`/paginas/Perfil/${resp.autorId}`)} />
                                             <div className="texto-comentario">
-                                                <strong>{resp.nomeAutor} <span>↳ respondeu</span></strong>
+                                                <strong>{resp.nomeAutor} <span>↳ respondeu</span> {resp.nomeRespondendoA}</strong>
                                                 <p>{resp.texto}</p>
                                             </div>
 

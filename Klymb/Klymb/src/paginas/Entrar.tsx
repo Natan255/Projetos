@@ -66,7 +66,6 @@ function Entrar() {
                 </form>
 
                 <div className="Entre_google">
-                    <p>Ou entre com</p>
                     <button className="btn-google-enter" onClick={handleGoogleLogin}>
                         <img
                             src="https://fonts.gstatic.com/s/i/productlogos/googleg/v6/24px.svg"

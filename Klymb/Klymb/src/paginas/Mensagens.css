@@ -22,6 +22,13 @@
     overflow-y: auto;
 }
 
+.sem-amigos-aviso {
+    color: #444;
+    font-size: 0.85rem;
+    text-align: center;
+    margin-top: 20px;
+}
+
 /* Área da Direita (Onde a conversa acontece) */
 .conteudo-mensagens {
     flex: 1;
@@ -42,6 +49,7 @@
     display: flex;
     align-items: center;
     gap: 12px;
+    cursor: pointer;
 }
 
 .foto-amigo {
@@ -62,7 +70,6 @@
     color: #ffffff;
     font-weight: 700;
     font-size: 1rem;
-    text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
@@ -75,7 +82,7 @@
     overflow-y: auto;
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 12px;
 }
 
 /* Texto de sistema (ex: "Início da conversa com...") */
@@ -87,6 +94,47 @@
     padding: 6px 16px;
     border-radius: 20px;
     border: 1px solid #141414;
+    margin-bottom: 8px;
+}
+
+/* Balões de Mensagem Genéricos */
+.balao-mensagem {
+    padding: 10px 14px;
+    border-radius: 8px;
+    max-width: 60%;
+    word-break: break-word;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+/* Estilo quando a mensagem foi enviada por VOCÊ */
+.balao-mensagem.enviada {
+    align-self: flex-end;
+    background-color: #ff4d00;
+    color: #ffffff;
+}
+
+/* Estilo quando a mensagem foi RECEBIDA do amigo */
+.balao-mensagem.recebida {
+    align-self: flex-start;
+    background-color: #141414;
+    color: #ffffff;
+}
+
+.texto-mensagem {
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.4;
+}
+
+/* Estilização do horário dentro do balão */
+.horario-mensagem {
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.6);
+    align-self: flex-end;
+    margin-top: 2px;
+    user-select: none;
 }
 
 /* Estado vazio (Quando nenhuma conversa está selecionada) */

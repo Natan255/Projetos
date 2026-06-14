@@ -8,7 +8,9 @@ import {
     addDoc, collection, query, where, orderBy, getDocs, 
     documentId, arrayUnion, arrayRemove, serverTimestamp, onSnapshot, increment, writeBatch
 } from "firebase/firestore";
-import { db } from "../firebaseConfig";
+// Adicione essa importação no topo do seu PerfilSquad.js junto com as outras
+import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { db, storage } from "../firebaseConfig";
 import PostVotacaoSquad from "../componentes/VotoSquad";
 import ModalListagem from "../componentes/ModalListagem";
 import { useAlerta } from "../componentes/AlertaProvider";
@@ -58,7 +60,7 @@ function PerfilSquad({ squads, usuario }) {
         }
     };
 
-    // Fluxo 1: Envia post para aprovação (Pendente)
+    // Fluxo 1: Envia post para aprovação (Pendente) ou direto para o Feed com suporte a imagem
     const solicitarPost = async (dadosDoPost) => {
         if (!usuario || !id) return;
 
@@ -76,14 +78,31 @@ function PerfilSquad({ squads, usuario }) {
                 exibirAlerta("Erro", "Você precisa ser membro do squad para enviar uma prova.");
                 return;
             }
+
+            let urlImagem = "";
+
+            // Se houver uma imagem anexada, fazemos o upload dela primeiro
+            if (dadosDoPost.imagem) {
+                // Cria um nome único usando timestamp e o nome do arquivo original
+                const nomeArquivo = `${Date.now()}_${dadosDoPost.imagem.name}`;
+                const storageRef = ref(storage, `posts/${id}/${nomeArquivo}`);
+                
+                // Faz o upload do arquivo
+                const uploadTask = await uploadBytesResumable(storageRef, dadosDoPost.imagem);
+                // Obtém a URL pública do arquivo recém upado
+                urlImagem = await getDownloadURL(uploadTask.ref);
+            }
+
             const precisaDeAprovacao = squadAtual.solicitarPost !== "nao"; 
             const usuarioRef = doc(db, "usuarios", usuario.uid);
             const usuarioSnap = await getDoc(usuarioRef);
             const usuarioDados = usuarioSnap.data();
+
             if (precisaDeAprovacao) {
                 await addDoc(collection(db, "squads", id, "solicitacoes_posts"), {
                     titulo: dadosDoPost.titulo,
                     texto: dadosDoPost.texto,
+                    imagemPost: urlImagem, // Salva a URL da imagem (vazia se não tiver)
                     idAutor: usuario.uid,
                     nomeAutor: usuario.displayName || "Membro",
                     fotoAutor: usuario.photoURL || "",
@@ -91,15 +110,17 @@ function PerfilSquad({ squads, usuario }) {
                     status: "pendente" 
                 });
                 exibirAlerta("Sucesso", "Sua publicação foi enviada para análise dos moderadores!");
-            }else{
+            } else {
                 await addDoc(collection(db, "posts"), {
                     titulo: dadosDoPost.titulo,
                     texto: dadosDoPost.texto,
+                    imagemPost: urlImagem, // Salva a URL da imagem (vazia se não tiver)
                     idSquad: id,
                     idAutor: usuario.uid,
-                    nomeAutor: usuarioDados.nome || "Membro", 
-                    fotoAutor: usuarioDados.fotoUrl || "",
-                    likes: [],
+                    nomeAutor: usuarioDados?.nome || "Membro", 
+                    fotoAutor: usuarioDados?.fotoUrl || usuarioDados?.foto || "",
+                    likes: 0, // Dica: seu gerenciarLike usa increment, recomendo iniciar o campo com número 0 e não array vazio []
+                    quemDeuLike: [],
                     comentarios: 0, 
                     compartilhamento: 0,
                     criadoEm: serverTimestamp(),
@@ -107,10 +128,10 @@ function PerfilSquad({ squads, usuario }) {
                 exibirAlerta("Sucesso", "Sua publicação foi postada!");
             }
 
-            
             setModalAberto(false);
         } catch (error) {
             console.error("Erro ao solicitar post:", error);
+            exibirAlerta("Erro", "Ocorreu um erro ao enviar sua publicação.");
         }
     };
 
@@ -361,7 +382,7 @@ function PerfilSquad({ squads, usuario }) {
                                 const ordemVisual = index === 0 ? 2 : index === 1 ? 1 : 3;
 
                                 return (
-                                    <div key={membro.id || index} className={`card-podio ${classes[index]}`} style={{ order: ordemVisual }}>
+                                    <div key={membro.id || index} className={`card-podio ${classes[index]}`} style={{ order: ordemVisual }} onClick={() => navigate(`/paginas/Perfil/${membro.uid}`)}>
                                         <div className="medalha">{medalhas[index]}</div>
                                         <span className="nome">{membro.nome}</span>
                                         <span className="producao">
@@ -374,7 +395,7 @@ function PerfilSquad({ squads, usuario }) {
 
                         <div className="Rank_lista">
                             {ranking.slice(3).map((membro, index) => (
-                                <div key={membro.id || index} className="membro-rank">
+                                <div key={membro.id || index} className="membro-rank" onClick={() => navigate(`/paginas/Perfil/${membro.id}`)}>
                                     <span className="posicao">{index + 4}º</span>
                                     <span className="nome">{membro.nome}</span>
                                     <span className="producao">

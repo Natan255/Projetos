@@ -139,7 +139,7 @@ function PostSquad({
 
                     <div className="ranking-squad">
                         {ranking.slice(0, 3).map((membro, index) => (
-                            <span key={membro.id} className="mini-badge-rank">
+                            <span key={membro.id} className="mini-badge-rank" onClick={() => navigate(`/paginas/Perfil/${membro.id}`)} style={{ cursor: 'pointer' }}>
                                 #{index + 1} {membro.nome}
                             </span>
                         ))}

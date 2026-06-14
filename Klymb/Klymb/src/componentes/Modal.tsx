@@ -1,20 +1,44 @@
-import { useState } from "react";
-import "./Modal.css"
+import { useState, useRef } from "react";
+import "./Modal.css";
 
 function Modal({ isOpen, onClose, aoPostar }) {
     const [titulo, setTitulo] = useState("");
     const [texto, setTexto] = useState("");
+    const [imagem, setImagem] = useState(null); // Estado para guardar o arquivo da imagem
+    const fileInputRef = useRef(null); // Referência para o input escondido
 
     if (!isOpen) return null;
+
+    const handleFileChange = (e) => {
+        if (e.target.files && e.target.files[0]) {
+            setImagem(e.target.files[0]);
+        }
+    };
+
+    const handleAnexarClick = () => {
+        fileInputRef.current?.click(); // Simula o clique no input de arquivo real
+    };
 
     const handleEnviar = () => {
         if (titulo.trim() === "" || texto.trim() === "") {
             alert("Preencha todos os campos!");
             return;
         }
-        aoPostar({titulo, texto});
+        
+        // Passa o título, texto e o arquivo da imagem para a função pai
+        aoPostar({ titulo, texto, imagem });
+        
+        // Limpa os estados
         setTitulo("");
         setTexto("");
+        setImagem(null);
+    };
+
+    const handleFechar = () => {
+        setTitulo("");
+        setTexto("");
+        setImagem(null);
+        onClose();
     };
 
     return (
@@ -39,11 +63,28 @@ function Modal({ isOpen, onClose, aoPostar }) {
                     />
                 </div>
 
+                {/* Feedback visual de imagem anexada */}
+                {imagem && (
+                    <div style={{ padding: "0 20px", fontSize: "14px", color: "#4caf50" }}>
+                        📸 Imagem selecionada: <strong>{imagem.name}</strong>
+                    </div>
+                )}
+
+                {/* Input de arquivo real escondido */}
+                <input 
+                    type="file" 
+                    accept="image/*" 
+                    ref={fileInputRef} 
+                    style={{ display: "none" }} 
+                    onChange={handleFileChange}
+                />
 
                 <div className="modal-opcoes">
                     <button onClick={handleEnviar}> Enviar </button>
-                    <button onClick={onClose}> Fechar </button>
-                    <button> Anexar </button>
+                    <button onClick={handleFechar}> Fechar </button>
+                    <button onClick={handleAnexarClick}> 
+                        {imagem ? "Alterar Foto" : "Anexar"} 
+                    </button>
                 </div>
             </div>
         </div>

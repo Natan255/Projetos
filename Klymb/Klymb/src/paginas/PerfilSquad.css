@@ -226,6 +226,7 @@
     text-align: center;
     border: 1px solid #222;
     transition: transform 0.3s ease;
+    cursor:pointer;
 }
 
 .card-podio.primeiro {
@@ -269,6 +270,7 @@
 
 /* Lista do Restante (4º lugar em diante) */
 .Rank_lista {
+    cursor: pointer;
     display: flex;
     flex-direction: column;
     gap: 8px;
