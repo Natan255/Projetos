@@ -100,6 +100,7 @@ function Home({ squads, usuario }) { // Removida a prop pesquisaQuery que não �
                                         likes={post.likes || 0}
                                         comentarios={post.comentários || post.comentarios || 0}
                                         autor={post.nomeAutor}
+                                        imagemPost={post.imagemPost}
                                         fotoAutor={post.fotoAutor}
                                         conquista={conq}
                                         squadId={post.idSquad}

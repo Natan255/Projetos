@@ -123,7 +123,7 @@
     margin: 0;
 }
 
-/* --- 4. CONTEÚDO PRINCIPAL (TÍTULO E TEXTO) --- */
+/* --- 4. CONTEÚDO PRINCIPAL (TÍTULO, TEXTO E IMAGENS DO FEED) --- */
 .Conteudo_Post {
     cursor: pointer;
     text-align: left;
@@ -147,6 +147,54 @@
     line-height: 1.5;
     font-size: 0.95rem; 
     margin: 0;
+}
+
+.Imagem_Post_Container {
+    width: 100%;
+    max-height: 450px; /* Evita que imagens verticais gigantes quebrem o feed */
+    margin-top: 12px;
+    border-radius: 8px;
+    position: relative; /* Necessário para ancorar o efeito atrás */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #121212; /* Fundo base escuro */
+    overflow: hidden; /* Garante que o borrão não vaze para fora do bloco do post */
+}
+
+.Imagem_Post_Container::before {
+    content: "";
+    position: absolute;
+    top: -10%;
+    left: -10%;
+    width: 120%;
+    height: 120%;
+    /* Injeta a imagem dinamicamente via variável CSS */
+    background-image: var(--feed-blur-img); 
+    background-size: cover;
+    background-position: center;
+    filter: blur(30px) brightness(0.4); /* Desfoque sutil e escurecido para dar contraste */
+    z-index: 1; /* Fica atrás da imagem principal, mas acima do fundo do container */
+    pointer-events: none;
+}
+
+/* Estilo unificado para a mídia anexada ao feed */
+.imagem-anexo-post.post-imagem-midia {
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    max-height: 400px;
+    object-fit: contain; /* Mantém a proporção original da imagem sem distorcer */
+    border-radius: 8px;
+    cursor: pointer;
+    z-index: 2; /* Garante que a imagem principal fique por cima do borrão */
+    position: relative;
+    transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.imagem-anexo-post.post-imagem-midia:hover {
+    filter: brightness(0.95);
+    transform: scale(1.01); /* Leve feedback visual ao passar o mouse */
 }
 
 /* --- 5. INTERAÇÕES E BOTÕES COMPATÍVEIS --- */
@@ -319,4 +367,73 @@
     font-size: 0.55rem;
     font-weight: bold;
     padding: 3px;
+}
+/* --- 9. MODAL DE ZOOM EXPANDIDO --- */
+/* Fundo escuro que cobre toda a tela */
+.zoom-overlay {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    background-color: rgba(0, 0, 0, 0.9); /* Fundo preto sólido bem escuro (90% opacidade) */
+    z-index: 99999 !important; 
+    cursor: zoom-out;
+    animation: fadeIn 0.2s ease-out;
+    overflow: hidden;
+}
+
+/* O BLOCO ::BEFORE DO BLUR FOI REMOVIDO DAQUI PARA DEIXAR O FUNDO LIMPO */
+
+/* A imagem expandida dentro do Modal - Agora blindada contra desalinhamentos */
+.zoom-imagem-expandida {
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) scale(1) !important; /* Centralização matemática perfeita */
+    
+    max-width: 90% !important;
+    max-height: 90% !important;
+    object-fit: contain !important;
+    border-radius: 4px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    cursor: default;
+    
+    animation: scaleUpCenter 0.25s cubic-bezier(0.16, 1, 0.3, 1) ease-out;
+}
+
+/* Botão de fechar (X) */
+.zoom-fechar {
+    position: absolute;
+    top: 25px;
+    right: 30px;
+    color: #fff;
+    font-size: 42px;
+    font-weight: bold;
+    cursor: pointer;
+    user-select: none;
+    transition: color 0.2s, transform 0.2s;
+    z-index: 100000;
+}
+
+.zoom-fechar:hover {
+    color: #ff4d00;
+    transform: scale(1.1);
+}
+
+/* --- 10. ANIMAÇÕES --- */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes scaleUpCenter {
+    from { 
+        transform: translate(-50%, -50%) scale(0.9); 
+        opacity: 0; 
+    }
+    to { 
+        transform: translate(-50%, -50%) scale(1); 
+        opacity: 1; 
+    }
 }

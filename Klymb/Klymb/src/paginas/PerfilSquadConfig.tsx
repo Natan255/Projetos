@@ -95,6 +95,15 @@ function PerfilSquadConfig() {
                     <button className="config-opcao">Gerenciar usuario</button>
                 </Link>
 
+                <Link to={`/squadconfig/insignias/${id}`}>
+                    <button className="config-opcao"> Insignias de usuario</button>
+                </Link>
+
+                <Link to={`/squadconfig/rank/${id}`}>
+                    <button className="config-opcao"> Adicionar mais rank </button>
+                </Link>
+
+
                 {solicitarEntrada === "sim" && (
                     <Link to={`/squadconfig/solicitacao/${id}/entrada`}>
                         <button className="config-opcao">Solicitação de entrada no squad </button>

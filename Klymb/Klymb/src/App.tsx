@@ -25,7 +25,9 @@ import GerenciaPostSquadConfig from './paginas/GerenciaPostSquadConfig'
 import AlterarPerfilSquad from './paginas/AlterarPerfilSquad'
 import AdicionarItem from './paginas/AdicionarItem'
 import ItemExpansao from './paginas/ItemExpansao'
+import SquadInsignias from './paginas/SquadInsignias'
 import Mensagens from './paginas/Mensagens'
+import AdicionarRankSquad from './paginas/AdicionarRankSquad'
 
 
 function App() {
@@ -88,6 +90,10 @@ useEffect(() => {
           <Route path='/squadconfig/alterar/:id/:campo' element={<AlterarPerfilSquad/>}/>
 
           <Route path='/squadconfig/administrar/:id/:campo' element={<MembroSquadConfig/>}/>
+
+          <Route path='/squadconfig/insignias/:id' element={<SquadInsignias/>}/>
+
+          <Route path='/squadconfig/rank/:id' element={<AdicionarRankSquad/>}/>
 
           <Route path='/squadconfig/solicitacao/:id/prova' element={<GerenciarProvaSquadConfig/>}/>
 

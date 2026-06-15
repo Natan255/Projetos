@@ -371,7 +371,6 @@ function PerfilSquad({ squads, usuario }) {
 
             {/* --- SEÇÃO DO RANKING --- */}
             <div className="Rank_secao">
-                <h2>🏆 Ranking do {squadSelecionado.nome}</h2>
 
                 {ranking.length > 0 ? (
                     <div className="Rank_container">
@@ -469,6 +468,7 @@ function PerfilSquad({ squads, usuario }) {
                                                                     autor={post.nomeAutor} 
                                                                     fotoAutor={post.fotoAutor}
                                                                     likes={post.likes || 0}
+                                                                    imagemPost={post.imagemPost}
                                                                     conquista={post.tipo?.includes("conquista")}
                                                                     jaDeuLike={euCurti}
                                                                     aoDarLike={() => gerenciarLike(post.id, euCurti)}

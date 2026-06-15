@@ -222,7 +222,7 @@ function Perfil({ usuario, squads }: PerfilProps) {
                 return {
                     id: doc.id,
                     nome: dados.nome,
-                    foto: dados.foto || "https://via.placeholder.com/150"
+                    foto: dados.fotoUrl || "https://via.placeholder.com/150"
                 };
             });
             setTitulos("Seguindo");
@@ -477,6 +477,7 @@ function Perfil({ usuario, squads }: PerfilProps) {
                                                 likes={post.likes || 0}
                                                 comentarios={post.comentarios || 0}
                                                 autor={post.nomeAutor || "Membro"}
+                                                imagemPost={post.imagemPost}
                                                 fotoAutor={post.fotoAutor}
                                                 conquista={post.tipo?.includes("conquista")}
                                                 squadId={post.idSquad}

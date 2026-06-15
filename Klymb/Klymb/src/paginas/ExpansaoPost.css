@@ -338,6 +338,28 @@
     text-align: center;
 }
 
+.container-imagem-post {
+    width: 100%;             
+    max-width: 100%;         
+    display: flex;
+    justify-content: center; 
+    margin: 15px 0;          
+    border-radius: 8px;      
+    overflow: hidden;        
+    box-sizing: border-box; /* ADICIONE ISSO: Garante que margens e paddings não empurrem a foto para fora */
+}
+
+/* A tag <img> real da foto */
+.expansao-imagem-post {
+    width: 100%;             /* Faz a imagem ser responsiva */
+    max-width: 100%;         /* Impede ela de ser maior que o contêiner pai */
+    max-height: 450px;       /* EVITA QUE FOTOS VERTICAIS COMPRIDAS OCUPEM A TELA INTEIRA */
+    object-fit: contain;     /* Mantém a proporção exata da foto sem achatar ou distorcer */
+    display: block;
+}
+
+
+
 @keyframes subiraula {
     from { opacity: 0; transform: translateY(-4px); }
     to { opacity: 1; transform: translateY(0); }

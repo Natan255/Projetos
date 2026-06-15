@@ -4,13 +4,14 @@ import "./PostSquad.css";
 import { useNavigate } from "react-router-dom";
 import { doc, collection, getDoc, getDocs, deleteDoc, updateDoc, arrayRemove, arrayUnion, increment } from "firebase/firestore";
 import { db } from "../firebaseConfig";
+import { createPortal } from "react-dom"; // Importado corretamente para isolar o modal
 
-// Definindo uma interface simples para as Props (Boa prática em TypeScript)
 interface PostSquadProps {
     id: string;
     idAutor: string;
     titulo: string;
     texto: string;
+    imagemPost?: string;
     likes: number;
     comentarios?: number;
     autor: string;
@@ -18,7 +19,7 @@ interface PostSquadProps {
     conquista: boolean;
     squadId?: string | null;
     usuarioId?: string | null;
-    quemDeuLike?: string[]; // Adicionado para rastrear quem curtiu
+    quemDeuLike?: string[];
 }
 
 function PostSquad({
@@ -26,6 +27,7 @@ function PostSquad({
     idAutor, 
     titulo, 
     texto, 
+    imagemPost = "", 
     likes, 
     comentarios, 
     autor, 
@@ -33,13 +35,14 @@ function PostSquad({
     conquista, 
     squadId = null, 
     usuarioId = null,
-    quemDeuLike = [] // Valor padrão vazio caso não venha do banco
+    quemDeuLike = [] 
 }: PostSquadProps) {
     
     const navigate = useNavigate();
     const [dadosSquad, setDadosSquad] = useState<any>(null);
     const [ranking, setRanking] = useState<any[]>([]);
     const [menuAberto, setMenuAberto] = useState(false);
+    const [zoomAberto, setZoomAberto] = useState(false);
 
     useEffect(() => {
         if (!squadId) return;
@@ -53,7 +56,6 @@ function PostSquad({
                     setDadosSquad(squadSnap.data());
                 }
 
-                // Pegando a subcoleção de Ranking desse Squad
                 const rankRef = collection(db, "squads", squadId, "ranking");
                 const querySnapshot = await getDocs(rankRef);
                 const listaRank = querySnapshot.docs.map(doc => ({
@@ -102,19 +104,16 @@ function PostSquad({
     const gerenciarLike = async () => {
         if (!usuarioId) return alert("Logue para curtir!");   
         
-        // quemDeuLike vem direto das props que o Feed enviou
         const jaDeuLike = quemDeuLike?.includes(usuarioId); 
-        const postRef = doc(db, "posts", id); // Aqui usamos o ID do post para saber ONDE atualizar
+        const postRef = doc(db, "posts", id); 
         
         try {
             if (jaDeuLike) {
-                // Se já curtiu, remove o ID do usuário do array e tira 1 like
                 await updateDoc(postRef, {
                     quemDeuLike: arrayRemove(usuarioId),
                     likes: increment(-1)
                 });
             } else {
-                // Se não curtiu, adiciona o ID do usuário no array e soma 1 like
                 await updateDoc(postRef, {
                     quemDeuLike: arrayUnion(usuarioId),
                     likes: increment(1)
@@ -152,13 +151,31 @@ function PostSquad({
                 <p>{autor || "Membro"}</p>
             </div>
 
+            {/* Conteúdo do Post com clique para expandir */}
             <div className="Conteudo_Post" onClick={() => navigate(`/post/${id}`)}>
                 <h1>{conquista ? `🏆 ${titulo}` : titulo}</h1>
                 <p>{texto}</p>
+                
+                {imagemPost && (
+                    <div 
+                        className="Imagem_Post_Container" 
+                        onClick={(e) => e.stopPropagation()}
+                        /* Injeta a imagem na variável do CSS para o blur do feed */
+                        style={{ "--feed-blur-img": `url(${imagemPost})` } as React.CSSProperties}
+                    >
+                        <img 
+                            src={imagemPost} 
+                            className="imagem-anexo-post post-imagem-midia" 
+                            onClick={() => setZoomAberto(true)}
+                            alt="Imagem da publicação" 
+                            title="Clique para ampliar"
+                            loading="lazy"
+                        />
+                    </div>
+                )}
             </div>
 
             <div className="Botoes_interacoes">
-                {/* Correção da classe dinâmica e do ícone de curtida */}
                 <button 
                     className={`btn_interacao btn_like ${usuarioJaCurtiu ? 'ativo' : ''}`} 
                     onClick={gerenciarLike}
@@ -172,7 +189,6 @@ function PostSquad({
                     <span className="count">{comentarios || 0}</span>
                 </button>
 
-
                 <div className="container-opcoes-wrapper">
                     <button className="btn_interacao btn_opcoes" onClick={() => setMenuAberto(!menuAberto)}>
                         <div className="tres-pontos-container">
@@ -184,7 +200,6 @@ function PostSquad({
 
                     {menuAberto && (
                         <div className="menu-dropdown-opcoes">
-                            {/* Verifica se o usuário logado é o dono do squad */}
                             {dadosSquad?.idCriador === usuarioId && (
                                 <>
                                     <button onClick={() => { deletarPost(); setMenuAberto(false); }}>
@@ -197,7 +212,6 @@ function PostSquad({
                                 </>
                             )}
 
-                            {/* Verifica se o usuário logado é o autor do post */}
                             {idAutor === usuarioId && (
                                 <button onClick={() => { /* sua lógica de edição */ setMenuAberto(false); }}>
                                     Editar Post
@@ -211,6 +225,24 @@ function PostSquad({
                     )}
                 </div>
             </div>
+
+            {/* MODAL AJUSTADO: Utiliza Portal para renderizar na raiz da página e passa o background por propriedade customizada */}
+            {zoomAberto && createPortal(
+                <div 
+                    className="zoom-overlay" 
+                    onClick={() => setZoomAberto(false)}
+                    style={{ "--bg-blur-img": `url(${imagemPost})` } as React.CSSProperties}
+                >
+                    <span className="zoom-fechar">&times;</span>
+                    <img 
+                        src={imagemPost} 
+                        alt="Imagem ampliada" 
+                        className="zoom-imagem-expandida" 
+                        onClick={(e) => e.stopPropagation()} 
+                    />
+                </div>,
+                document.body
+            )}
         </div>
     );
 }

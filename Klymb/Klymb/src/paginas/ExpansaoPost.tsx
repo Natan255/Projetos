@@ -224,6 +224,8 @@ function ExpansaoPost({ usuario }) {
 
             <div className="expansao-conteudo">
                 <h1 className="expansao-titulo">📊 {dadosPost.titulo}</h1>
+
+                
                 
                 {dadosPost?.tipo === "conquistaVoto" && (
                     <div className="container-enquete-post">
@@ -251,6 +253,16 @@ function ExpansaoPost({ usuario }) {
                 )}
                 
                 <p className="expansao-texto-corpo" style={{ whiteSpace: "pre-line" }}>{dadosPost.texto}</p>
+
+                {dadosPost.imagemPost && (
+                    <div className="container-imagem-post">
+                        <img 
+                            src={dadosPost.imagemPost} 
+                            alt="Mídia do post" 
+                            className="expansao-imagem-post" 
+                        />
+                    </div>
+                )}
             </div>
 
             <div className="expansao-comentarios">
