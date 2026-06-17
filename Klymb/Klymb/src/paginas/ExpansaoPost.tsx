@@ -223,7 +223,7 @@ function ExpansaoPost({ usuario }) {
             </div>
 
             <div className="expansao-conteudo">
-                <h1 className="expansao-titulo">📊 {dadosPost.titulo}</h1>
+                <h1 className="expansao-titulo"> {dadosPost.titulo}</h1>
 
                 
                 

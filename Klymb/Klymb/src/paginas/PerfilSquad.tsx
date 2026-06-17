@@ -8,7 +8,6 @@ import {
     addDoc, collection, query, where, orderBy, getDocs, 
     documentId, arrayUnion, arrayRemove, serverTimestamp, onSnapshot, increment, writeBatch
 } from "firebase/firestore";
-// Adicione essa importação no topo do seu PerfilSquad.js junto com as outras
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { db, storage } from "../firebaseConfig";
 import PostVotacaoSquad from "../componentes/VotoSquad";
@@ -27,6 +26,8 @@ function PerfilSquad({ squads, usuario }) {
     const [modalAberto, setModalAberto] = useState(false);
     const [posts, setPosts] = useState<any[]>([]);
     const [ranking, setRanking] = useState<any[]>([]);
+    // Estado para guardar as fotos em tempo real do Top 3
+    const [fotosPodio, setFotosPodio] = useState<Record<string, string>>({});
     const [solicitacaoPend, setSolicitacaoPend] = useState(false);
     const [squadSelecionado, setSquadSelecionado] = useState<any>(null);
 
@@ -40,7 +41,6 @@ function PerfilSquad({ squads, usuario }) {
         if (!squadSelecionado?.membros || squadSelecionado.membros.length === 0) return;
         try {
             const usuariosRef = collection(db, "usuarios");
-            // Nota: O limite do 'in' no Firestore é de 30 IDs.
             const membrosLimitados = squadSelecionado.membros.slice(0, 30);
             const q = query(usuariosRef, where(documentId(), "in", membrosLimitados));
             const querySnapshot = await getDocs(q);
@@ -49,7 +49,7 @@ function PerfilSquad({ squads, usuario }) {
                 return {
                     id: doc.id,
                     nome: dados.nome,
-                    foto: dados.foto || "https://via.placeholder.com/150"
+                    foto: dados.fotoUrl || "https://via.placeholder.com/150"
                 };
             });
             setTitulos("Membros do Squad");
@@ -81,15 +81,10 @@ function PerfilSquad({ squads, usuario }) {
 
             let urlImagem = "";
 
-            // Se houver uma imagem anexada, fazemos o upload dela primeiro
             if (dadosDoPost.imagem) {
-                // Cria um nome único usando timestamp e o nome do arquivo original
                 const nomeArquivo = `${Date.now()}_${dadosDoPost.imagem.name}`;
                 const storageRef = ref(storage, `posts/${id}/${nomeArquivo}`);
-                
-                // Faz o upload do arquivo
                 const uploadTask = await uploadBytesResumable(storageRef, dadosDoPost.imagem);
-                // Obtém a URL pública do arquivo recém upado
                 urlImagem = await getDownloadURL(uploadTask.ref);
             }
 
@@ -102,7 +97,7 @@ function PerfilSquad({ squads, usuario }) {
                 await addDoc(collection(db, "squads", id, "solicitacoes_posts"), {
                     titulo: dadosDoPost.titulo,
                     texto: dadosDoPost.texto,
-                    imagemPost: urlImagem, // Salva a URL da imagem (vazia se não tiver)
+                    imagemPost: urlImagem,
                     idAutor: usuario.uid,
                     nomeAutor: usuario.displayName || "Membro",
                     fotoAutor: usuario.photoURL || "",
@@ -114,12 +109,12 @@ function PerfilSquad({ squads, usuario }) {
                 await addDoc(collection(db, "posts"), {
                     titulo: dadosDoPost.titulo,
                     texto: dadosDoPost.texto,
-                    imagemPost: urlImagem, // Salva a URL da imagem (vazia se não tiver)
+                    imagemPost: urlImagem,
                     idSquad: id,
                     idAutor: usuario.uid,
                     nomeAutor: usuarioDados?.nome || "Membro", 
                     fotoAutor: usuarioDados?.fotoUrl || usuarioDados?.foto || "",
-                    likes: 0, // Dica: seu gerenciarLike usa increment, recomendo iniciar o campo com número 0 e não array vazio []
+                    likes: 0, 
                     quemDeuLike: [],
                     comentarios: 0, 
                     compartilhamento: 0,
@@ -134,7 +129,6 @@ function PerfilSquad({ squads, usuario }) {
             exibirAlerta("Erro", "Ocorreu um erro ao enviar sua publicação.");
         }
     };
-
 
     const gerenciarLike = async (postId: string, euCurti: boolean) => {
         if (!usuario) return exibirAlerta("Erro", "Você precisa estar logado para curtir.");
@@ -168,7 +162,7 @@ function PerfilSquad({ squads, usuario }) {
                     foto: usuario.photoURL || "",
                     dataSolicitacao: serverTimestamp()
                 });
-            }else{
+            } else {
                 const usuarioId = usuario.uid || usuario.id;
                 if (!usuarioId) {
                     alert("Erro: ID do usuário não encontrado.");
@@ -199,7 +193,6 @@ function PerfilSquad({ squads, usuario }) {
                     ultimaAtividade: serverTimestamp()
                 });
                 await batch.commit();
-                            
             }
             setSolicitacaoPend(true);
         } catch (error) {
@@ -280,6 +273,39 @@ function PerfilSquad({ squads, usuario }) {
 
         return () => unsubscribeRanking();
     }, [id]);
+
+    // Hook para monitorar o Top 3 e buscar as fotos de perfil atualizadas
+    useEffect(() => {
+        if (ranking.length === 0) return;
+
+        const buscarFotosTop3 = async () => {
+            const top3 = ranking.slice(0, 3);
+            const novasFotos: Record<string, string> = {};
+
+            try {
+                await Promise.all(
+                    top3.map(async (membro) => {
+                        if (!membro.uid) return;
+                        
+                        const userRef = doc(db, "usuarios", membro.uid);
+                        const userSnap = await getDoc(userRef);
+                        
+                        if (userSnap.exists()) {
+                            const dadosUser = userSnap.data();
+                            novasFotos[membro.uid] = dadosUser.foto || dadosUser.fotoUrl || "https://via.placeholder.com/150";
+                        } else {
+                            novasFotos[membro.uid] = "https://via.placeholder.com/150";
+                        }
+                    })
+                );
+                setFotosPodio(novasFotos);
+            } catch (error) {
+                console.error("Erro ao buscar fotos em tempo real do top 3:", error);
+            }
+        };
+
+        buscarFotosTop3();
+    }, [ranking]);
 
     useEffect(() => {
         const verificarStatus = async () => {
@@ -371,18 +397,33 @@ function PerfilSquad({ squads, usuario }) {
 
             {/* --- SEÇÃO DO RANKING --- */}
             <div className="Rank_secao">
-
                 {ranking.length > 0 ? (
                     <div className="Rank_container">
                         <div className="Podio_container">
                             {ranking.slice(0, 3).map((membro, index) => {
                                 const classes = ["primeiro", "segundo", "terceiro"];
-                                const medalhas = ["🥇", "🥈", "🥉"];
                                 const ordemVisual = index === 0 ? 2 : index === 1 ? 1 : 3;
 
+                                // Prioriza a foto em tempo real buscada do banco; se não tiver, usa a estática ou placeholder
+                                const fotoAtualizada = fotosPodio[membro.uid] || membro.fotoUrl || "https://via.placeholder.com/150";
+
                                 return (
-                                    <div key={membro.id || index} className={`card-podio ${classes[index]}`} style={{ order: ordemVisual }} onClick={() => navigate(`/paginas/Perfil/${membro.uid}`)}>
-                                        <div className="medalha">{medalhas[index]}</div>
+                                    <div 
+                                        key={membro.id || index} 
+                                        className={`card-podio ${classes[index]}`} 
+                                        style={{ order: ordemVisual }} 
+                                        onClick={() => navigate(`/paginas/Perfil/${membro.uid}`)}
+                                    >
+                                        <div className="medalha">
+                                            <img 
+                                                src={fotoAtualizada} 
+                                                alt={`Foto do ${index + 1}º colocado`} 
+                                                className="foto-campeao-podio"
+                                                onError={(e) => {
+                                                    e.currentTarget.src = "https://via.placeholder.com/150";
+                                                }}
+                                            />
+                                        </div>
                                         <span className="nome">{membro.nome}</span>
                                         <span className="producao">
                                             {membro.pontos} {squadSelecionado.metrica || "Pts"}
@@ -394,7 +435,7 @@ function PerfilSquad({ squads, usuario }) {
 
                         <div className="Rank_lista">
                             {ranking.slice(3).map((membro, index) => (
-                                <div key={membro.id || index} className="membro-rank" onClick={() => navigate(`/paginas/Perfil/${membro.id}`)}>
+                                <div key={membro.id || index} className="membro-rank" onClick={() => navigate(`/paginas/Perfil/${membro.uid}`)}>
                                     <span className="posicao">{index + 4}º</span>
                                     <span className="nome">{membro.nome}</span>
                                     <span className="producao">

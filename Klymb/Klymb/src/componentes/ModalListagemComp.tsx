@@ -1,4 +1,4 @@
-import { createPortal } from "react-dom"; // 1. Importe o createPortal
+import { createPortal } from "react-dom";
 import "./ModalListagemComp.css";
 
 interface ItemLista {
@@ -19,7 +19,6 @@ interface ModalListagemProps {
 function ModalListagem({ isOpen, onClose, titulo, itens, onItemClick }: ModalListagemProps) {
     if (!isOpen) return null;
 
-    // 2. Envolva o retorno dentro do Portal mirando no document.body
     return createPortal(
         <div className="modal-overlay" onClick={onClose}>
             <div className="modal-content" onClick={(e) => e.stopPropagation()}>
@@ -61,7 +60,7 @@ function ModalListagem({ isOpen, onClose, titulo, itens, onItemClick }: ModalLis
                 </div>
             </div>
         </div>,
-        document.body // O modal agora será injetado no topo da aplicação, isolado do pódio!
+        document.body
     );
 }
 

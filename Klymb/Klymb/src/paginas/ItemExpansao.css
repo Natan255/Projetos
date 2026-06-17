@@ -49,33 +49,43 @@
 }
 
 /* ==========================================================================
-   LAYOUT EM GRID (EQUILIBRADO NO CENTRO)
+   LAYOUT EM GRID (Adaptado para abraçar a largura da foto)
    ========================================================================== */
 .item-expansao-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr; /* Dividido igualmente para melhor simetria */
+    /* A coluna da esquerda ocupa exatamente o tamanho da foto, 
+       a da direita consome o resto do espaço disponível */
+    grid-template-columns: max-content 1fr; 
     gap: 50px; /* Mais espaço entre a imagem e as informações */
-    align-items: start;
+    align-items: center; /* Centraliza verticalmente o texto com a foto */
 }
 
-/* --- CONTAINER DA IMAGEM (VITRINE) --- */
+/* --- CONTAINER DA IMAGEM (VITRINE 100% PREENCHIDA) --- */
 .item-expansao-media {
-    width: 100%;
     display: flex;
     justify-content: center;
-}
-
-.item-expansao-media img {
-    width: 100%;
-    height: auto;
-    max-height: 480px;
-    object-fit: cover;
+    align-items: center;
     border-radius: 10px;
     border: 2px solid #ff4d00;
     box-shadow: 0 0 25px rgba(255, 77, 0, 0.15);
+    overflow: hidden;
+    background: #0d0d0d; /* Fundo igual ao do card */
 }
 
-/* --- BLOCO DE TEXTOS E INFORMAÇÕES --- */
+.item-expansao-media img {
+    /* Limites máximos para manter a consistência do layout desktop */
+    max-width: 450px;  
+    max-height: 550px; 
+    
+    width: auto;  /* Permite que a largura se adapte à proporção real */
+    height: auto; /* Permite que a altura se ajuste ao formato real da foto */
+    display: block;
+    object-fit: contain; /* Garante que o arquivo seja exibido por inteiro */
+}
+
+/* ==========================================================================
+   BLOCO DE TEXTOS E INFORMAÇÕES
+   ========================================================================== */
 .item-expansao-info {
     display: flex;
     flex-direction: column;
@@ -183,6 +193,7 @@
     }
 
     .item-expansao-media img {
-        max-height: 350px;
+        max-width: 100%; /* No mobile ela se expande na largura total permitida */
+        max-height: 350px; /* Mantém um teto controlado para telas menores */
     }
 }

@@ -19,6 +19,26 @@ interface PerfilProps {
 
 type AbaPerfil = "postagens" | "votacoes" | "colecao";
 
+function DadosAutorMural({ uid, children }: { uid: string, children: (dados: { nome: string, foto: string }) => React.ReactElement }) {
+    const [dadosAutor, setDadosAutor] = useState({ nome: "Membro", foto: "https://via.placeholder.com/150" });
+
+    useEffect(() => {
+        if (!uid) return;
+        const unsubscribe = onSnapshot(doc(db, "usuarios", uid), (docSnap) => {
+            if (docSnap.exists()) {
+                const d = docSnap.data();
+                setDadosAutor({
+                    nome: d.nome || "Membro",
+                    foto: d.fotoUrl || d.fotoURL || "https://via.placeholder.com/150"
+                });
+            }
+        });
+        return () => unsubscribe();
+    }, [uid]);
+
+    return children(dadosAutor);
+}
+
 function Perfil({ usuario, squads }: PerfilProps) {
     const navigate = useNavigate();
     const { idUsuario } = useParams();
@@ -33,15 +53,13 @@ function Perfil({ usuario, squads }: PerfilProps) {
     const [exibirMapComp, setExibirMapComp] = useState(false);
     const [titulos, setTitulos] = useState("");
     const [modalAberto, setModalAberto] = useState(false);
+    
+    // Estados para controlar o item que está sendo compartilhado
     const [squadComp, setSquadComp] = useState<any>(null);
+    const [imagemItemCompartilhado, setImagemItemCompartilhado] = useState<string>("");
+
     const idParaBuscar = idUsuario || usuario?.uid;
     const eMeuPerfil = idParaBuscar === usuario?.uid;
-
-    // Tem qeu depois fazer com que quando compartilhado o item da colecao seja levado os dados dele + oq o cara quis acrescentar de texto, ou fazer um
-    // novo componente pra essas situacoes
-
-
-
 
     useEffect(() => {
         if (!idParaBuscar) return;
@@ -140,19 +158,21 @@ function Perfil({ usuario, squads }: PerfilProps) {
                     texto: dadosDoPost.texto,
                     idAutor: usuario.uid,
                     nomeAutor: dadosExtras.nome || "Membro",
-                    fotoAutor: dadosExtras.ftoURL || "",
+                    fotoAutor: dadosExtras.fotoUrl || dadosExtras.fotoURL || "",
+                    imagemPost: imagemItemCompartilhado || "", // Foto enviada para aprovação também
                     criadoEm: serverTimestamp(),
                     status: "pendente" 
                 });
                 exibirAlerta("Sucesso", "Sua publicação foi enviada para análise dos moderadores!");
-            }else{
+            } else {
                 await addDoc(collection(db, "posts"), {
                     titulo: dadosDoPost.titulo,
                     texto: dadosDoPost.texto,
+                    imagemPost: imagemItemCompartilhado || "", // AQUI: Foto do item da coleção salva com sucesso!
                     idSquad: squadComp,
                     idAutor: usuario.uid,
                     nomeAutor: dadosExtras.nome || "Membro", 
-                    fotoAutor: dadosExtras.fotoUrl || "",
+                    fotoAutor: dadosExtras.fotoUrl || dadosExtras.fotoURL || "",
                     likes: [],
                     comentarios: 0, 
                     compartilhamento: 0,
@@ -162,6 +182,7 @@ function Perfil({ usuario, squads }: PerfilProps) {
             }
 
             setModalAberto(false);
+            setImagemItemCompartilhado(""); // Limpa o estado após postar
         } catch (error) {
             console.error("Erro ao solicitar post:", error);
         }
@@ -293,7 +314,7 @@ function Perfil({ usuario, squads }: PerfilProps) {
                 usuario_seguindo: arrayRemove(idParaBuscar)
             });
             await updateDoc(perfilRef, {
-                seguidores: arrayRemove(usuario.uid)
+                followers: arrayRemove(usuario.uid)
             });
         } catch (error) {
             console.error("Erro ao seguir usuário:", error);
@@ -318,8 +339,9 @@ function Perfil({ usuario, squads }: PerfilProps) {
 
     const postsNormaisEConquistas = meusPosts ? meusPosts.filter(p => p.tipo !== "conquistaVoto") : [];
     const postsDeVotacao = meusPosts ? meusPosts.filter(p => p.tipo === "conquistaVoto") : [];
-    const imagemPerfil = dadosExtras?.fotoUrl || usuario?.photoURL || "https://via.placeholder.com/150";
-
+    
+    // Foto de perfil dinâmica da header do Perfil escutando dadosExtras
+    const imagemPerfil = dadosExtras?.fotoUrl
 
     const euSigoEles = dadosExtras?.seguidores?.includes(usuario.uid);
     const elesMeSeguem = dadosExtras?.usuario_seguindo?.includes(usuario.uid);
@@ -400,7 +422,10 @@ function Perfil({ usuario, squads }: PerfilProps) {
                                     onClose={() => setExibirMapComp(false)}
                                     titulo={titulos}
                                     itens={info}
-                                    onItemClick={(idClicado) => { setModalAberto(true); setSquadComp(idClicado);}}
+                                    onItemClick={(idClicado) => { 
+                                        setModalAberto(true); 
+                                        setSquadComp(idClicado);
+                                    }}
                                 />
                             )}
 
@@ -439,7 +464,6 @@ function Perfil({ usuario, squads }: PerfilProps) {
                     )}
                 </div>
 
-                {/* SÓ MOSTRA AS ABAS SE O PERFIL NÃO ESTIVER PRIVADO */}
                 {!perfilEstaPrivado && (
                     <>
                         <div className="perfil-abas-menu">
@@ -468,22 +492,25 @@ function Perfil({ usuario, squads }: PerfilProps) {
                                 {abaAtiva === "postagens" && (
                                     postsNormaisEConquistas.length > 0 ? (
                                         postsNormaisEConquistas.map((post) => (
-                                            <PostSquad
-                                                key={post.id}
-                                                id={post.id}
-                                                idAutor={post.idAutor || post.idUsuario}
-                                                titulo={post.titulo}
-                                                texto={post.texto}
-                                                likes={post.likes || 0}
-                                                comentarios={post.comentarios || 0}
-                                                autor={post.nomeAutor || "Membro"}
-                                                imagemPost={post.imagemPost}
-                                                fotoAutor={post.fotoAutor}
-                                                conquista={post.tipo?.includes("conquista")}
-                                                squadId={post.idSquad}
-                                                usuarioId={usuario?.uid}
-                                                quemDeuLike={post.quemDeuLike || []}
-                                            />
+                                            <DadosAutorMural key={post.id} uid={post.idAutor || post.idUsuario}>
+                                                {(autor) => (
+                                                    <PostSquad
+                                                        id={post.id}
+                                                        idAutor={post.idAutor || post.idUsuario}
+                                                        titulo={post.titulo}
+                                                        texto={post.texto}
+                                                        likes={post.likes || 0}
+                                                        comentarios={post.comentarios || 0}
+                                                        autor={autor.nome}
+                                                        imagemPost={post.imagemPost}
+                                                        fotoAutor={autor.foto}
+                                                        conquista={post.tipo?.includes("conquista")}
+                                                        squadId={post.idSquad}
+                                                        usuarioId={usuario?.uid}
+                                                        quemDeuLike={post.quemDeuLike || []}
+                                                    />
+                                                )}
+                                            </DadosAutorMural>
                                         ))
                                     ) : (
                                         <p className="sem-posts">Nenhuma postagem publicada ainda.</p>
@@ -493,24 +520,27 @@ function Perfil({ usuario, squads }: PerfilProps) {
                                 {abaAtiva === "votacoes" && (
                                     postsDeVotacao.length > 0 ? (
                                         postsDeVotacao.map((post) => (
-                                            <PostVotacaoSquad 
-                                                key={post.id}
-                                                id={post.id}
-                                                idAutor={post.idAutor}
-                                                titulo={post.titulo}
-                                                texto={post.texto}
-                                                autor={post.nomeAutor}
-                                                fotoAutor={post.fotoAutor}
-                                                squadId={post.idSquad}
-                                                votosPositivos={post.votosPositivos || []}
-                                                votosNegativos={post.votosNegativos || []}
-                                                statusVotacao={post.statusVotacao || "aberta"}
-                                                usuario={usuario}
-                                                likes={post.likes}
-                                                comentarios={post.comentarios}
-                                                encerraEm={post.encerraEm}
-                                                rankingComputado={post.rankingComputado || false}
-                                            />
+                                            <DadosAutorMural key={post.id} uid={post.idAutor}>
+                                                {(autor) => (
+                                                    <PostVotacaoSquad 
+                                                        id={post.id}
+                                                        idAutor={post.idAutor}
+                                                        titulo={post.titulo}
+                                                        texto={post.texto}
+                                                        autor={autor.nome}
+                                                        fotoAutor={autor.foto}
+                                                        squadId={post.idSquad}
+                                                        votosPositivos={post.votosPositivos || []}
+                                                        votosNegativos={post.votosNegativos || []}
+                                                        statusVotacao={post.statusVotacao || "aberta"}
+                                                        usuario={usuario}
+                                                        likes={post.likes}
+                                                        comentarios={post.comentarios}
+                                                        encerraEm={post.encerraEm}
+                                                        rankingComputado={post.rankingComputado || false}
+                                                    />
+                                                )}
+                                            </DadosAutorMural>
                                         ))
                                     ) : (
                                         <p className="sem-posts">Nenhuma votação iniciada por este perfil.</p>
@@ -543,7 +573,11 @@ function Perfil({ usuario, squads }: PerfilProps) {
                                                             fixado={!!item.fixado}
                                                             onDeletar={handleDeletarItem}
                                                             onFixar={handleFixarItem}
-                                                            onCompartilhar={buscaSquad}
+                                                            onCompartilhar={() => {
+                                                                // AQUI: Salva a foto do item específico que foi clicado antes de abrir a listagem
+                                                                setImagemItemCompartilhado(item.fotoBanner || "");
+                                                                buscaSquad();
+                                                            }}
                                                             abrirMap={setExibirMapComp}
                                                         />
                                                     ))}

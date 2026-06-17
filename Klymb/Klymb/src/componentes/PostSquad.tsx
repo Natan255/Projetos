@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import { storage } from "../firebaseConfig"; 
+import { ref, deleteObject } from "firebase/storage";
 import "./CardItem.css";
 import "./PostSquad.css";
 import { useNavigate } from "react-router-dom";
@@ -14,8 +16,8 @@ interface PostSquadProps {
     imagemPost?: string;
     likes: number;
     comentarios?: number;
-    autor: string;
-    fotoAutor: string;
+    autor: string;     // Fica como fallback caso o usuário não seja encontrado
+    fotoAutor: string; // Fica como fallback
     conquista: boolean;
     squadId?: string | null;
     usuarioId?: string | null;
@@ -43,34 +45,54 @@ function PostSquad({
     const [ranking, setRanking] = useState<any[]>([]);
     const [menuAberto, setMenuAberto] = useState(false);
     const [zoomAberto, setZoomAberto] = useState(false);
+    
+    // --- NOVO ESTADO PARA O AUTOR ATUALIZADO ---
+    const [dadosAutor, setDadosAutor] = useState<{ nome?: string; fotoUrl?: string } | null>(null);
 
     useEffect(() => {
-        if (!squadId) return;
+        // 1. Buscar dados do Squad e Ranking se houver squadId
+        if (squadId) {
+            const buscarDadosDoSquad = async () => {
+                try {
+                    const squadRef = doc(db, "squads", squadId);
+                    const squadSnap = await getDoc(squadRef);
+                    
+                    if (squadSnap.exists()) {
+                        setDadosSquad(squadSnap.data());
+                    }
 
-        const buscarDadosDoSquad = async () => {
-            try {
-                const squadRef = doc(db, "squads", squadId);
-                const squadSnap = await getDoc(squadRef);
-                
-                if (squadSnap.exists()) {
-                    setDadosSquad(squadSnap.data());
+                    const rankRef = collection(db, "squads", squadId, "ranking");
+                    const querySnapshot = await getDocs(rankRef);
+                    const listaRank = querySnapshot.docs.map(doc => ({
+                        id: doc.id,
+                        ...doc.data()
+                    }));
+                    setRanking(listaRank);
+
+                } catch (error) {
+                    console.error("Erro ao buscar dados do Squad/Ranking:", error);
                 }
+            };
+            buscarDadosDoSquad();
+        }
 
-                const rankRef = collection(db, "squads", squadId, "ranking");
-                const querySnapshot = await getDocs(rankRef);
-                const listaRank = querySnapshot.docs.map(doc => ({
-                    id: doc.id,
-                    ...doc.data()
-                }));
-                setRanking(listaRank);
+        // --- NOVA BUSCA: DADOS DO AUTOR EM TEMPO REAL ---
+        if (idAutor) {
+            const buscarDadosDoAutor = async () => {
+                try {
+                    const userRef = doc(db, "usuarios", idAutor); // Ajuste "usuarios" para o nome exato da sua coleção
+                    const userSnap = await getDoc(userRef);
+                    if (userSnap.exists()) {
+                        setDadosAutor(userSnap.data());
+                    }
+                } catch (error) {
+                    console.error("Erro ao buscar dados atualizados do autor:", error);
+                }
+            };
+            buscarDadosDoAutor();
+        }
 
-            } catch (error) {
-                console.error("Erro ao buscar dados do Squad/Ranking:", error);
-            }
-        };
-
-        buscarDadosDoSquad();
-    }, [squadId]);
+    }, [squadId, idAutor]); // Adicionado idAutor como dependência
 
     if (!titulo && !texto) return null;
 
@@ -79,12 +101,29 @@ function PostSquad({
     };
 
     const deletarPost = async () => {
+
+        const confirmar = window.confirm("Tem certeza que deseja deletar este post?");
+        if (!confirmar) return;
+
         try {
+
+            if (imagemPost) {
+                try {
+                    const imagemRef = ref(storage, imagemPost);
+                    await deleteObject(imagemRef);
+                    console.log("Imagem deletada do Storage com sucesso.");
+                } catch (storageError) {
+                    console.error("Erro ao deletar imagem do Storage (ou ela não existe mais):", storageError);
+                }
+            }
+
             const postref = doc(db, "posts", id);
             await deleteDoc(postref);
-            alert("Post deletado com sucesso!");
+            window.location.reload(); 
+
         } catch (error) {
             console.error("Erro ao deletar post:", error);
+            alert("Erro ao tentar deletar o post.");
         }
     };
 
@@ -126,6 +165,11 @@ function PostSquad({
 
     const usuarioJaCurtiu = usuarioId ? quemDeuLike.includes(usuarioId) : false;
 
+    // --- VARIÁVEIS COM FALLBACK ---
+    // Se encontrou os dados na coleção "usuarios", usa eles. Se não, usa a prop antiga do post.
+    const fotoExibicao = dadosAutor?.fotoUrl || fotoAutor || "https://via.placeholder.com/40";
+    const nomeExibicao = dadosAutor?.nome || autor || "Membro";
+
     return (
         <div className={`Estrutura_post ${conquista ? 'post-conquista' : ''}`}>
 
@@ -146,9 +190,10 @@ function PostSquad({
                 </div>
             )}
             
+            {/* Renderização com os dados dinâmicos do autor */}
             <div className="Foto_perfil" onClick={verPerfil} style={{cursor: "pointer"}}>
-                <img src={fotoAutor || "https://via.placeholder.com/40"} alt="foto perfil" />
-                <p>{autor || "Membro"}</p>
+                <img src={fotoExibicao} alt="foto perfil" />
+                <p>{nomeExibicao}</p>
             </div>
 
             {/* Conteúdo do Post com clique para expandir */}
@@ -160,7 +205,6 @@ function PostSquad({
                     <div 
                         className="Imagem_Post_Container" 
                         onClick={(e) => e.stopPropagation()}
-                        /* Injeta a imagem na variável do CSS para o blur do feed */
                         style={{ "--feed-blur-img": `url(${imagemPost})` } as React.CSSProperties}
                     >
                         <img 
@@ -226,7 +270,6 @@ function PostSquad({
                 </div>
             </div>
 
-            {/* MODAL AJUSTADO: Utiliza Portal para renderizar na raiz da página e passa o background por propriedade customizada */}
             {zoomAberto && createPortal(
                 <div 
                     className="zoom-overlay" 

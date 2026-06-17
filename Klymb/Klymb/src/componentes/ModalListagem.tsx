@@ -19,7 +19,6 @@ interface ModalListagemProps {
 function ModalListagem({ isOpen, onClose, titulo, itens, onItemClick }: ModalListagemProps) {
     if (!isOpen) return null;
 
-    // 2. Envolva o retorno dentro do Portal mirando no document.body
     return createPortal(
         <div className="modal-overlay" onClick={onClose}>
             <div className="modal-content" onClick={(e) => e.stopPropagation()}>
@@ -35,7 +34,7 @@ function ModalListagem({ isOpen, onClose, titulo, itens, onItemClick }: ModalLis
                         itens.map((item) => (
                             <div key={item.id} className="modal-item-linha" onClick={() => {onItemClick(item.id);onClose();}}>
                                 <img 
-                                    src={item.foto || "https://via.placeholder.com/150"}
+                                    src={item.foto}
                                     alt={item.nome} 
                                     className="modal-item-foto"
                                 />

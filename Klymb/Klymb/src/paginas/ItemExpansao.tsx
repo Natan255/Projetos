@@ -66,11 +66,9 @@ function ItemExpansao() {
 
                     {/* Lado Direito: Informações detalhadas */}
                     <div className="item-expansao-info">
-                        <span className="item-tag-categoria">Item de Coleção</span>
                         <h1 className="item-titulo-detalhe">{item.nome}</h1>
                         
                         <div className="item-descricao-bloco">
-                            <h3>Descrição / Informações:</h3>
                             <p>{item.info}</p>
                         </div>
 

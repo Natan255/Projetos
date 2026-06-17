@@ -573,3 +573,12 @@
         width: 100%;
     }
 }
+
+.foto-campeao-podio {
+    width: 50px;           /* Tamanho ajustável de acordo com o seu pódio */
+    height: 50px;
+    border-radius: 10%;    /* Deixa a foto perfeitamente redonda */
+    object-fit: cover;     /* Impede que a foto fique esticada ou achatada */
+    display: block;
+    margin: 0 auto;
+}
