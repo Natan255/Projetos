@@ -1,6 +1,3 @@
-/* ==========================================================================
-   PostSquad.css - Estilo Premium, Compacto e Adaptado ao Firestore
-   ========================================================================== */
 
 /* --- 1. CONTAINER DO POST --- */
 .Estrutura_post {
@@ -169,12 +166,11 @@
     left: -10%;
     width: 120%;
     height: 120%;
-    /* Injeta a imagem dinamicamente via variável CSS */
     background-image: var(--feed-blur-img); 
     background-size: cover;
     background-position: center;
-    filter: blur(30px) brightness(0.4); /* Desfoque sutil e escurecido para dar contraste */
-    z-index: 1; /* Fica atrás da imagem principal, mas acima do fundo do container */
+    filter: blur(30px) brightness(0.4);
+    z-index: 1;
     pointer-events: none;
 }
 
@@ -368,6 +364,38 @@
     font-weight: bold;
     padding: 3px;
 }
+/* --- 8.2. VARIANTE EXCLUSIVA PARA COLEÇÃO COMPARTILHADA --- */
+.post-colecao-compartilhada {
+    border: 1px solid #ffffff; 
+    background: linear-gradient(145deg, #1a1a1a, #111111);
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.05);
+    position: relative;
+    overflow: hidden;
+}
+
+.post-colecao-compartilhada .Conteudo_Post h1 {
+    color: #ffffff; /* Texto branco puro para destaque */
+    text-shadow: 0 0 6px rgba(255, 255, 255, 0.2);
+}
+
+.post-colecao-compartilhada::before {
+    content: "COLEÇÃO";
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: #ffffff; /* Tag branca */
+    color: #000000; /* Texto preto */
+    font-size: 0.55rem;
+    font-weight: 900;
+    padding: 3px 6px;
+    letter-spacing: 0.5px;
+    border-bottom-left-radius: 4px;
+}
+
+.post-colecao-compartilhada:hover {
+    border-color: #cccccc; /* No hover, a borda fica um cinza um pouco mais suave */
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.1); /* Aumenta o brilho sutil */
+}
 /* --- 9. MODAL DE ZOOM EXPANDIDO --- */
 /* Fundo escuro que cobre toda a tela */
 .zoom-overlay {
@@ -383,9 +411,6 @@
     overflow: hidden;
 }
 
-/* O BLOCO ::BEFORE DO BLUR FOI REMOVIDO DAQUI PARA DEIXAR O FUNDO LIMPO */
-
-/* A imagem expandida dentro do Modal - Agora blindada contra desalinhamentos */
 .zoom-imagem-expandida {
     position: absolute !important;
     top: 50% !important;

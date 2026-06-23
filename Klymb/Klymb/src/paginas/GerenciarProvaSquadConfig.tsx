@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { collection, getDocs, doc, updateDoc, increment, deleteDoc, addDoc, serverTimestamp, getDoc } from "firebase/firestore";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
+// CORREÇÃO: Importado setDoc para lidar com novos usuários pontuando
+import { collection, getDocs, doc, updateDoc, setDoc, increment, deleteDoc, addDoc, serverTimestamp, getDoc } from "firebase/firestore";
 import { db } from "../firebaseConfig";
 import { useAlerta } from "../componentes/AlertaProvider";
 import "./GerenciarProvaSquadConfig.css";
@@ -39,27 +40,43 @@ function GerenciarProvaSquadConfig() {
     }, [id]);
 
     const aprovarProva = async (solicitacao) => {
-        
         try {
             const postsRef = collection(db, "posts");
-            const estilo = squadAtual?.estilo || "Pontos";
+            
+            let estiloAlvo = squadAtual?.estilo || "Pontos";
+            let metricaAlvo = squadAtual?.metrica || "Pontos";
+            const isRankExtra = solicitacao.rankId && solicitacao.rankId !== "principal";
+
+            // Se a prova veio de um Rank Extra, busca as regras dele
+            if (isRankExtra) {
+                const rankDocRef = doc(db, "squads", id, "ranks_extra", solicitacao.rankId);
+                const rankSnap = await getDoc(rankDocRef);
+                if (rankSnap.exists()) {
+                    const dadosRank = rankSnap.data();
+                    if (dadosRank.estilo) estiloAlvo = dadosRank.estilo;
+                    if (dadosRank.metrica) metricaAlvo = dadosRank.metrica;
+                }
+            }
+
             const disputarRanking = squadAtual?.disputarRanking !== false; 
 
-            // CASO A: Grupos que geram Enquetes/Votação no Feed (Estilo Votação OU Coleção Competitiva)
-            if (estilo === "Votacao" || (estilo === "Colecao" && disputarRanking)) {
+            // CASO A: Ranks que geram Enquetes/Votação no Feed
+            if (estiloAlvo === "Votacao" || (estiloAlvo === "Colecao" && disputarRanking)) {
                 const diasDuracao = Number(squadAtual?.configVotacao?.dataEncerramento) || 3;
                 const dataEncerramento = new Date();
                 dataEncerramento.setDate(dataEncerramento.getDate() + diasDuracao);
 
                 await addDoc(postsRef, {
-                    titulo: estilo === "Colecao" ? `Avalie o item de ${solicitacao.nome}!` : `Avalie o desempenho de seu parceiro!`,
-                    texto: estilo === "Colecao" 
+                    titulo: estiloAlvo === "Colecao" ? `Avalie o item de ${solicitacao.nome}!` : `Avalie o desempenho de seu parceiro!`,
+                    texto: estiloAlvo === "Colecao" 
                         ? `📦 Item: ${solicitacao.provas?.resumo || "Sem descrição."}`
                         : `💬 Comentário: ${solicitacao.comentario || "Sem descrição."}`,
                     idSquad: id,
                     idAutor: solicitacao.uid,
+                    rankExtraId: solicitacao.rankId || "principal", 
                     nomeAutor: solicitacao.nome,
                     fotoAutor: solicitacao.fotoPerfil || "",
+                    imagemPost: solicitacao.provas?.foto || "",
                     tipo: "conquistaVoto",
                     statusVotacao: "aberta",
                     valorAcao: Number(solicitacao.valorAcao) || 0,
@@ -76,32 +93,44 @@ function GerenciarProvaSquadConfig() {
 
             } else {
                 // CASO B: Publicações Diretas no Feed (Estilo Pontos OU Coleção Vitrine)
-                if (estilo === "Pontos") {
-                    // MUDE AQUI: usa solicitacao.uid para dar os pontos para o usuário correto
-                    const rankingRef = doc(db, "squads", id, "ranking", solicitacao.uid); 
-                    await updateDoc(rankingRef, {
-                        pontos: increment(Number(solicitacao.valorAcao))
-                    });
+                if (estiloAlvo === "Pontos") {
+                    let rankingRef;
+                    
+                    if (isRankExtra) {
+                        rankingRef = doc(db, "squads", id, "ranks_extra", solicitacao.rankId, "ranking", solicitacao.uid);
+                    } else {
+                        rankingRef = doc(db, "squads", id, "ranking", solicitacao.uid);
+                    }
+
+                    await setDoc(rankingRef, {
+                        pontos: increment(Number(solicitacao.valorAcao)),
+                        nome: solicitacao.nome || "Membro",
+                        fotoPerfil: solicitacao.fotoPerfil || ""
+                    }, { merge: true });
                 }
 
-                let linhasTexto = estilo === "Colecao" 
+                let linhasTexto = estiloAlvo === "Colecao" 
                     ? [`Adicionou um novo item à vitrine!`]
-                    : [`Concluiu: ${solicitacao.valorAcao} unidades.`];
+                    : [`Concluiu: ${solicitacao.valorAcao} ${metricaAlvo}.`];
                     
                 if (solicitacao.provas?.resumo) {
-                    linhasTexto.push(`${estilo === "Colecao" ? "📝 Descrição:" : "📝 Resumo:"} ${solicitacao.provas.resumo}`);
+                    linhasTexto.push(`${estiloAlvo === "Colecao" ? "📝 Descrição:" : "📝 Resumo:"} ${solicitacao.provas.resumo}`);
                 }
                 if (solicitacao.provas?.github) linhasTexto.push(`💻 GitHub: ${solicitacao.provas.github}`);
-                if (solicitacao.provas?.foto) linhasTexto.push(`📸 Foto: ${solicitacao.provas.foto}`);
+                if (solicitacao.rankNome) linhasTexto.push(`🎯 Rank: ${solicitacao.rankNome}`);
+                
+                // 🔴 AQUI: A linha "linhasTexto.push(` Foto: ...`)" FOI REMOVIDA DAQUI!
 
                 await addDoc(postsRef, {
-                    titulo: estilo === "Colecao" ? `${solicitacao.nome} atualizou sua Vitrine!` : `Nova conquista de ${solicitacao.nome}!`,
+                    titulo: estiloAlvo === "Colecao" ? `${solicitacao.nome} atualizou sua Vitrine!` : `Nova conquista de ${solicitacao.nome}!`,
                     texto: linhasTexto.join("\n"),
                     idSquad: id,
-                    idAutor: solicitacao.id,
+                    idAutor: solicitacao.uid,
+                    rankExtraId: solicitacao.rankId || "principal",
                     nomeAutor: solicitacao.nome,
                     fotoAutor: solicitacao.fotoPerfil || "",
-                    tipo: estilo === "Colecao" ? "vitrineItem" : "conquista",
+                    imagemPost: solicitacao.provas?.foto || "", // 🟢 AQUI: Passando o link direto para a propriedade correta!
+                    tipo: estiloAlvo === "Colecao" ? "vitrineItem" : "conquista",
                     likes: [],
                     comentarios: 0,
                     compartilhamento: 0,
@@ -116,9 +145,9 @@ function GerenciarProvaSquadConfig() {
             
             exibirAlerta(
                 "Aprovado!", 
-                squadAtual?.estilo === "Votacao" || (squadAtual?.estilo === "Colecao" && squadAtual?.disputarRanking)
+                estiloAlvo === "Votacao" || (estiloAlvo === "Colecao" && disputarRanking)
                     ? "O item foi enviado para a votação da comunidade."
-                    : "Post publicado com sucesso no feed.", 
+                    : "Post publicado com sucesso no feed."
             );
 
         } catch (error) {
@@ -150,53 +179,48 @@ function GerenciarProvaSquadConfig() {
                     {solicitacoes.map((s) => (
                         <div key={s.id} className="card-prova">
                             <div className="info">
-                                <h3>{s.nome}</h3>
+                                <div className="header-card-prova">
+                                    <h3>{s.nome}</h3>
+                                    <span className="badge-rank-origem">{s.rankNome || "Rank Principal"}</span>
+                                </div>
                                 
-                                {squadAtual?.estilo !== "Colecao" && (
+                                {s.valorAcao > 0 && (
                                     <p>
-                                        <span className="label-legenda">Quantidade:</span>{" "}
-                                        <strong>{s.valorAcao} ({squadAtual?.metrica || "Pontos"})</strong>
+                                        <span className="label-legenda">Quantidade enviada:</span>{" "}
+                                        <strong>{s.valorAcao}</strong>
                                     </p>
                                 )}
 
-                                {squadAtual?.estilo === "Votacao" ? (
-                                    s.comentario && (
-                                        <p className="resumo">
-                                            <span className="label-legenda">Comentário:</span> {s.comentario}
-                                        </p>
-                                    )
-                                ) : (
-                                    <>
-                                        {s.provas?.resumo && (
-                                            <p className="resumo">
-                                                <span className="label-legenda">
-                                                    {squadAtual?.estilo === "Colecao" ? "Item / Descrição:" : "Resumo:"}
-                                                </span> {s.provas.resumo}
-                                            </p>
-                                        )}
-                                        {s.provas?.github && (
-                                            <p>
-                                                <span className="label-legenda">Link GitHub:</span>
-                                                <a href={s.provas.github} target="_blank" rel="noreferrer"> Abrir Link</a>
-                                            </p>
-                                        )}
-                                        {s.provas?.foto && (
-                                            <p>
-                                                <span className="label-legenda">
-                                                    {squadAtual?.estilo === "Colecao" ? "Imagem do Item:" : "Evidência:"}
-                                                </span>
-                                                <a href={s.provas.foto} target="_blank" rel="noreferrer"> Ver Foto</a>
-                                            </p>
-                                        )}
-                                    </>
+                                {s.comentario && (
+                                    <p className="resumo">
+                                        <span className="label-legenda">Motivo / Comentário:</span> {s.comentario}
+                                    </p>
+                                )}
+
+                                {s.provas?.resumo && (
+                                    <p className="resumo">
+                                        <span className="label-legenda">Resumo/Descrição:</span> {s.provas.resumo}
+                                    </p>
+                                )}
+                                
+                                {s.provas?.github && (
+                                    <p>
+                                        <span className="label-legenda">Link GitHub:</span>
+                                        <a href={s.provas.github} target="_blank" rel="noreferrer"> Abrir Link</a>
+                                    </p>
+                                )}
+                                
+                                {s.provas?.foto && (
+                                    <p>
+                                        <span className="label-legenda">Evidência anexada:</span>
+                                        <a href={s.provas.foto} target="_blank" rel="noreferrer" className="link-foto-azul"> Ver Imagem </a>
+                                    </p>
                                 )}
                             </div>
 
                             <div className="acoes">
                                 <button onClick={() => aprovarProva(s)} className="btn-aprovar">
-                                    {squadAtual?.estilo === "Votacao" || (squadAtual?.estilo === "Colecao" && squadAtual?.disputarRanking) 
-                                        ? "Liberar p/ Votação" 
-                                        : "Aceitar / Postar"}
+                                    Aceitar / Processar
                                 </button>
                                 <button onClick={() => recusarProva(s.id)} className="btn-recusar">
                                     Recusar

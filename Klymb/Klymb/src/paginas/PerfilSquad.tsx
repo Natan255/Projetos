@@ -25,7 +25,13 @@ function PerfilSquad({ squads, usuario }) {
     const [titulos, setTitulos] = useState("");
     const [modalAberto, setModalAberto] = useState(false);
     const [posts, setPosts] = useState<any[]>([]);
-    const [ranking, setRanking] = useState<any[]>([]);
+    
+    // --- ESTADOS DE RANKING E LISTAGEM DE ABAS ---
+    const [ranksDisponiveis, setRanksDisponiveis] = useState<any[]>([]); 
+    const [rankAtivoId, setRankAtivoId] = useState<string>("principal"); 
+    const [rankingExibido, setRankingExibido] = useState<any[]>([]);
+    const [metricaAtual, setMetricaAtual] = useState<string>("Pts");
+
     // Estado para guardar as fotos em tempo real do Top 3
     const [fotosPodio, setFotosPodio] = useState<Record<string, string>>({});
     const [solicitacaoPend, setSolicitacaoPend] = useState(false);
@@ -36,7 +42,21 @@ function PerfilSquad({ squads, usuario }) {
     const temPermissaoEspecial = isOwner || isMod;
     const jaSegue = squadSelecionado?.membros?.includes(usuario?.uid);  
 
-    // Busca os usuários membros para o ModalListagem
+
+    const navegarRanking = (direcao) => {
+        const listaCompleta = ["principal", ...ranksDisponiveis.map(r => r.id)];
+        const indiceAtual = listaCompleta.indexOf(rankAtivoId);
+
+        if (direcao === "avancar") {
+            const proximoIndice = (indiceAtual + 1) % listaCompleta.length;
+            setRankAtivoId(listaCompleta[proximoIndice])
+            ;
+        } else if (direcao === "voltar") {
+
+            const indiceAnterior = (indiceAtual - 1 + listaCompleta.length) % listaCompleta.length;
+            setRankAtivoId(listaCompleta[indiceAnterior]);
+        }
+    };
     const buscaUsuSeguindo = async () => {
         if (!squadSelecionado?.membros || squadSelecionado.membros.length === 0) return;
         try {
@@ -94,6 +114,7 @@ function PerfilSquad({ squads, usuario }) {
             const usuarioDados = usuarioSnap.data();
 
             if (precisaDeAprovacao) {
+                // --- FLUXO COM MODERAÇÃO ---
                 await addDoc(collection(db, "squads", id, "solicitacoes_posts"), {
                     titulo: dadosDoPost.titulo,
                     texto: dadosDoPost.texto,
@@ -106,6 +127,9 @@ function PerfilSquad({ squads, usuario }) {
                 });
                 exibirAlerta("Sucesso", "Sua publicação foi enviada para análise dos moderadores!");
             } else {
+                // --- FLUXO DIRETO (SEM ADM) ---
+                
+                // 1. Cria o post imediatamente no feed global
                 await addDoc(collection(db, "posts"), {
                     titulo: dadosDoPost.titulo,
                     texto: dadosDoPost.texto,
@@ -120,7 +144,48 @@ function PerfilSquad({ squads, usuario }) {
                     compartilhamento: 0,
                     criadoEm: serverTimestamp(),
                 });
-                exibirAlerta("Sucesso", "Sua publicação foi postada!");
+
+                // 2. Calcula os pontos conquistados com base nas propriedades do post
+                let pontosAGanhar = 20; // Pontuação base por postar
+                if (dadosDoPost.texto && dadosDoPost.texto.length > 300) pontosAGanhar += 30;
+                if (urlImagem !== "") pontosAGanhar += 10; // Se subiu imagem, soma bônus
+
+                // 3. Atualiza o Ranking Principal (Se o squad for "Colecao" e estiver competitivo)
+                if (squadAtual.estilo === "Colecao" && squadAtual.disputarRanking === true) {
+                    const rankingPrincipalRef = doc(db, "squads", id, "ranking", usuario.uid);
+                    await updateDoc(rankingPrincipalRef, {
+                        pontos: increment(pontosAGanhar),
+                        ultimaAtividade: serverTimestamp()
+                    });
+                }
+
+                // 4. Atualiza os Ranks Extras Cadastrados dinamicamente
+                const ranksExtraSnapshot = await getDocs(collection(db, "squads", id, "ranks_extra"));
+                
+                const promessasRanksExtras = ranksExtraSnapshot.docs.map(async (rankDoc) => {
+                    const rankExtraMembroRef = doc(db, "squads", id, "ranks_extra", rankDoc.id, "ranking", usuario.uid);
+                    
+                    return updateDoc(rankExtraMembroRef, {
+                        pontos: increment(pontosAGanhar),
+                        ultimaAtividade: serverTimestamp()
+                    }).catch(async (err) => {
+                        // Se o documento do usuário não existir neste rank extra específico, criamos ele agora
+                        if (err.code === "not-found") {
+                            await setDoc(rankExtraMembroRef, {
+                                uid: usuario.uid,
+                                nome: usuarioDados?.nome || "Membro",
+                                fotoUrl: usuarioDados?.fotoUrl || usuarioDados?.foto || "",
+                                pontos: pontosAGanhar,
+                                ultimaAtividade: serverTimestamp()
+                            });
+                        }
+                    });
+                });
+
+                // Executa a atualização de todos os sub-rankings em paralelo para não travar a UI
+                await Promise.all(promessasRanksExtras);
+
+                exibirAlerta("Sucesso", "Sua publicação foi postada e seus pontos foram computados!");
             }
 
             setModalAberto(false);
@@ -225,11 +290,11 @@ function PerfilSquad({ squads, usuario }) {
                 });
             }
         } catch (error) {
-            console.error("Erro na operação de seguir/sair:", error);
+            console.error("Erro na operation de seguir/sair:", error);
         }
     };
 
-    // Realtime Listeners
+    // Realtime Listeners - Posts
     useEffect(() => {
         if (!id) return;
         const postsRef = collection(db, "posts");
@@ -246,6 +311,7 @@ function PerfilSquad({ squads, usuario }) {
         return () => unsubscribe();
     }, [id]);
 
+    // Realtime Listeners - Dados do Squad
     useEffect(() => {
         if (!id) return;
         const squadRef = doc(db, "squads", id);
@@ -260,26 +326,54 @@ function PerfilSquad({ squads, usuario }) {
 
     useEffect(() => {
         if (!id) return;
-        const rankingRef = collection(db, "squads", id, "ranking");
-        const qRanking = query(rankingRef, orderBy("pontos", "desc"));
+        const subColecaoRanksRef = collection(db, "squads", id, "ranks_extra");
+        
+        const unsubscribeRanks = onSnapshot(subColecaoRanksRef, (snapshot) => {
+            const extraRanks = snapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            }));
+            setRanksDisponiveis(extraRanks);
+        });
 
+        return () => unsubscribeRanks();
+    }, [id]);
+
+    // --- ESCUTA DINÂMICA DO RANKING SELECIONADO (PRINCIPAL OU EXTRA) ---
+    useEffect(() => {
+        if (!id) return;
+
+        let rankingRef;
+        let metricaLabel = "Pts";
+
+        if (rankAtivoId === "principal") {
+            rankingRef = collection(db, "squads", id, "ranking");
+            metricaLabel = squadSelecionado?.metrica || "Pts";
+        } else {
+            rankingRef = collection(db, "squads", id, "ranks_extra", rankAtivoId, "ranking");
+            const dadosRankExtra = ranksDisponiveis.find(r => r.id === rankAtivoId);
+            metricaLabel = dadosRankExtra?.metrica || "Pts";
+        }
+
+        setMetricaAtual(metricaLabel);
+
+        const qRanking = query(rankingRef, orderBy("pontos", "desc"));
         const unsubscribeRanking = onSnapshot(qRanking, (querySnapshot) => {
             const listaRanking = querySnapshot.docs.map(doc => ({ 
                 id: doc.id, 
                 ...doc.data() 
             }));
-            setRanking(listaRanking);
+            setRankingExibido(listaRanking);
         });
 
         return () => unsubscribeRanking();
-    }, [id]);
+    }, [id, rankAtivoId, squadSelecionado, ranksDisponiveis]);
 
-    // Hook para monitorar o Top 3 e buscar as fotos de perfil atualizadas
     useEffect(() => {
-        if (ranking.length === 0) return;
+        if (rankingExibido.length === 0) return;
 
         const buscarFotosTop3 = async () => {
-            const top3 = ranking.slice(0, 3);
+            const top3 = rankingExibido.slice(0, 3);
             const novasFotos: Record<string, string> = {};
 
             try {
@@ -305,7 +399,7 @@ function PerfilSquad({ squads, usuario }) {
         };
 
         buscarFotosTop3();
-    }, [ranking]);
+    }, [rankingExibido]);
 
     useEffect(() => {
         const verificarStatus = async () => {
@@ -395,16 +489,56 @@ function PerfilSquad({ squads, usuario }) {
                 </div>
             </div>
 
+            <div className="seletor-ranking-carrossel">
+                <button 
+                    className="seta-rank-btn" 
+                    onClick={() => navegarRanking("voltar")}
+                    aria-label="Ranking anterior"
+                >
+                    ◀
+                </button>
+
+                <div className="info-rank-atual">
+                    {rankAtivoId === "principal" ? (
+                        <>
+                            <div className="texto-rank">
+                                <strong className="nome-rank">Geral</strong>
+                                <span className="metrica-rank">{squadSelecionado.metrica || "Pts"}</span>
+                            </div>
+                        </>
+                    ) : (
+                        (() => {
+                            const atual = ranksDisponiveis.find(r => r.id === rankAtivoId);
+                            return (
+                                <>
+                                    <div className="texto-rank">
+                                        <strong className="nome-rank">{atual?.subCategoria || atual?.nomeRank || "Rank Extra"}</strong>
+                                        <span className="metrica-rank">{atual?.metrica}</span>
+                                    </div>
+                                </>
+                            );
+                        })()
+                    )}
+                </div>
+
+                <button 
+                    className="seta-rank-btn" 
+                    onClick={() => navegarRanking("avancar")}
+                    aria-label="Próximo ranking"
+                >
+                    ▶
+                </button>
+            </div>
+
             {/* --- SEÇÃO DO RANKING --- */}
             <div className="Rank_secao">
-                {ranking.length > 0 ? (
+                {rankingExibido.length > 0 ? (
                     <div className="Rank_container">
                         <div className="Podio_container">
-                            {ranking.slice(0, 3).map((membro, index) => {
+                            {rankingExibido.slice(0, 3).map((membro, index) => {
                                 const classes = ["primeiro", "segundo", "terceiro"];
                                 const ordemVisual = index === 0 ? 2 : index === 1 ? 1 : 3;
 
-                                // Prioriza a foto em tempo real buscada do banco; se não tiver, usa a estática ou placeholder
                                 const fotoAtualizada = fotosPodio[membro.uid] || membro.fotoUrl || "https://via.placeholder.com/150";
 
                                 return (
@@ -426,7 +560,7 @@ function PerfilSquad({ squads, usuario }) {
                                         </div>
                                         <span className="nome">{membro.nome}</span>
                                         <span className="producao">
-                                            {membro.pontos} {squadSelecionado.metrica || "Pts"}
+                                            {membro.pontos} {metricaAtual}
                                         </span>
                                     </div>
                                 );
@@ -434,27 +568,40 @@ function PerfilSquad({ squads, usuario }) {
                         </div>
 
                         <div className="Rank_lista">
-                            {ranking.slice(3).map((membro, index) => (
+                            {rankingExibido.slice(3).map((membro, index) => (
                                 <div key={membro.id || index} className="membro-rank" onClick={() => navigate(`/paginas/Perfil/${membro.uid}`)}>
                                     <span className="posicao">{index + 4}º</span>
                                     <span className="nome">{membro.nome}</span>
                                     <span className="producao">
-                                        {membro.pontos} {squadSelecionado.metrica || "Pts"}
+                                        {membro.pontos} {metricaAtual}
                                     </span>
                                 </div>
                             ))}
                         </div>
                     </div>
                 ) : (
-                    <p>Nenhum dado de ranking disponível.</p>
+                    <p style={{ textAlign: "center", padding: "20px" }}>Nenhum dado de ranking disponível para esta categoria.</p>
                 )}
             </div>
 
             <div className="Topicos_squad">
                 <div className="Topicos_header_acoes">
+
                     {squadSelecionado.estilo !== "Colecao" && (
-                        <button className="prova" onClick={() => navigate(`/paginas/Prova/${id}`)}>Prova</button>
+                        <button 
+                            className="prova" 
+                            onClick={() => {
+                                if (rankAtivoId === "principal") {
+                                    navigate(`/paginas/Prova/${id}`);
+                                } else {
+                                    navigate(`/paginas/Prova/${id}?rankExtra=${rankAtivoId}`);
+                                }
+                            }}
+                        >
+                            {rankAtivoId === "principal" ? "Provar Geral" : `Provar ${metricaAtual}`}
+                        </button>
                     )}
+                    
                     <button className="Postar" onClick={() => setModalAberto(true)}>Postar</button>
                     <Modal 
                         isOpen={modalAberto} 
@@ -510,7 +657,7 @@ function PerfilSquad({ squads, usuario }) {
                                                                     fotoAutor={post.fotoAutor}
                                                                     likes={post.likes || 0}
                                                                     imagemPost={post.imagemPost}
-                                                                    conquista={post.tipo?.includes("conquista")}
+                                                                    tipo={post.tipo}
                                                                     jaDeuLike={euCurti}
                                                                     aoDarLike={() => gerenciarLike(post.id, euCurti)}
                                                                     squadId={post.idSquad}

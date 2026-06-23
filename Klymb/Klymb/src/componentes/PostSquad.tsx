@@ -18,7 +18,7 @@ interface PostSquadProps {
     comentarios?: number;
     autor: string;     // Fica como fallback caso o usuário não seja encontrado
     fotoAutor: string; // Fica como fallback
-    conquista: boolean;
+    tipo?: "conquista" | "colecaoCompartilhada" | string | null; // Adaptado para receber os múltiplos tipos dinâmicos
     squadId?: string | null;
     usuarioId?: string | null;
     quemDeuLike?: string[];
@@ -34,7 +34,7 @@ function PostSquad({
     comentarios, 
     autor, 
     fotoAutor, 
-    conquista, 
+    tipo = null, 
     squadId = null, 
     usuarioId = null,
     quemDeuLike = [] 
@@ -92,7 +92,7 @@ function PostSquad({
             buscarDadosDoAutor();
         }
 
-    }, [squadId, idAutor]); // Adicionado idAutor como dependência
+    }, [squadId, idAutor]);
 
     if (!titulo && !texto) return null;
 
@@ -101,12 +101,10 @@ function PostSquad({
     };
 
     const deletarPost = async () => {
-
         const confirmar = window.confirm("Tem certeza que deseja deletar este post?");
         if (!confirmar) return;
 
         try {
-
             if (imagemPost) {
                 try {
                     const imagemRef = ref(storage, imagemPost);
@@ -166,12 +164,25 @@ function PostSquad({
     const usuarioJaCurtiu = usuarioId ? quemDeuLike.includes(usuarioId) : false;
 
     // --- VARIÁVEIS COM FALLBACK ---
-    // Se encontrou os dados na coleção "usuarios", usa eles. Se não, usa a prop antiga do post.
     const fotoExibicao = dadosAutor?.fotoUrl || fotoAutor || "https://via.placeholder.com/40";
     const nomeExibicao = dadosAutor?.nome || autor || "Membro";
 
+    // Retorna a classe CSS específica baseada no tipo do Post
+    const obterClassePorTipo = () => {
+        if (tipo === "conquista") return "post-conquista";
+        if (tipo === "colecaoCompartilhada") return "post-colecao-compartilhada";
+        return "";
+    };
+
+    // Altera dinamicamente o prefixo visual do título do post
+    const renderizarTituloComIcone = () => {
+        if (tipo === "conquista") return `🏆 ${titulo}`;
+        if (tipo === "colecaoCompartilhada") return `📦 ${titulo}`; // Ícone sugestivo para coleções/itens
+        return titulo;
+    };
+
     return (
-        <div className={`Estrutura_post ${conquista ? 'post-conquista' : ''}`}>
+        <div className={`Estrutura_post ${obterClassePorTipo()}`}>
 
             {squadId !== null && dadosSquad && (
                 <div className="Header_squad_info">
@@ -198,7 +209,7 @@ function PostSquad({
 
             {/* Conteúdo do Post com clique para expandir */}
             <div className="Conteudo_Post" onClick={() => navigate(`/post/${id}`)}>
-                <h1>{conquista ? `🏆 ${titulo}` : titulo}</h1>
+                <h1>{renderizarTituloComIcone()}</h1>
                 <p>{texto}</p>
                 
                 {imagemPost && (

@@ -155,6 +155,7 @@ function Perfil({ usuario, squads }: PerfilProps) {
             if (precisaDeAprovacao) {
                 await addDoc(collection(db, "squads", squadComp, "solicitacoes_posts"), {
                     titulo: dadosDoPost.titulo,
+                    tipo: "colecaoCompartilhada",
                     texto: dadosDoPost.texto,
                     idAutor: usuario.uid,
                     nomeAutor: dadosExtras.nome || "Membro",
@@ -167,6 +168,7 @@ function Perfil({ usuario, squads }: PerfilProps) {
             } else {
                 await addDoc(collection(db, "posts"), {
                     titulo: dadosDoPost.titulo,
+                    tipo: "colecaoCompartilhada",
                     texto: dadosDoPost.texto,
                     imagemPost: imagemItemCompartilhado || "", // AQUI: Foto do item da coleção salva com sucesso!
                     idSquad: squadComp,
@@ -504,7 +506,7 @@ function Perfil({ usuario, squads }: PerfilProps) {
                                                         autor={autor.nome}
                                                         imagemPost={post.imagemPost}
                                                         fotoAutor={autor.foto}
-                                                        conquista={post.tipo?.includes("conquista")}
+                                                        tipo={post.tipo}
                                                         squadId={post.idSquad}
                                                         usuarioId={usuario?.uid}
                                                         quemDeuLike={post.quemDeuLike || []}

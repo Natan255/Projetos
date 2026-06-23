@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { db, auth, storage } from "../firebaseConfig"; // Certifique-se de que 'storage' está exportado em firebaseConfig
+import { db, auth, storage } from "../firebaseConfig";
 import { collection, addDoc, serverTimestamp, doc, updateDoc, arrayUnion, setDoc } from "firebase/firestore";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { useNavigate } from "react-router-dom";
@@ -14,7 +14,6 @@ function CadastrarSquad() {
     const [metrica, setMetrica] = useState("Pontos");
     const [outraMetrica, setOutraMetrica] = useState("");
     
-    // Agora guardamos o arquivo binário selecionado pelo usuário
     const [fotoPerfilFile, setFotoPerfilFile] = useState(null);
     const [fotoBannerFile, setFotoBannerFile] = useState(null);
     const [fotoCapaFile, setFotoCapaFile] = useState(null);
@@ -114,6 +113,8 @@ function CadastrarSquad() {
                 fotoPerfil: fotoPerfilFinal,
                 fotoBanner: fotoBannerFinal,
                 fotoCapa: fotoCapaFinal,
+                solicitarEntrada: "sim",
+                solicitarPost: "sim",
                 idCriador: auth.currentUser.uid,
                 nomeCriador: auth.currentUser.displayName || "Criador",
                 membros: [auth.currentUser.uid],
@@ -304,12 +305,10 @@ function CadastrarSquad() {
                                         </div>
                                     </>
                                 )}
-                                {/* ... Outras regras de validação por categoria permanecem iguais ... */}
                             </div>
                         </>
                     )}
                     
-                    {/* SEÇÃO DAS FOTOS ATUALIZADA COM BOTÕES DE ANEXO NATÍVO */}
                     <div className="fotos-grid">
                         <div className="input-group-file">
                             <label className="custom-file-upload">

@@ -38,38 +38,73 @@ function GerenciaPostSquadConfig() {
 
             const squadDados = squadSnap.data();
 
-            if (squadDados.estilo === "Colecao" && squadDados.disputarRanking === true) {
-                const rankingRef = doc(db, "squads", id, "ranking", post.idAutor);
-                
-                if (post.texto.length > 300) {
-                    await updateDoc(rankingRef, {
-                        pontos: increment(30) 
-                    });
-                }
-                
-                //Futuramente tem que ajeitar aqui pq ainda nao da pra botar fotos no site
-                // |
-                // |
-                // v
+            // 1. Calcula a pontuação base do post de forma unificada
+            let pontosAGanhar = 20; // Pontos fixos por aprovação
+            if (post.texto && post.texto.length > 300) pontosAGanhar += 30;
+            if (post.foto && post.foto !== "") pontosAGanhar += 10;
 
-                if (post.foto && post.foto !== "") {
-                    await updateDoc(rankingRef, {
-                        pontos: increment(10) 
-                    });
-                }
-                await updateDoc(rankingRef, {
-                    pontos: increment(20),
+            // 2. Atualiza o Ranking Principal (se estiver ativo no cadastro do Squad)
+            if (squadDados.estilo === "Colecao" && squadDados.disputarRanking === true) {
+                const rankingPrincipalRef = doc(db, "squads", id, "ranking", post.idAutor);
+                
+                // Um único update resolve toda a pontuação do principal
+                await updateDoc(rankingPrincipalRef, {
+                    pontos: increment(pontosAGanhar),
                     ultimaAtividade: serverTimestamp()
                 });
-                                      
             }
+
+            // 3. ATUALIZAÇÃO DOS RANKS EXTRAS (Competitivos ou Não)
+            // Vamos buscar a subcoleção de configurações de ranks extras do squad
+            const ranksExtraSnapshot = await getDocs(collection(db, "squads", id, "ranks_extra"));
+            
+            // Iteramos por cada rank extra que o admin cadastrou para este squad
+            const promessasRanks = ranksExtraSnapshot.docs.map(async (rankDoc) => {
+                const dadosRankExtra = rankDoc.data();
+
+                // Aqui você decide a regra. Exemplo: 
+                // Todos os ranks extras ganham os mesmos pontos? Ou apenas os que estão ativos?
+                // Se o rank extra tiver um campo 'acumulaComPost: true' no cadastro, pontuamos:
+                
+                const rankExtraMembroRef = doc(
+                    db, 
+                    "squads", 
+                    id, 
+                    "ranks_extra", 
+                    rankDoc.id, // ID do Rank Extra (ex: "maratona-xp")
+                    "ranking", 
+                    post.idAutor // ID do jogador
+                );
+
+                // Atualiza (ou cria) os pontos do usuário dentro deste rank específico
+                return updateDoc(rankExtraMembroRef, {
+                    pontos: increment(pontosAGanhar),
+                    ultimaAtividade: serverTimestamp()
+                }).catch(async (err) => {
+                    // Caso o usuário ainda não tenha registro nesse rank extra, tratamos o erro criando o doc
+                    if (err.code === "not-found") {
+                        const usuarioSnap = await getDoc(doc(db, "squads", id, "ranking", post.idAutor));
+                        const nomeUsuario = usuarioSnap.exists() ? usuarioSnap.data().nome : "Membro";
+                        
+                        await setDoc(rankExtraMembroRef, {
+                            nome: nomeUsuario,
+                            pontos: pontosAGanhar,
+                            ultimaAtividade: serverTimestamp()
+                        });
+                    }
+                });
+            });
+
+            // Aguarda todos os ranks extras serem atualizados em paralelo
+            await Promise.all(promessasRanks);
+
         } catch (error) {
-            console.error("Erro ao acessar ranking:", error);
+            console.error("Erro ao processar pontuações dos rankings:", error);
         }
 
+        // 4. Criação do Post e Deleção da Solicitação (Seu código original mantido)
         try {
             const postsRef = collection(db, "posts");
-
             await addDoc(postsRef, {
                 titulo: post.titulo,
                 texto: post.texto,
@@ -85,9 +120,8 @@ function GerenciaPostSquadConfig() {
 
             await deleteDoc(doc(db, "squads", id, "solicitacoes_posts", post.id));
             exibirAlerta("Post Aprovado!", "");
-
         } catch (error) {
-            console.error("Erro ao aprovar post:", error);
+            console.error("Erro ao criar post ou remover solicitação:", error);
         }
     };
 

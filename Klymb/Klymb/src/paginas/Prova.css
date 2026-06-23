@@ -108,3 +108,84 @@
     border-radius: 8px;
     margin: 20px;
 }
+
+/* Container Geral do Upload */
+.upload-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 5px;
+}
+
+/* Botão Customizado de Upload (o label que ativa o input) */
+.btn-upload {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #ff4d00; /* Azul moderno */
+    color: #ffffff;
+    padding: 12px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    text-align: center;
+    border: 1px solid transparent;
+}
+
+/* Efeito Hover no Botão */
+.btn-upload:hover {
+    background-color: #717171;
+}
+
+/* Efeito ao Clicar */
+.btn-upload:active {
+    transform: scale(0.98);
+}
+
+/* Estado de Carregamento (Enviando Imagem...) */
+.btn-upload.carregando {
+    background-color: #93c5fd; /* Azul claro/desbotado */
+    color: #1e3a8a;
+    cursor: not-allowed;
+    position: relative;
+}
+
+/* Bloco de Mensagem de Sucesso */
+.preview-sucesso {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #262626; /* Fundo verde bem claro */
+    border: 1px solid #000000;
+    padding: 10px 14px;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.preview-sucesso span {
+    color: #166534; /* Verde escuro para o texto */
+    font-weight: 500;
+}
+
+/* Link para Abrir a Imagem */
+.link-preview {
+    color: #ff4d00;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.2s ease;
+}
+
+.link-preview:hover {
+    color: #b2b2b4;
+    text-decoration: underline;
+}
+
+/* Estilização para o botão de enviar o formulário quando estiver desativado */
+.btn-enviar-prova:disabled {
+    background-color: #cbd5e1;
+    color: #64748b;
+    cursor: not-allowed;
+    transform: none !important;
+}

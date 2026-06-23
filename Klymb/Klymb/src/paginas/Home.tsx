@@ -89,7 +89,7 @@ function Home({ squads, usuario }) { // Removida a prop pesquisaQuery que n√£o √
                                     );
                                 }
                                 
-                                const conq = post.tipo?.includes("conquista");
+                                const tipo = post?.tipo;
                                 return (
                                     <PostSquad
                                         key={post.id}
@@ -102,7 +102,7 @@ function Home({ squads, usuario }) { // Removida a prop pesquisaQuery que n√£o √
                                         autor={post.nomeAutor}
                                         imagemPost={post.imagemPost}
                                         fotoAutor={post.fotoAutor}
-                                        conquista={conq}
+                                        tipo={post.tipo}
                                         squadId={post.idSquad}
                                         usuarioId={usuario?.uid}
                                         quemDeuLike={post.quemDeuLike || []}
