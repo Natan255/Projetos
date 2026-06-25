@@ -239,8 +239,24 @@ function PerfilSquad({ squads, usuario }) {
                 const usuarioDados = usuarioSnap.data();
                 const squadRef = doc(db, "squads", id);
                 const rankingMemberRef = doc(db, "squads", id, "ranking", usuarioId);
-                    
+    
                 const batch = writeBatch(db);
+
+                const ranksExtraColecaoRef = collection(db, "squads", id, "ranks_extra"); 
+                const ranksExtraSnap = await getDocs(ranksExtraColecaoRef);
+                
+                ranksExtraSnap.docs.forEach((rankDoc) => {
+                    const usuarioNoRankExtraRef = doc(db, "squads", id, "ranks_extra", rankDoc.id, "ranking", usuarioId);
+
+                    batch.set(usuarioNoRankExtraRef, {
+                        uid: usuarioId,
+                        nome: usuarioDados?.nome || "Recruta Anônimo",
+                        fotoUrl: usuarioDados?.foto || usuarioDados?.fotoUrl || "",
+                        pontos: 0,
+                        ultimaAtividade: serverTimestamp()
+                    });
+                });
+
                 batch.update(squadRef, {
                     membros: arrayUnion(usuarioId)
                 });
@@ -257,8 +273,10 @@ function PerfilSquad({ squads, usuario }) {
                     cargo: "Recruta",
                     ultimaAtividade: serverTimestamp()
                 });
+
                 await batch.commit();
             }
+
             setSolicitacaoPend(true);
         } catch (error) {
             console.error("Erro ao solicitar entrada:", error);
@@ -294,7 +312,33 @@ function PerfilSquad({ squads, usuario }) {
         }
     };
 
-    // Realtime Listeners - Posts
+    useEffect(() => {
+        if (!usuario?.uid || !id) return;
+
+        const checarExpulsao = async () => {
+            try {
+                const perfilRef = doc(db, "usuarios", usuario.uid);
+                const perfilSnap = await getDoc(perfilRef);
+
+                if (perfilSnap.exists()) {
+                    const dadosPerfil = perfilSnap.data();
+                
+                    const squadsExpulso = dadosPerfil.expulso || [];
+                    if (squadsExpulso.includes(id)) {
+                        exibirAlerta("Expulso", "Você foi expulso deste Squad e não pode acessá-lo.");
+                        navigate("/");
+                        return;
+                    }
+                }
+            } catch (e) {
+                console.error("Erro ao verificar expulsão:", e);
+            }
+
+            
+        };
+        checarExpulsao();
+    }, [usuario?.uid, id, navigate]);
+
     useEffect(() => {
         if (!id) return;
         const postsRef = collection(db, "posts");
@@ -323,6 +367,8 @@ function PerfilSquad({ squads, usuario }) {
 
         return () => unsubscribe();
     }, [id]);
+
+    
 
     useEffect(() => {
         if (!id) return;
@@ -587,7 +633,7 @@ function PerfilSquad({ squads, usuario }) {
             <div className="Topicos_squad">
                 <div className="Topicos_header_acoes">
 
-                    {squadSelecionado.estilo !== "Colecao" && (
+                    {(squadSelecionado.estilo !== "Colecao" || rankAtivoId !== "principal") && (
                         <button 
                             className="prova" 
                             onClick={() => {

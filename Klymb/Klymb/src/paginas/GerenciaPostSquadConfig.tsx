@@ -54,17 +54,12 @@ function GerenciaPostSquadConfig() {
                 });
             }
 
-            // 3. ATUALIZAÇÃO DOS RANKS EXTRAS (Competitivos ou Não)
-            // Vamos buscar a subcoleção de configurações de ranks extras do squad
-            const ranksExtraSnapshot = await getDocs(collection(db, "squads", id, "ranks_extra"));
+
+            const ranksExtraSnapshot = await getDoc(collection(db, "squads", id, "ranks_extra"));
             
-            // Iteramos por cada rank extra que o admin cadastrou para este squad
+
             const promessasRanks = ranksExtraSnapshot.docs.map(async (rankDoc) => {
                 const dadosRankExtra = rankDoc.data();
-
-                // Aqui você decide a regra. Exemplo: 
-                // Todos os ranks extras ganham os mesmos pontos? Ou apenas os que estão ativos?
-                // Se o rank extra tiver um campo 'acumulaComPost: true' no cadastro, pontuamos:
                 
                 const rankExtraMembroRef = doc(
                     db, 
@@ -76,7 +71,6 @@ function GerenciaPostSquadConfig() {
                     post.idAutor // ID do jogador
                 );
 
-                // Atualiza (ou cria) os pontos do usuário dentro deste rank específico
                 return updateDoc(rankExtraMembroRef, {
                     pontos: increment(pontosAGanhar),
                     ultimaAtividade: serverTimestamp()
@@ -101,8 +95,6 @@ function GerenciaPostSquadConfig() {
         } catch (error) {
             console.error("Erro ao processar pontuações dos rankings:", error);
         }
-
-        // 4. Criação do Post e Deleção da Solicitação (Seu código original mantido)
         try {
             const postsRef = collection(db, "posts");
             await addDoc(postsRef, {

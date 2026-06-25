@@ -15,7 +15,6 @@ function CadastrarSquad() {
     const [outraMetrica, setOutraMetrica] = useState("");
     
     const [fotoPerfilFile, setFotoPerfilFile] = useState(null);
-    const [fotoBannerFile, setFotoBannerFile] = useState(null);
     const [fotoCapaFile, setFotoCapaFile] = useState(null);
     
     const [subCategoria, setSubCategoria] = useState("");
@@ -78,7 +77,6 @@ function CadastrarSquad() {
         try {
             // 1. Faz o upload das fotos selecionadas no input de arquivos
             const fotoPerfilFinal = await uploadArquivo(fotoPerfilFile, "perfis", avatarPadrao);
-            const fotoBannerFinal = await uploadArquivo(fotoBannerFile, "banners", bannerPadrao);
             const fotoCapaFinal = await uploadArquivo(fotoCapaFile, "capas", avatarPadrao);
 
             // 2. Salva o documento com as URLs finais resolvidas
@@ -111,7 +109,6 @@ function CadastrarSquad() {
                         ? "Exibição" 
                         : metricaFinal,
                 fotoPerfil: fotoPerfilFinal,
-                fotoBanner: fotoBannerFinal,
                 fotoCapa: fotoCapaFinal,
                 solicitarEntrada: "sim",
                 solicitarPost: "sim",
@@ -309,39 +306,31 @@ function CadastrarSquad() {
                         </>
                     )}
                     
+                    {/* --- SEÇÃO DE FOTOS AJUSTADA --- */}
                     <div className="fotos-grid">
                         <div className="input-group-file">
+                            <p>Foto de Perfil</p>
                             <label className="custom-file-upload">
                                 <input 
                                     type="file" 
                                     accept="image/*"
                                     onChange={(e) => setFotoPerfilFile(e.target.files[0])} 
                                 />
-                                {fotoPerfilFile ? `Selected: ${fotoPerfilFile.name}` : "Selecionar Foto de Perfil"}
+                                {fotoPerfilFile ? `Selecionado: ${fotoPerfilFile.name}` : "Selecionar Foto de Perfil"}
                             </label>
                         </div>
                         
                         <div className="input-group-file">
+                            <p>Foto de Capa</p>
                             <label className="custom-file-upload">
                                 <input 
                                     type="file" 
                                     accept="image/*"
-                                    onChange={(e) => setFotoBannerFile(e.target.files[0])} 
+                                    onChange={(e) => setFotoCapaFile(e.target.files[0])} 
                                 />
-                                {fotoBannerFile ? `Selected: ${fotoBannerFile.name}` : "Selecionar Banner "}
+                                {fotoCapaFile ? `Selecionado: ${fotoCapaFile.name}` : "Selecionar Foto da Capa"}
                             </label>
                         </div>
-                    </div>
-
-                    <div className="input-group-file">
-                        <label className="custom-file-upload">
-                            <input 
-                                type="file" 
-                                accept="image/*"
-                                onChange={(e) => setFotoCapaFile(e.target.files[0])} 
-                            />
-                            {fotoCapaFile ? `Selected: ${fotoCapaFile.name}` : "Selecionar Foto da Capa "}
-                        </label>
                     </div>
 
                     <button type="submit" className="btn-criar" disabled={enviando}>

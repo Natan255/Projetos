@@ -77,10 +77,6 @@ function PerfilSquadConfig() {
                     <button className="config-opcao">Alterar mural de avisos</button>
                 </Link>
 
-                <Link to={`/squadconfig/alterar/${id}/fotoBanner`}>
-                    <button className="config-opcao">Alterar banner</button>
-                </Link>
-
                 <Link to={`/squadconfig/alterar/${id}/fotoCapa`}>
                     <button className="config-opcao">Alterar capa</button>
                 </Link>

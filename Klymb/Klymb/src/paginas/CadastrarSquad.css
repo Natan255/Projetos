@@ -77,12 +77,6 @@
     resize: vertical;
 }
 
-/* Grid para as fotos (duas colunas no desktop) */
-.fotos-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-}
 
 /* Opções de Métrica (Botões de Seleção) */
 .metrica-options {
@@ -264,6 +258,11 @@
     margin: 0;
 }
 
+.input-group-file {
+    display: flex;
+    flex-direction: column;
+}
+
 /* Esconde o input original */
 .input-group-file input[type="file"] {
     display: none;
@@ -272,27 +271,30 @@
 /* Transforma a label em um botão moderno */
 .custom-file-upload {
     display: block;
-    /* Adicione uma borda padrão aqui para evitar o "pulo" no hover */
-    border: 1px solid #333; 
+    border: 1px solid #222; 
     color: #fff;
-    background: #1a1a1a;
+    background: #151515;
     padding: 12px 20px;
     border-radius: 8px;
     cursor: pointer;
     text-align: center;
     font-weight: 500;
+    font-size: 0.95rem;
     transition: all 0.3s ease;
-    margin-top: 5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .custom-file-upload:hover {
     border-color: #ff4d00;
-    /* Opcional: se quiser dar um leve destaque no fundo ou no texto ao passar o mouse */
     background: #222; 
 }
 
 .input-group-file p {
-    margin-bottom: 5px;
-    font-size: 14px;
-    color: #ccc;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #888;
+    text-transform: uppercase;
 }

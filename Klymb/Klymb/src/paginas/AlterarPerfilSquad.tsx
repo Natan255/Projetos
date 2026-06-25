@@ -23,7 +23,6 @@ function AlterarPerfilSquad() {
         descricao: { titulo: "Descrição do Squad", tipo: "text", campoBanco: "descricao" }, 
         mural: { titulo: "Mural do Squad", tipo: "text", campoBanco: "mural" },
         
-        fotoBanner: { titulo: "Imagem de Fundo (Capa) do Squad", tipo: "file", campoBanco: "fotoCapa" },
         fotoCapa: { titulo: "Imagem de Fundo (Capa) do Squad", tipo: "file", campoBanco: "fotoCapa" },
 
         fotoPerfil: { titulo: "Foto de Perfil do Squad", tipo: "file", campoBanco: "fotoPerfil" }
@@ -57,18 +56,14 @@ function AlterarPerfilSquad() {
             const squadRef = doc(db, "squads", id);
 
             if (!ehCampoDeArquivo) {
-                // Salva dinamicamente no campo de texto correto (nome, descricao ou mural)
                 await updateDoc(squadRef, { [atual.campoBanco]: valor });
             } else {
                 const storage = getStorage();
-                
-                // Organiza os arquivos no Storage em subpastas dinâmicas (ex: fotoSquad/fotoPerfil/id_squad)
                 const arquivoRef = ref(storage, `fotoSquad/${atual.campoBanco}/${id}`);
 
                 const snapshot = await uploadBytes(arquivoRef, arquivoFoto!);
                 const urlDownload = await getDownloadURL(snapshot.ref);
 
-                // Salva a URL exatamente no campo correto do banco (fotoPerfil, fotoBanner ou fotoCapa)
                 await updateDoc(squadRef, { [atual.campoBanco]: urlDownload });
             }
 
@@ -92,7 +87,6 @@ function AlterarPerfilSquad() {
             <h1>Alterar {atual.titulo}</h1>
             
             {ehCampoDeArquivo ? (
-                // Se for fotoPerfil, fotoBanner ou fotoCapa, renderiza a área de upload
                 <div className="upload-foto-wrapper">
                     {previewFoto && (
                         <div className="preview-foto-container">

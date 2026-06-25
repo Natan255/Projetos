@@ -1,8 +1,9 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { db } from "../firebaseConfig";
-import { doc, getDoc, updateDoc, arrayUnion, arrayRemove, collection, query, where, getDocs } from "firebase/firestore";
+import { doc, getDoc, updateDoc, deleteDoc, arrayUnion, arrayRemove, collection, query, where, getDocs } from "firebase/firestore";
 import UsuariosLista from "../componentes/UsuariosLista";
+import { useAlerta } from "../componentes/AlertaProvider";
 import "./MembroSquadConfig.css";
 
 function MembroSquadConfig() {
@@ -10,6 +11,7 @@ function MembroSquadConfig() {
     const navigate = useNavigate();
     const [squad, setSquad] = useState<any>(null);
     const [usuariosDetalhados, setUsuariosDetalhados] = useState<any[]>([]);
+    const { exibirAlerta } = useAlerta(); 
 
 
     useEffect(() => {
@@ -60,7 +62,6 @@ function MembroSquadConfig() {
     }, [listaIds.join(",")]); // O .join(",") faz o React perceber se qualquer ID da lista mudou
 
 
-    // Função para Promover Membro a Moderador
     const promoverParaMod = async (membroId: string) => {
         if (!window.confirm("Tornar este usuário um moderador?")) return;
         try {
@@ -75,19 +76,46 @@ function MembroSquadConfig() {
         }
     };
 
-    // Função para Remover/Banir
     const removerMembro = async (membroId: string) => {
-        const acao = campo === "mode" ? "remover cargo" : "banir";
-        if (!window.confirm(`Deseja ${acao} deste usuário?`)) return;
+
         try {
             const squadRef = doc(db, "squads", id!);
-            const campoBanco = campo === "mode" ? "moderadores" : "membros";
-            await updateDoc(squadRef, { [campoBanco]: arrayRemove(membroId) });
-            window.location.reload();
+            await updateDoc(squadRef, {membros: arrayRemove(membroId)});
+            if (campo !== "mode") {
+                
+                const rankPrincipalDocRef = doc(db, "squads", id!, "ranking", membroId);
+                const perfilRef = doc(db, "usuarios", membroId);
+                await updateDoc(perfilRef, {
+                    squads_seguindo: arrayRemove(id)
+                });
+                await deleteDoc(rankPrincipalDocRef);
+                const ranksExtraColecaoRef = collection(db, "squads", id!, "ranks_extra");
+                const ranksExtraSnap = await getDocs(ranksExtraColecaoRef);
+
+                const promessasDelecao = ranksExtraSnap.docs.map(async (rankDoc) => {
+                    const usuarioNoRankRef = doc(db, "squads", id!, "ranks_extra", rankDoc.id, "ranking", membroId);
+                    await deleteDoc(usuarioNoRankRef);
+                });
+
+                await Promise.all(promessasDelecao);
+            }
+            
+            exibirAlerta("Expulso", "Usuario foi expulso com sucesso!");
         } catch (e) {
-            console.error(e);
+            console.error("Erro ao remover/banir membro:", e);
         }
     };
+
+    const expulsarMembro = async (membroId: string) => {
+        const perfilRef = doc(db, "usuarios", membroId);
+        await updateDoc(perfilRef, {
+            expulso: arrayUnion(id!)
+        });
+
+        removerMembro(membroId);
+
+    }
+
 
     if (!squad) return <div className="loading">Carregando Squad...</div>;
 
@@ -112,11 +140,11 @@ function MembroSquadConfig() {
                         <div className="botoes-gestao">
                             {campo !== "mode" && (
                                 <button className="btn-promover" onClick={() => promoverParaMod(user.id)}>
-                                    👑 Mod
+                                    Mod
                                 </button>
                             )}
-                            <button className="btn-banir" onClick={() => removerMembro(user.id)}>
-                                {campo === "mode" ? "Tirar Mod" : "Banir"}
+                            <button className="btn-banir" onClick={() => expulsarMembro(user.id)}>
+                                {campo === "mode" ? "Tirar Mod" : "Expulsar"}
                             </button>
                         </div>
                     </div>
