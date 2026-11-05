@@ -28,6 +28,7 @@ import ItemExpansao from './paginas/ItemExpansao'
 import SquadInsignias from './paginas/SquadInsignias'
 import Mensagens from './paginas/Mensagens'
 import AdicionarRankSquad from './paginas/AdicionarRankSquad'
+import RemoverRankSquad from './paginas/RemoverRankSquad'
 
 
 function App() {
@@ -94,6 +95,10 @@ useEffect(() => {
           <Route path='/squadconfig/insignias/:id' element={<SquadInsignias/>}/>
 
           <Route path='/squadconfig/rank/:id' element={<AdicionarRankSquad/>}/>
+
+          <Route path='/squadconfig/retirar_rank/:id' element={<RemoverRankSquad/>}/>
+
+
 
           <Route path='/squadconfig/solicitacao/:id/prova' element={<GerenciarProvaSquadConfig/>}/>
 

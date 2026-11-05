@@ -10,9 +10,9 @@ interface CardItemProps {
     eMeuPerfil: boolean; 
     onDeletar?: (id: string) => void; 
     onFixar?: (id: string) => void;   
-    onCompartilhar?: () => void; // 1. Nova prop adicionada aqui
+    onCompartilhar?: () => void;
     fixado?: boolean;      
-    abrirMap?: (abrir: boolean) => void;   // 👈 Ajustado: tipado como função corretamente
+    abrirMap?: (abrir: boolean) => void;
 }
 
 function CardItem({ nome, fotoBanner, info, id, eMeuPerfil, onDeletar, onFixar, onCompartilhar, fixado, abrirMap }: CardItemProps) {

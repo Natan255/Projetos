@@ -1,0 +1,5 @@
+<resources>
+    <string name="accessibility_service_description">
+        O Experge usa este serviço para bloquear apps de distração e exigir créditos para liberá-los.
+    </string>
+</resources>

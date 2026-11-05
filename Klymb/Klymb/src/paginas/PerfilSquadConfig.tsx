@@ -56,10 +56,6 @@ function PerfilSquadConfig() {
         }
     };
 
-    if (carregando) {
-        return <div className="config-container"><p style={{color: '#fff'}}>Carregando configurações...</p></div>;
-    }
-
     return (
         <div className="config-container">
             <div className="config">
@@ -99,6 +95,10 @@ function PerfilSquadConfig() {
                     <button className="config-opcao"> Adicionar mais rank </button>
                 </Link>
 
+                <Link to={`/squadconfig/retirar_rank/${id}`}>
+                    <button className="config-opcao"> Remover rank </button>
+                </Link>
+
 
                 {solicitarEntrada === "sim" && (
                     <Link to={`/squadconfig/solicitacao/${id}/entrada`}>
@@ -115,6 +115,8 @@ function PerfilSquadConfig() {
                 <Link to={`/squadconfig/solicitacao/${id}/prova`}>
                     <button className="config-opcao">Solicitação de prova no squad </button>
                 </Link>
+
+
 
                 <h2 className="config-titulo">Configurações de privacidade do Squad</h2>
                 
