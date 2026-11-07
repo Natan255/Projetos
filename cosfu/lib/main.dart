@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'providers/blocked_apps_provider.dart'; // <-- tem que estar aqui
+import 'providers/blocked_apps_provider.dart';
 import 'providers/credit_provider.dart';
 import 'providers/rewards_provider.dart';
 import 'providers/task_provider.dart';
@@ -13,7 +13,7 @@ void main() {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => CreditProvider()),
-        ChangeNotifierProvider(create: (_) => BlockedAppsProvider()), // <-- FALTAVA ESTE
+        ChangeNotifierProvider(create: (_) => BlockedAppsProvider()),
         ChangeNotifierProvider(create: (_) => RewardsProvider()),
         ChangeNotifierProxyProvider<CreditProvider, TimerProvider>(
           create: (_) => TimerProvider(),

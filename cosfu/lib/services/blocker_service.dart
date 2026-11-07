@@ -7,7 +7,6 @@ class BlockerService {
     'com.example.cosfu/blocker',
   );
 
-  /// Envia a lista atualizada de apps bloqueados para o serviço nativo.
   static Future<void> updateBlockedApps(
     List<BlockedApp> apps,
     List<BlockedApp> unlocked,
@@ -28,7 +27,6 @@ class BlockerService {
     });
   }
 
-  /// Verifica se o serviço de acessibilidade está ativado.
   static Future<bool> isAccessibilityEnabled() async {
     final result = await _channel.invokeMethod<bool>('isAccessibilityEnabled');
     return result ?? false;

@@ -108,7 +108,6 @@ class _DistractionsPageState extends State<DistractionsPage> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    // Revalida ao voltar das configurações do Android
     _checkAccessibility();
   }
 
@@ -127,7 +126,6 @@ class _DistractionsPageState extends State<DistractionsPage> {
 
   Future<void> _openAccessibilitySettings() async {
     await BlockerService.openAccessibilitySettings();
-    // Ao voltar do settings, o didChangeDependencies revalida
   }
 
   Future<void> _loadApps() async {
