@@ -40,6 +40,7 @@ CREATE TABLE IF NOT EXISTS Servico(
     endereco TEXT NOT NULL,
     hora TEXT NOT NULL,
     observacao TEXT NOT NULL,
+    data TEXT NOT NULL,
     status TEXT CHECK (status IN ('pendente', 'finalizado', 'entregue')),
     pago INTEGER CHECK (pago IN (0, 1)),
     FOREIGN KEY (id_cliente) REFERENCES Cliente(id_cliente),

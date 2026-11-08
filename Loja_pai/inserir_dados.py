@@ -41,21 +41,21 @@ VALUES (?, ?, ?)
 """, materiais)
 
 servicos = [
-    (1, 1, 'Geladeira', 'Manutencao', 250.00, 'Rua Juvenal, 50', '08:00', 'Fazendo barulho', 'entregue', 1),
-    (2, 2, 'Ar Split', 'Instalacao', 400.00, 'Rua A, 123', '10:00', 'Instalado com sucesso', 'finalizado', 1),
-    (3, 1, 'Forno', 'Conserto', 120.00, 'Padaria Pão Quente', '14:30', 'Não acende', 'entregue', 1),
-    (4, 3, 'Ar Split', 'Manutencao', 300.00, 'Mercado do Zé', '09:00', 'Limpeza feita', 'finalizado', 1),
-    (5, 2, 'Micro-ondas', 'Conserto', 150.00, 'Rua C, 789', '16:00', 'Não esquenta', 'pendente', 0),
-    (1, 3, 'Máquina de Lavar', 'Conserto', 350.00, 'Rua Juvenal, 50', '11:00', 'Vazando água', 'entregue', 1),
-    (3, 1, 'Cafeteira', 'Conserto', 80.00, 'Padaria Pão Quente', '08:30', 'Queimou a resistência', 'entregue', 1),
-    (2, 2, 'Geladeira', 'Instalacao', 500.00, 'Rua A, 123', '13:00', 'Geladeira nova', 'finalizado', 1),
-    (4, 3, 'Ar Split', 'Instalacao', 600.00, 'Mercado do Zé', '15:00', 'Instalação de 2 splits', 'pendente', 0),
-    (5, 1, 'Forno', 'Visita', 50.00, 'Rua C, 789', '09:30', 'Apenas orçamento', 'finalizado', 1)
+    (1, 1, 'Geladeira', 'Manutencao', 250.00, 'Rua Juvenal, 50', '08:00', 'Fazendo barulho', '2026-10-01', 'entregue', 1),
+    (2, 2, 'Ar Split', 'Instalacao', 400.00, 'Rua A, 123', '10:00', 'Instalado com sucesso', '2026-10-05', 'finalizado', 1),
+    (3, 1, 'Forno', 'Conserto', 120.00, 'Padaria Pão Quente', '14:30', 'Não acende', '2026-11-12', 'entregue', 1),
+    (4, 3, 'Ar Split', 'Manutencao', 300.00, 'Mercado do Zé', '09:00', 'Limpeza feita', '2026-11-10', 'finalizado', 1),
+    (5, 2, 'Micro-ondas', 'Conserto', 150.00, 'Rua C, 789', '16:00', 'Não esquenta', '2026-11-15', 'pendente', 0),
+    (1, 3, 'Máquina de Lavar', 'Conserto', 350.00, 'Rua Juvenal, 50', '11:00', 'Vazando água', '2026-11-20', 'entregue', 1),
+    (3, 1, 'Cafeteira', 'Conserto', 80.00, 'Padaria Pão Quente', '08:30', 'Queimou a resistência', '2026-11-25', 'entregue', 1),
+    (2, 2, 'Geladeira', 'Instalacao', 500.00, 'Rua A, 123', '13:00', 'Geladeira nova', '2026-12-01', 'finalizado', 1),
+    (4, 3, 'Ar Split', 'Instalacao', 600.00, 'Mercado do Zé', '15:00', 'Instalação de 2 splits', '2026-12-05', 'pendente', 0),
+    (5, 1, 'Forno', 'Visita', 50.00, 'Rua C, 789', '09:30', 'Apenas orçamento', '2026-12-10', 'finalizado', 1)
 ]
 
 cursor.executemany("""
-INSERT INTO Servico (id_cliente, id_funcionario, aparelho, servico, valor, endereco, hora, observacao, status, pago)
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+INSERT INTO Servico (id_cliente, id_funcionario, aparelho, servico, valor, endereco, hora, observacao, data, status, pago)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 """, servicos)
 
 servicos_materiais = [
