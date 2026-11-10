@@ -3,7 +3,6 @@ import sqlite3
 conexao = sqlite3.connect("loja_pai.db")
 cursor = conexao.cursor()
 
-#faz um comando sql por vez, executescript
 cursor.execute(""" 
 CREATE TABLE IF NOT EXISTS Cliente(
 
@@ -40,6 +39,7 @@ CREATE TABLE IF NOT EXISTS Servico(
     endereco TEXT NOT NULL,
     hora TEXT NOT NULL,
     observacao TEXT NOT NULL,
+    data DATE NOT NULL,
     status TEXT CHECK (status IN ('pendente', 'finalizado', 'entregue')),
     pago INTEGER CHECK (pago IN (0, 1)),
     FOREIGN KEY (id_cliente) REFERENCES Cliente(id_cliente),
@@ -77,4 +77,3 @@ CREATE TABLE IF NOT EXISTS ServicosMaterial(
 
 conexao.commit()
 conexao.close()
-print("SQLite está funcionando perfeitamente!")
