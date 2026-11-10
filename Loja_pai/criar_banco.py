@@ -39,7 +39,11 @@ CREATE TABLE IF NOT EXISTS Servico(
     endereco TEXT NOT NULL,
     hora TEXT NOT NULL,
     observacao TEXT NOT NULL,
+<<<<<<< HEAD
     data DATE NOT NULL,
+=======
+    data TEXT NOT NULL,
+>>>>>>> 74216294ca15f23b09c0895bc7b96ddc521dc221
     status TEXT CHECK (status IN ('pendente', 'finalizado', 'entregue')),
     pago INTEGER CHECK (pago IN (0, 1)),
     FOREIGN KEY (id_cliente) REFERENCES Cliente(id_cliente),
